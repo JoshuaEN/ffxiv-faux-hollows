@@ -12,6 +12,7 @@
     "test:ci": "vitest run",
     "test:ci:coverage": "vitest run --coverage",
     "lint": "eslint .",
+    "script:load-community-data": "node --max-old-space-size=8192 --loader ts-node/esm --es-module-specifier-resolution=node ./scripts/load-community-data.ts --path",
     "postinstall": "node ./scripts/eslint-plugin-fix.js"
   },
   "dependencies": {
