@@ -1,0 +1,58 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict",
+    "plugin:vue/vue3-recommended",
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint"],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "project": ["tsconfig.json", "tsconfig.node.json"],
+    "extraFileExtensions": [".vue"],
+    "sourceType": "module"
+  },
+  "root": true,
+  "rules": {
+    "@typescript-eslint/strict-boolean-expressions": [
+      "error",
+      {
+        "allowString": false,
+        "allowNumber": false,
+        "allowNullableObject": false,
+        "allowNullableBoolean": false,
+        "allowNullableString": false,
+        "allowNullableNumber": false,
+        "allowAny": false
+      }
+    ],
+    "@typescript-eslint/restrict-template-expressions": [
+      "error",
+      { "allowNullish": true, "allowBoolean": true }
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-for-in-array": "error",
+    "@typescript-eslint/no-unnecessary-condition": "error",
+    "@typescript-eslint/no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "console",
+            "importNames": ["assert"],
+            "message": "Import assert from the assert/strict library instead"
+          },
+          {
+            "name": "assert",
+            "message": "Import asserts from assert/strict instead"
+          }
+        ]
+      }
+    ],
+    "block-scoped-var": "error",
+    "no-inner-declarations": "off"
+  }
+}
