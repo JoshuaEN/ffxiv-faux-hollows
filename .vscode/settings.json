@@ -1,0 +1,16 @@
+{
+  "eslint.validate": ["javascript", "typescript", "vue"],
+  "editor.formatOnSave": true,
+  "eslint.debug": true,
+  "eslint.rules.customizations": [
+    { "rule": "*", "severity": "warn" },
+    // This rule is really annoying in the editor because it flags early,
+    // and makes the entire body of the for loop squiggled
+    { "rule": "@typescript-eslint/prefer-for-of", "severity": "off" }
+  ],
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "**/node_modules/.pnpm/@types+node*",
+    "chai",
+    "dom.d.ts"
+  ]
+}
