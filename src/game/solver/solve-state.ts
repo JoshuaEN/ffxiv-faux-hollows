@@ -1,4 +1,3 @@
-import { cordToIndex, indexToCord } from "../helpers";
 import {
   BoardIssue,
   IndeterminateSolveState,
@@ -6,12 +5,10 @@ import {
   SolveStep,
   TrackedStatesIndexList,
   TileState,
-  StateTileEligibility,
-  CommunityDataPattern,
-} from "../types";
-import { calculateStatesCandidates } from "./state-candidates";
-import { getIdentifierCandidates } from "./identifier-candidates";
-import { lengthEquals } from "../../helpers";
+} from "../types/index.js";
+import { calculateStatesCandidates } from "./state-candidates.js";
+import { getIdentifierCandidates } from "./identifier-candidates.js";
+import { lengthEquals } from "../../helpers.js";
 
 export function calculatedSolveState(
   userSelected: readonly TileState[],

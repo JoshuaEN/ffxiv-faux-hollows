@@ -12,5 +12,7 @@
     "**/node_modules/.pnpm/@types+node*",
     "chai",
     "dom.d.ts"
-  ]
+  ],
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

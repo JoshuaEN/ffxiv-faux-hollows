@@ -1,4 +1,4 @@
-import { indexToCord } from "../helpers";
+import { indexToCord } from "../helpers.js";
 
 export class BoundingBox {
   readonly shortSide: number;

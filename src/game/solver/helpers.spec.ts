@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BoundingBox, getBoundingBox } from "./helpers";
+import { BoundingBox, getBoundingBox } from "./helpers.js";
 
 describe("helpers", () => {
   describe("BoundingBox", () => {

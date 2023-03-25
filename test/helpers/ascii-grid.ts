@@ -1,10 +1,10 @@
-import { BOARD_CELLS, BOARD_WIDTH } from "../../game/constants";
+import { BOARD_CELLS, BOARD_WIDTH } from "~/src/game/constants.js";
 import {
   SmartFillTileState,
   SuggestTileState,
   TileState,
-} from "../../game/types";
-import { assertNever } from "../../helpers";
+} from "~/src/game/types/index.js";
+import { assertNever } from "~/src/helpers.js";
 
 enum AsciiParts {
   TopLeft = "┌",

@@ -4,7 +4,7 @@ import {
   SmartFillTileState,
   SuggestTileState,
   TileState,
-} from "../game/types";
+} from "../game/types/index.js";
 import BaseTile from "./base-tile.vue";
 
 defineProps<{ tile: CombinedTileState }>();

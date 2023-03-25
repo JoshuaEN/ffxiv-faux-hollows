@@ -4,7 +4,7 @@ import {
   SmartFillTileState,
   SuggestTileState,
   TileState,
-} from "../game/types";
+} from "../game/types/index.js";
 
 const props = defineProps<{ tile: CombinedTileState }>();
 </script>

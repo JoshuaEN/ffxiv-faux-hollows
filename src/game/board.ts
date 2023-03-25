@@ -1,7 +1,5 @@
-import { assert } from "console";
-import { BOARD_CELLS } from "./constants";
-import { cordToIndex } from "./helpers";
-import { solve } from "./solver";
+import { BOARD_CELLS } from "./constants.js";
+import { solve } from "./solver/index.js";
 import {
   BoardIssue,
   CombinedTileState,
@@ -10,7 +8,7 @@ import {
   TileState,
   IndeterminateSolveState,
   SolveStep,
-} from "./types";
+} from "./types/index.js";
 
 export class Board {
   readonly #userSelectedStates: TileState[] = [];

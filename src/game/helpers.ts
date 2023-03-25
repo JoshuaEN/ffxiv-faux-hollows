@@ -1,4 +1,4 @@
-import { BOARD_CELLS, BOARD_HEIGHT } from "./constants";
+import { BOARD_CELLS, BOARD_HEIGHT } from "./constants.js";
 
 export function cordToIndex(x: number, y: number) {
   if (x < 0) {

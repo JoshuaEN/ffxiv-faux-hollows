@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import GameBoard from './components/game-board.vue';
-import { Board } from './game/board';
+import GameBoard from "./components/game-board.vue";
+import { Board } from "./game/board.js";
 
 const board = new Board();
 </script>

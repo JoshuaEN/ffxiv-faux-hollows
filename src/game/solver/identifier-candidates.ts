@@ -1,15 +1,15 @@
-import { MAX_BLOCKED } from "../constants";
+import { MAX_BLOCKED } from "../constants.js";
 import {
   communityDataBlocksToIdentifier,
   communityDataByIdentifier,
   CommunityDataIdentifiers,
-} from "../generated-community-data";
-import { hash } from "../helpers";
+} from "../generated-community-data.js";
+import { hash } from "../helpers.js";
 import {
   BoardIssue,
   BoardIssueSeverity,
   CommunityDataIdentifierPatterns,
-} from "../types";
+} from "../types/index.js";
 
 export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
   identifierCandidates: readonly CommunityDataIdentifierPatterns[];

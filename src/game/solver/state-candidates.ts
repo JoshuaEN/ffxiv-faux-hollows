@@ -1,6 +1,6 @@
-import { assert, assertLengthAtLeast, lengthEquals } from "../../helpers";
-import { BOARD_WIDTH, BOARD_HEIGHT } from "../constants";
-import { cordToIndex } from "../helpers";
+import { assert, assertLengthAtLeast, lengthEquals } from "../../helpers.js";
+import { BOARD_WIDTH, BOARD_HEIGHT } from "../constants.js";
+import { cordToIndex } from "../helpers.js";
 import {
   BoardIssue,
   BoardIssueSeverity,
@@ -11,8 +11,8 @@ import {
   StateTileEligibility,
   TileState,
   TrackedStatesIndexList,
-} from "../types";
-import { BoundingBox, getBoundingBox } from "./helpers";
+} from "../types/index.js";
+import { BoundingBox, getBoundingBox } from "./helpers.js";
 
 interface ShapeData {
   readonly state: TileState.Sword | TileState.Present;

@@ -1,7 +1,5 @@
-import { it } from "node:test";
 import { describe, test } from "vitest";
-import { SequenceRunner } from "../framework";
-import { EMPTY } from "../shared";
+import { SequenceRunner } from "../framework.js";
 
 export const data = (run: SequenceRunner) => {
   describe("Fox suggestions", () => {

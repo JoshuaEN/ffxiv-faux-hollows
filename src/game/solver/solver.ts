@@ -1,5 +1,5 @@
-import { assertNever } from "../../helpers";
-import { BOARD_CELLS } from "../constants";
+import { assertNever } from "../../helpers.js";
+import { BOARD_CELLS } from "../constants.js";
 import {
   CombinedTileState,
   SolveStep,
@@ -7,8 +7,8 @@ import {
   SuggestTileState,
   TileState,
   SmartFillTileState,
-} from "../types";
-import { calculatedSolveState } from "./solve-state";
+} from "../types/index.js";
+import { calculatedSolveState } from "./solve-state.js";
 
 export function solve(
   userSelected: readonly TileState[],

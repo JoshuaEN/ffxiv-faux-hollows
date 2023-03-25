@@ -6,13 +6,17 @@ import process from "process";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import prettier from "prettier";
-import { TileState } from "../src/game/types/tile-states";
+import { TileState } from "../src/game/types/tile-states.js";
 import {
   CommunityDataIdentifierPatterns,
   CommunityDataPattern,
-} from "../src/game/types/community-data";
-import { BOARD_HEIGHT, BOARD_WIDTH, MAX_BLOCKED } from "../src/game/constants";
-import { cordToIndex, hash, indexToCord } from "../src/game/helpers";
+} from "../src/game/types/community-data.js";
+import {
+  BOARD_HEIGHT,
+  BOARD_WIDTH,
+  MAX_BLOCKED,
+} from "../src/game/constants.js";
+import { cordToIndex, hash, indexToCord } from "../src/game/helpers.js";
 import { chromium } from "playwright";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +39,7 @@ const colors = {
   "rgb(255, 255, 255)": "Empty", // #ffffff
   "rgb(217, 217, 217)": null, // #d9d9d9
 } as const;
-type ColorState = typeof colors[keyof typeof colors];
+type ColorState = (typeof colors)[keyof typeof colors];
 
 type Writable<T> = T extends object
   ? { -readonly [K in keyof T]: Writable<T[K]> }
@@ -45,7 +49,7 @@ interface ExtendedCommunityDataPattern extends Writable<CommunityDataPattern> {
   Blocked: number[];
 }
 
-const blockPatterns: Record<string, Set<string>> = {};
+const blockPatterns: Record<string, Set<string> | undefined> = {};
 const setsByIdentifier: Record<string, CommunityDataIdentifierPatterns> = {};
 
 const browser = await chromium.launch();
@@ -355,7 +359,7 @@ export const communityDataBlocksToIdentifier: Record<string, readonly CommunityD
       Array.from(Object.entries(blockPatterns))
         .sort((a, b) => a[0].length - b[0].length)
         .reduce<Record<string, string[]>>((acc, [k, v]) => {
-          acc[k] = Array.from(v.keys());
+          acc[k] = Array.from(v?.keys() ?? []);
           return acc;
         }, {})
     )} as const;

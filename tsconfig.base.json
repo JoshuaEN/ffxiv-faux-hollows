@@ -3,7 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "nodenext",
     "strict": true,
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
@@ -18,7 +18,11 @@
     "skipLibCheck": true,
     "noEmit": true,
     "types": ["vitest/importMeta"],
-    "allowJs": false
+    "allowJs": false,
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./*"]
+    }
   },
   "include": [],
   "files": []

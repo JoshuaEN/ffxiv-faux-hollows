@@ -1,5 +1,5 @@
 import { expect, describe, test } from "vitest";
-import { hash } from "./helpers";
+import { hash } from "./helpers.js";
 
 describe("helpers", () => {
   describe("hash", () => {

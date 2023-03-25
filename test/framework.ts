@@ -1,8 +1,12 @@
 import { assert, expect } from "vitest";
-import { BOARD_CELLS, BOARD_WIDTH } from "../game/constants";
-import { BoardIssue, SmartFillTileState, TileState } from "../game/types";
-import { eachIndex } from "../helpers";
-import { CellTestData, loadAsciiGrid } from "./helpers/ascii-grid";
+import { BOARD_CELLS, BOARD_WIDTH } from "~/src/game/constants.js";
+import {
+  BoardIssue,
+  SmartFillTileState,
+  TileState,
+} from "~/src/game/types/index.js";
+import { eachIndex } from "~/src/helpers.js";
+import { CellTestData, loadAsciiGrid } from "./helpers/ascii-grid.js";
 
 export type SequenceRunnerFactory = () => BaseSequenceRunner;
 export type SequenceRunner = (...states: string[]) => Promise<void>;

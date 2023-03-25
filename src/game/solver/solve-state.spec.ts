@@ -1,16 +1,18 @@
-import { assert, describe } from "vitest";
-import { eachIndex } from "../../helpers";
-import { allTestData } from "../../test/all-data-tests";
-import { BaseSequenceRunner, FormatDataSource } from "../../test/framework";
-import { CellTestData } from "../../test/helpers/ascii-grid";
+import { describe } from "vitest";
+import { eachIndex } from "../../helpers.js";
+import { allTestData } from "~/test/all-data-tests.js";
+import {
+  BaseSequenceRunner,
+  FormatDataSource,
+} from "../../../test/framework.js";
+import { CellTestData } from "../../../test/helpers/ascii-grid.js";
 import {
   SmartFillTileState,
-  SolveStep,
   SuggestTileState,
   TileState,
   TrackedStatesIndexList,
-} from "../types";
-import { calculatedSolveState } from "./solve-state";
+} from "../types/index.js";
+import { calculatedSolveState } from "./solve-state.js";
 /**
  * Legend:
  *

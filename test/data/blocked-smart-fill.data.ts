@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
-import { eachIndex } from "../../helpers";
-import { SequenceRunner } from "../framework";
-import { EMPTY } from "../shared";
+import { eachIndex } from "~/src/helpers.js";
+import { SequenceRunner } from "../framework.js";
+import { EMPTY } from "../shared.js";
 
 export const data = (run: SequenceRunner) => {
   describe("Blocked Smart-fill", () => {

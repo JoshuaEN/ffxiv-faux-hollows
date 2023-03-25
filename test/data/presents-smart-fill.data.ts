@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
-import { SequenceRunner } from "../framework";
+import { SequenceRunner } from "../framework.js";
 
 export const data = (run: SequenceRunner) => {
   describe("Present Smart-Fill", () => {

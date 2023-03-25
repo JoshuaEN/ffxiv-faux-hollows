@@ -1,19 +1,16 @@
-import { expect } from "chai";
 import { assert, describe } from "vitest";
-import { assertNever, eachIndex } from "../../helpers";
-import { allTestData } from "../../test/all-data-tests";
-import { BaseSequenceRunner, FormatDataSource } from "../../test/framework";
-import { CellTestData } from "../../test/helpers/ascii-grid";
-import { BOARD_CELLS } from "../constants";
+import { assertNever, eachIndex } from "../../helpers.js";
+import { allTestData } from "~/test/all-data-tests.js";
+import { BaseSequenceRunner, FormatDataSource } from "~/test/framework.js";
+import { CellTestData } from "~/test/helpers/ascii-grid.js";
+import { BOARD_CELLS } from "../constants.js";
 import {
   SmartFillTileState,
-  SolveStep,
   SuggestTileState,
   TileState,
   TrackedStatesIndexList,
-} from "../types";
-import { calculatedSolveState } from "./solve-state";
-import { solve } from "./solver";
+} from "../types/index.js";
+import { solve } from "./solver.js";
 /**
  * Legend:
  *

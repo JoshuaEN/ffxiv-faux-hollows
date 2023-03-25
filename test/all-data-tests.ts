@@ -1,16 +1,9 @@
-import { makeRunner, SequenceRunnerFactory } from "./framework";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import { createHash } from "crypto";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const basePath = path.join(__dirname, "data");
-import { data as blockedSmartFillData } from "./data/blocked-smart-fill.data";
-import { data as foxSuggestionsData } from "./data/fox-suggestions.data";
-import { data as presentsSmartFillData } from "./data/presents-smart-fill.data";
-import { data as smartFillEdgeCasesData } from "./data/smart-fill-edge-cases.data";
-import { data as swordSmartFillData } from "./data/sword-smart-fill.data";
+import { makeRunner, SequenceRunnerFactory } from "./framework.js";
+import { data as blockedSmartFillData } from "./data/blocked-smart-fill.data.js";
+import { data as foxSuggestionsData } from "./data/fox-suggestions.data.js";
+import { data as presentsSmartFillData } from "./data/presents-smart-fill.data.js";
+import { data as smartFillEdgeCasesData } from "./data/smart-fill-edge-cases.data.js";
+import { data as swordSmartFillData } from "./data/sword-smart-fill.data.js";
 
 export function allTestData(runnerFactory: SequenceRunnerFactory) {
   const runner = makeRunner(runnerFactory);

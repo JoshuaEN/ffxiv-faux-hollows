@@ -1,5 +1,5 @@
-import { BOARD_CELLS } from "../constants";
-import { TargetTileState, TileState } from "./tile-states";
+import { BOARD_CELLS } from "../constants.js";
+import { TargetTileState, TileState } from "./tile-states.js";
 
 export interface TileSuggestion {
   [TileState.Blocked]: number;
@@ -162,7 +162,7 @@ export class IndeterminateSolveState {
   }
 
   resetSuggestionsFor(state: TargetTileState) {
-    for (const [_, suggestion] of this.#suggestions) {
+    for (const [, suggestion] of this.#suggestions) {
       suggestion[state] = 0;
     }
   }

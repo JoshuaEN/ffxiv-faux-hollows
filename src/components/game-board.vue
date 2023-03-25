@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, shallowReactive } from "vue";
-import { Board } from "../game/board";
-import { CombinedTileState, TileState, SolveStep } from "../game/types";
+import { Board } from "../game/board.js";
+import {
+  CombinedTileState,
+  TileState,
+  SolveStep,
+} from "../game/types/index.js";
 import GameTile from "./game-tile.vue";
 import {
   useFloating,
@@ -15,7 +19,7 @@ import BaseTile from "./base-tile.vue";
 
 const popoverAnchorRef = ref(null);
 const popoverAnchorRefs = ref<unknown[]>([]);
-const popoverRef = ref(null);
+const popoverRef = ref<HTMLDivElement | null>(null);
 const popoverArrowRef = ref(null);
 const popoverMiddleware = ref([
   offset({ mainAxis: 10 }),
