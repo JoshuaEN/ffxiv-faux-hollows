@@ -1,0 +1,87 @@
+main {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.25rem;
+
+  &.focusTile .tile:not(.focused) {
+    opacity: 0.75;
+  }
+}
+
+main:not(.debug) {
+  width: 0;
+}
+.debug {
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(54, 54, 54);
+    padding: 1rem;
+    width: 5rem;
+    height: 5rem;
+  }
+  gap: 1rem;
+}
+.overlay {
+  width: max-content;
+  padding: 0.5rem;
+  border-radius: 5px;
+  &,
+  > .arrow {
+    background-color: antiquewhite;
+    border-color: antiquewhite;
+    color: #000;
+  }
+
+  > .buttons {
+    display: flex;
+    // grid-auto-columns: minmax(0, 1fr);
+    // grid-auto-flow: column;
+    gap: 0.5rem;
+    // Render the buttons over the arrow
+    position: relative;
+    justify-content: center;
+    align-items: center;
+
+    &:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &.top,
+  &.bottom {
+    .buttons {
+      flex-direction: row;
+    }
+  }
+
+  &.left,
+  &.right {
+    .buttons {
+      flex-direction: column;
+    }
+  }
+
+  > .arrow {
+    --arrow-size: 15px;
+    --arrow-half-size: calc(var(--arrow-size) / 2 * -1);
+    position: absolute;
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    transform: rotate(45deg);
+
+    &.bottom {
+      top: var(--arrow-half-size);
+    }
+    &.top {
+      bottom: var(--arrow-half-size);
+    }
+    &.right {
+      left: var(--arrow-half-size);
+    }
+    &.left {
+      right: var(--arrow-half-size);
+    }
+  }
+}
