@@ -1,4 +1,4 @@
-import { describe } from "vitest";
+import { describe, expect, test } from "vitest";
 import { eachIndex } from "../../helpers.js";
 import { allTestData } from "~/test/all-data-tests.js";
 import {
@@ -54,7 +54,14 @@ import { calculatedSolveState } from "./solve-state.js";
  */
 
 describe("calculatedSolveState", () => {
-  allTestData(() => new SolveStateSequenceRunner());
+  allTestData(
+    (title, ...states) =>
+      test(
+        title,
+        async () => await new SolveStateSequenceRunner().testSequence(states)
+      ),
+    { describe }
+  );
 
   class SolveStateSequenceRunner extends BaseSequenceRunner {
     static #smartFillMap = {
@@ -65,7 +72,7 @@ describe("calculatedSolveState", () => {
     #userSelected: TileState[];
 
     constructor() {
-      super();
+      super((message) => expect("FAIL", message).toBeFalsy() as never, expect);
       this.#userSelected = Array.from(this.indexes()).map(
         () => TileState.Unknown
       );

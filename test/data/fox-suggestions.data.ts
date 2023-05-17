@@ -1,12 +1,15 @@
-import { describe, test } from "vitest";
-import { SequenceRunner } from "../framework.js";
+import { TestStructuralElements } from "../all-data-tests.js";
+import { RegisterTest } from "../framework.js";
 
-export const data = (run: SequenceRunner) => {
+export const data = (
+  registerTest: RegisterTest,
+  { describe }: TestStructuralElements
+) => {
   describe("Fox suggestions", () => {
     describe("Fully Solved board", () => {
-      test(`Does not suggest any foxes with no community data`, async () => {
-        await run(
-          `
+      registerTest(
+        `Does not suggest any foxes with no community data`,
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -21,7 +24,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-          `
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -36,11 +39,10 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-        );
-      });
-      test(`Does not suggest any foxes with an unknown block pattern and no community data`, async () => {
-        await run(
-          `
+      );
+      registerTest(
+        `Does not suggest any foxes with an unknown block pattern and no community data`,
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │ B   │ B   │ B   │ B   │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -55,7 +57,7 @@ export const data = (run: SequenceRunner) => {
       │ E   │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-          `
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │ B   │ B   │ B   │ B   │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -71,11 +73,10 @@ export const data = (run: SequenceRunner) => {
       └─────┴─────┴─────┴─────┴─────┴─────┘
       [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
     `
-        );
-      });
-      test(`Suggests foxes with community data`, async () => {
-        await run(
-          `
+      );
+      registerTest(
+        `Suggests foxes with community data`,
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -90,7 +91,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-          `
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │*  1 │     │     │ B   │*  1 │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -105,11 +106,10 @@ export const data = (run: SequenceRunner) => {
       │*  1 │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-        );
-      });
-      test(`No longer suggests foxes once a fox has been entered`, async () => {
-        await run(
-          `
+      );
+      registerTest(
+        `No longer suggests foxes once a fox has been entered`,
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -124,7 +124,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-          `
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │*  1 │     │     │ B   │*  1 │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -139,7 +139,7 @@ export const data = (run: SequenceRunner) => {
       │*  1 │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-          `
+        `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │>F   │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -154,13 +154,12 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-        );
-      });
+      );
     });
     describe("Partially Solved board", () => {
-      test("Does not suggest any foxes with no community data", async () => {
-        await run(
-          `
+      registerTest(
+        "Does not suggest any foxes with no community data",
+        `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │ B   │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -175,7 +174,7 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │     │     │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-          `
+        `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │ B   │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -190,11 +189,10 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │.1  s│.1  s│
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-        );
-      });
-      test(`Correctly detects Sword orientation for determining valid foxes (2x3)`, async () => {
-        await run(
-          `
+      );
+      registerTest(
+        `Correctly detects Sword orientation for determining valid foxes (2x3)`,
+        `
         ┌─────┬─────┬─────┬─────┬─────┬─────┐
         │     │     │     │     │     │     │
         ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -209,7 +207,7 @@ export const data = (run: SequenceRunner) => {
         │     │ E   │     │     │     │ B   │
         └─────┴─────┴─────┴─────┴─────┴─────┘
       `,
-          `
+        `
         ┌─────┬─────┬─────┬─────┬─────┬─────┐
         │     │     │     │     │     │     │
         ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -224,13 +222,12 @@ export const data = (run: SequenceRunner) => {
         │     │ E   │*  1 │*  1 │*  1 │ B   │
         └─────┴─────┴─────┴─────┴─────┴─────┘
       `
-        );
-      });
+      );
     });
     describe("Recommendation prioritization", () => {
-      test(`Other things equal, should prioritize spots that may have a fox`, async () => {
-        await run(
-          `
+      registerTest(
+        `Other things equal, should prioritize spots that may have a fox`,
+        `
         ┌─────┬─────┬─────┬─────┬─────┬─────┐
         │     │     │     │     │ B   │     │
         ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -245,7 +242,7 @@ export const data = (run: SequenceRunner) => {
         │     │     │     │ B   │     │     │
         └─────┴─────┴─────┴─────┴─────┴─────┘
       `,
-          `
+        `
         ┌─────┬─────┬─────┬─────┬─────┬─────┐
         │     │.  1 │     │     │ B   │.  1 │
         ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -260,8 +257,7 @@ export const data = (run: SequenceRunner) => {
         │.  1 │     │     │ B   │*1 1 │*1 1 │
         └─────┴─────┴─────┴─────┴─────┴─────┘
       `
-        );
-      });
+      );
     });
   });
 };

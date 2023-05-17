@@ -7,7 +7,6 @@
     "plugin:vue/vue3-recommended",
     "prettier"
   ],
-  "plugins": ["@typescript-eslint"],
   "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
@@ -15,6 +14,7 @@
     "extraFileExtensions": [".vue"],
     "sourceType": "module"
   },
+  "plugins": ["vue", "@typescript-eslint"],
   "root": true,
   "rules": {
     "@typescript-eslint/strict-boolean-expressions": [

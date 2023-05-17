@@ -69,21 +69,19 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
     tileState in TileState &&
     tileState !== TileState.Unknown
   ) {
-    primaryOptions.push(TileState.Empty);
+    if (tileState === TileState.Empty) {
+      primaryOptions.push(TileState.Unknown);
+    } else {
+      primaryOptions.push(TileState.Empty);
+    }
   } else {
     switch (data.board.solveState.solveStep) {
       case SolveStep.FillBlocked: {
         primaryOptions.push(TileState.Blocked);
         break;
       }
-      case SolveStep.FillSword: {
-        primaryOptions.push(TileState.Sword);
-        break;
-      }
-      case SolveStep.FillPresent: {
-        primaryOptions.push(TileState.Present);
-        break;
-      }
+      case SolveStep.FillSword:
+      case SolveStep.FillPresent:
       case SolveStep.SuggestTiles: {
         const suggestions = data.board.solveState.getSuggestion(index);
         primaryOptions.push(TileState.Empty);
@@ -96,7 +94,7 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
       }
       case SolveStep.Done:
       default: {
-        primaryOptions.push(...states);
+        primaryOptions.push(TileState.Empty);
         break;
       }
     }
@@ -110,6 +108,7 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
     }
   }
   popoverData.value = { index, primaryOptions, secondaryOptions };
+  popoverRef.value?.focus();
 };
 
 const pickTile = (index: number, tileState: TileState) => {
@@ -120,10 +119,17 @@ const pickTile = (index: number, tileState: TileState) => {
 </script>
 
 <template>
-  <div v-for="issue in data.board.issues" :key="issue.message">
-    {{ issue.message }}
+  <div
+    v-for="issue in data.board.issues"
+    :key="issue.message"
+    data-testid="board-issue"
+    class="issue"
+  >
+    <span class="severity" data-testid="severity">[{{ issue.severity }}]</span
+    >&nbsp;
+    <span class="message" data-testid="message">{{ issue.message }}</span>
   </div>
-  <main :class="{ focusTile: popoverOpen }">
+  <main :class="{ focusTile: popoverOpen }" data-testid="game-board">
     <GameTile
       v-for="(tile, index) in data.board.tiles"
       :ref="(el) => (popoverAnchorRefs[index] = el as any)"
@@ -131,19 +137,24 @@ const pickTile = (index: number, tileState: TileState) => {
       class="tile"
       :class="{ focused: popoverOpen && index === popoverData?.index }"
       :tile="tile"
-      @click="showTilePicker(tile, index)"
+      :data-testid="`game-tile-index-${index}`"
+      :data-test-tile="tile"
+      @mousedown="(ev: MouseEvent) => { ev.preventDefault(); ev.stopImmediatePropagation(); showTilePicker(tile, index); }"
     />
   </main>
   <div
-    v-if="popoverOpen && popoverData /* Make Typescript happy */"
-    ref="popoverRef"
+    v-if="popoverOpen && popoverData"
+    :ref="(el) => { popoverRef = el as HTMLDivElement | null; popoverRef?.focus(); }"
     class="overlay"
+    data-testid="popover-picker"
     :class="[popoverPlacement]"
     :style="{
       position: popoverStrategy,
       top: `${popoverY ?? 0}px`,
       left: `${popoverX ?? 0}px`,
     }"
+    tabindex="-1"
+    @focusout="$event => !($event.currentTarget as HTMLElement)?.contains($event.relatedTarget as Node) ? popoverData = null : false"
   >
     <div
       ref="popoverArrowRef"
@@ -158,19 +169,37 @@ const pickTile = (index: number, tileState: TileState) => {
           : undefined,
       }"
     ></div>
-    <div v-if="popoverData.primaryOptions" class="buttons">
-      <div v-for="option in popoverData.primaryOptions" :key="`${option}`">
+    <div
+      v-if="popoverData.primaryOptions"
+      class="buttons"
+      data-testid="popover-picker-primary-options"
+    >
+      <div
+        v-for="option in popoverData.primaryOptions"
+        :key="`${option}`"
+        data-testid="popover-picker-primary-option"
+      >
         <BaseTile
           :tile="option"
+          :data-testid="`popover-picker-button-${option}`"
           @click="pickTile(popoverData!.index, option)"
         />
         {{ option }}
       </div>
     </div>
-    <div v-if="popoverData.secondaryOptions" class="buttons">
-      <div v-for="option in popoverData.secondaryOptions" :key="`${option}`">
+    <div
+      v-if="popoverData.secondaryOptions"
+      class="buttons"
+      data-testid="popover-picker-secondary-options"
+    >
+      <div
+        v-for="option in popoverData.secondaryOptions"
+        :key="`${option}`"
+        data-testid="popover-picker-secondary-option"
+      >
         <BaseTile
           :tile="option"
+          :data-testid="`popover-picker-button-${option}`"
           @click="pickTile(popoverData!.index, option)"
         />
         {{ option }}

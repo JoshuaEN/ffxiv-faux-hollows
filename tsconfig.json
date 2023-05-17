@@ -6,7 +6,8 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "e2e/**/*.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

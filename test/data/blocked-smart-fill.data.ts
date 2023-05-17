@@ -1,9 +1,12 @@
-import { describe, test } from "vitest";
 import { eachIndex } from "~/src/helpers.js";
-import { SequenceRunner } from "../framework.js";
+import { TestStructuralElements } from "../all-data-tests.js";
+import { RegisterTest } from "../framework.js";
 import { EMPTY } from "../shared.js";
 
-export const data = (run: SequenceRunner) => {
+export const data = (
+  registerTest: RegisterTest,
+  { describe }: TestStructuralElements
+) => {
   describe("Blocked Smart-fill", () => {
     for (const [i, data] of eachIndex([
       [
@@ -139,9 +142,11 @@ export const data = (run: SequenceRunner) => {
         `,
       ],
     ])) {
-      test(`auto-fills once enough blocked items have been filled in (test case ${i} ${data[0]})`, async () => {
-        await run(EMPTY, ...data.slice(1));
-      });
+      registerTest(
+        `auto-fills once enough blocked items have been filled in (test case ${i} ${data[0]})`,
+        EMPTY,
+        ...data.slice(1)
+      );
     }
 
     for (const [i, data] of eachIndex([
@@ -369,14 +374,16 @@ export const data = (run: SequenceRunner) => {
     `,
       ],
     ])) {
-      test(`${data[0]} (test case index ${i})`, async () => {
-        await run(EMPTY, ...data.slice(1));
-      });
+      registerTest(
+        `${data[0]} (test case index ${i})`,
+        EMPTY,
+        ...data.slice(1)
+      );
     }
 
-    test("reports issue when there are more than 5 blocked tiles entered by the user (6 tiles entered)", async () => {
-      await run(
-        `
+    registerTest(
+      "reports issue when there are more than 5 blocked tiles entered by the user (6 tiles entered)",
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -391,7 +398,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │>B   │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -407,11 +414,10 @@ export const data = (run: SequenceRunner) => {
       └─────┴─────┴─────┴─────┴─────┴─────┘
       [Error] Board has 6 blocked tiles, but there should only be 5. # Issues: 0, 8, 16, 23, 25, 33
     `
-      );
-    });
-    test("reports issue when there are more than 5 blocked tiles entered by the user (7 tiles entered)", async () => {
-      await run(
-        `
+    );
+    registerTest(
+      "reports issue when there are more than 5 blocked tiles entered by the user (7 tiles entered)",
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -426,7 +432,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │>B1  │>B2  │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -442,7 +448,6 @@ export const data = (run: SequenceRunner) => {
       └─────┴─────┴─────┴─────┴─────┴─────┘
       [Error] Board has 7 blocked tiles, but there should only be 5. # Issues: 0, 1, 8, 16, 23, 25, 33
     `
-      );
-    });
+    );
   });
 };

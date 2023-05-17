@@ -1,5 +1,7 @@
 import { BOARD_CELLS, BOARD_WIDTH } from "~/src/game/constants.js";
 import {
+  BoardIssue,
+  BoardIssueSeverity,
   SmartFillTileState,
   SuggestTileState,
   TileState,
@@ -290,13 +292,42 @@ export function loadAsciiGrid(str: string) {
     i++;
   }
 
-  const issues = [] as string[];
+  const issues = [] as BoardIssue[];
   for (; i < rows.length; i++) {
     const row = rows[i]?.trim();
     if (row === undefined || row.length === 0) {
       continue;
     }
-    issues.push(row);
+    const matches =
+      /^\[(?<severity>[A-z]+)\] (?<message>[^#]+)( # Issues: (?<issueTilesStr>[0-9, ]+))?$/.exec(
+        row
+      );
+
+    if (matches?.groups === undefined) {
+      throw new Error(`Failed to parse issues row: ${row}; no match or groups`);
+    }
+    const { severity, message, issueTilesStr } = matches.groups;
+    if (severity === undefined || message === undefined) {
+      throw new Error(
+        `Failed to parse issues row: ${row}; no severity or message`
+      );
+    }
+    const issueTiles =
+      issueTilesStr !== undefined
+        ? issueTilesStr.split(", ").map((n) => Number.parseInt(n))
+        : [];
+
+    if (!(severity in BoardIssueSeverity)) {
+      throw new Error(
+        `Failed to parse issues row: ${row}; ${severity} is not a BoardIssueSeverity`
+      );
+    }
+
+    issues.push({
+      severity: severity as BoardIssueSeverity,
+      message,
+      issueTiles,
+    });
   }
   issues.sort();
 

@@ -1,4 +1,4 @@
-import { assert, describe } from "vitest";
+import { assert, describe, expect, test } from "vitest";
 import { assertNever, eachIndex } from "../../helpers.js";
 import { allTestData } from "~/test/all-data-tests.js";
 import { BaseSequenceRunner, FormatDataSource } from "~/test/framework.js";
@@ -52,13 +52,20 @@ import { solve } from "./solver.js";
  */
 
 describe("solve", () => {
-  allTestData(() => new SolverSequenceRunner());
+  allTestData(
+    (title, ...states) =>
+      test(
+        title,
+        async () => await new SolverSequenceRunner().testSequence(states)
+      ),
+    { describe }
+  );
 
   class SolverSequenceRunner extends BaseSequenceRunner {
     #userSelected: TileState[];
 
     constructor() {
-      super();
+      super((message) => expect("FAIL", message).toBeFalsy() as never, expect);
       this.#userSelected = Array.from(this.indexes()).map(
         () => TileState.Unknown
       );

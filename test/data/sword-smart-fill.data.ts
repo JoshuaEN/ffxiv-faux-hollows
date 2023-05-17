@@ -1,11 +1,14 @@
-import { describe, test } from "vitest";
-import { SequenceRunner } from "../framework.js";
+import { TestStructuralElements } from "../all-data-tests.js";
+import { RegisterTest } from "../framework.js";
 
-export const data = (run: SequenceRunner) => {
+export const data = (
+  registerTest: RegisterTest,
+  { describe }: TestStructuralElements
+) => {
   describe("Sword Smart-Fill", () => {
-    test(`Basic Test`, async () => {
-      await run(
-        `
+    registerTest(
+      `Basic Test`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -20,7 +23,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │.  2 │. 1  │. 1  │ B   │.  2 │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -35,11 +38,10 @@ export const data = (run: SequenceRunner) => {
       │.  2 │     │     │ B   │  s  │>S   │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-      );
-    });
-    test(`Correctly smart fill based on diagonal data (3x2)`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill based on diagonal data (3x2)`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -54,7 +56,7 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -69,11 +71,10 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-      );
-    });
-    test(`Correctly smart fill based on diagonal data (2x3)`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill based on diagonal data (2x3)`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -88,7 +89,7 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -103,11 +104,10 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │*  1 │*  1 │*  1 │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-      );
-    });
-    test(`Correctly smart fill based on a horizontal line with one side blocked`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill based on a horizontal line with one side blocked`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -122,7 +122,7 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -137,11 +137,10 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-      );
-    });
-    test(`Correctly smart fill based on a vertical line with one side blocked`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill based on a vertical line with one side blocked`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -156,7 +155,7 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -171,11 +170,10 @@ export const data = (run: SequenceRunner) => {
     │     │ E   │*  1 │*  1 │*  1 │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-      );
-    });
-    test(`Correctly smart fill against top-left edge`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill against top-left edge`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -190,7 +188,7 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │     │     │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │>S   │  s  │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -206,11 +204,10 @@ export const data = (run: SequenceRunner) => {
     └─────┴─────┴─────┴─────┴─────┴─────┘
     [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
 `
-      );
-    });
-    test(`Correctly smart fill against top-right edge`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill against top-right edge`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -225,7 +222,7 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │     │     │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │  s  │>S   │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -241,11 +238,10 @@ export const data = (run: SequenceRunner) => {
     └─────┴─────┴─────┴─────┴─────┴─────┘
     [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
 `
-      );
-    });
-    test(`Correctly smart fill against bottom-left edge`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill against bottom-left edge`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -260,7 +256,7 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │     │     │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -276,11 +272,10 @@ export const data = (run: SequenceRunner) => {
     └─────┴─────┴─────┴─────┴─────┴─────┘
     [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
 `
-      );
-    });
-    test(`Correctly smart fill against bottom-right edge`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Correctly smart fill against bottom-right edge`,
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -295,7 +290,7 @@ export const data = (run: SequenceRunner) => {
     │     │     │     │ B   │     │     │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-        `
+      `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -311,7 +306,6 @@ export const data = (run: SequenceRunner) => {
     └─────┴─────┴─────┴─────┴─────┴─────┘
     [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
 `
-      );
-    });
+    );
   });
 };

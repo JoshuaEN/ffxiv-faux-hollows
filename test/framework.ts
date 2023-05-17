@@ -1,4 +1,3 @@
-import { assert, expect } from "vitest";
 import { BOARD_CELLS, BOARD_WIDTH } from "~/src/game/constants.js";
 import {
   BoardIssue,
@@ -8,12 +7,7 @@ import {
 import { eachIndex } from "~/src/helpers.js";
 import { CellTestData, loadAsciiGrid } from "./helpers/ascii-grid.js";
 
-export type SequenceRunnerFactory = () => BaseSequenceRunner;
-export type SequenceRunner = (...states: string[]) => Promise<void>;
-
-export function makeRunner(factory: SequenceRunnerFactory) {
-  return (...states: string[]) => factory().testSequence(states);
-}
+export type RegisterTest = (title: string, ...states: string[]) => void;
 
 export enum FormatDataSource {
   Actual = "Actual",
@@ -21,9 +15,16 @@ export enum FormatDataSource {
 }
 
 export abstract class BaseSequenceRunner {
+  constructor(
+    private readonly fail: (message: string) => never,
+    private readonly expect: <T>(
+      actual: T,
+      msg?: string
+    ) => { toEqual: (expected: T) => void }
+  ) {}
   async testSequence(states: string[]) {
     if (states.length < 2) {
-      assert.fail(
+      this.fail(
         `There must be at least two states provided; the first state is used as an initial (Arrange) state with no assertions made about it.`
       );
     }
@@ -31,43 +32,43 @@ export abstract class BaseSequenceRunner {
     {
       const initialState = states.shift();
       if (initialState === undefined) {
-        assert.fail("No states provided");
+        this.fail("No states provided");
       }
       const { expectedDatum, actions, issues } = loadAsciiGrid(initialState);
       if (actions.length > 0) {
-        assert.fail(
+        this.fail(
           `Initial state must not have any actions: All cells of the first item in the test sequence must only have prior state`
         );
       }
       if (issues.length > 0) {
-        assert.fail(
+        this.fail(
           `Initial state must not have any issues: All cells of the first item in the test sequence must only have prior state`
         );
       }
       for (const [i, expectedData] of eachIndex(expectedDatum)) {
         if (expectedData.prompt !== undefined) {
-          assert.fail(
+          this.fail(
             `Cell ${i} has prompt: All cells of the first item in the test sequence must only have prior state`
           );
         }
         if (expectedData.recommended !== undefined) {
-          assert.fail(
+          this.fail(
             `Cell ${i} has recommended: All cells of the first item in the test sequence must only have prior state`
           );
         }
         if (expectedData.suggestions !== undefined) {
-          assert.fail(
+          this.fail(
             `Cell ${i} has suggestions: All cells of the first item in the test sequence must only have prior state`
           );
         }
         if (expectedData.smartFill !== null) {
-          assert.fail(
+          this.fail(
             `Cell ${i} has smartFill: All cells of the first item in the test sequence must only have prior state`
           );
         }
 
         if (expectedData.userSelection === undefined) {
-          assert.fail(
+          this.fail(
             `Cell ${i} does not have a userSelection: All cells of the first item in the test sequence must only have prior state`
           );
         }
@@ -83,7 +84,7 @@ export abstract class BaseSequenceRunner {
       const {
         expectedDatum,
         actions,
-        issues: expectedIssues,
+        issues: expectedBoardIssues,
       } = loadAsciiGrid(state);
 
       // Act
@@ -111,7 +112,7 @@ export abstract class BaseSequenceRunner {
 
         const actualData = actualDatum[k];
         if (actualData === undefined) {
-          assert.fail(`No actual data at index ${k}`);
+          this.fail(`No actual data at index ${k}`);
         }
 
         this.format(FormatDataSource.Actual, k, actual, actualData);
@@ -124,13 +125,17 @@ export abstract class BaseSequenceRunner {
         FormatDataSource.Actual,
         actualState.issues
       );
+      const expectedIssues = this.formatIssues(
+        FormatDataSource.Expected,
+        expectedBoardIssues
+      );
       if (actualIssues.length > 0) {
         actual.str += "\nIssues:\n  " + actualIssues.join("\n  ");
       }
       if (expectedIssues.length > 0) {
         expected.str += "\nIssues:\n  " + expectedIssues.join("\n  ");
       }
-      expect(
+      this.expect(
         actual.str,
         actualState.debug !== undefined
           ? `\n\u001b[34mDebug: ${actualState.debug}\u001b[31m\n`
@@ -196,10 +201,10 @@ export abstract class BaseSequenceRunner {
     ) {
       data.str += "  ";
     } else {
-      assert.isTrue(
+      this.expect(
         smartFill.startsWith("SmartFill"),
         `${smartFill} must start with SmartFill`
-      );
+      ).toEqual(true);
       data.str += ` ${smartFill
         .slice("SmartFill".length, "SmartFill".length + 1)
         .toLowerCase()}`;
@@ -215,7 +220,7 @@ export abstract class BaseSequenceRunner {
     recommended: boolean | undefined
   ) {
     if (prompt !== undefined && recommended !== undefined) {
-      assert.fail(
+      this.fail(
         `[${source}] Index ${index} has both a prompt (${prompt}) and a recommended (${recommended}); the implementation of BaseSequenceRunner should filter one out depending on what is supported by the code being tested.`
       );
     }
@@ -228,10 +233,10 @@ export abstract class BaseSequenceRunner {
     if (recommended !== undefined) {
       data.str += recommended ? `  *` : `   `;
     } else if (prompt !== undefined) {
-      assert.isTrue(
+      this.expect(
         prompt.startsWith("Suggest"),
         `${prompt} must start with Suggest`
-      );
+      ).toEqual(true);
       data.str += ` ?${prompt
         .slice("Suggest".length, "Suggest".length + 1)
         .toLowerCase()}`;

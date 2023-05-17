@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import checker from "vite-plugin-checker";
-import { resolve } from "path";
+import { resolve, join } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +21,7 @@ export default defineConfig({
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
+    dir: join(resolve(__dirname), "src"),
   },
   resolve: {
     alias: [{ find: /^~/, replacement: resolve(__dirname) }],

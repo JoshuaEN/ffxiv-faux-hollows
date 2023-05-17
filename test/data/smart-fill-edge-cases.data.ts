@@ -1,11 +1,14 @@
-import { describe, test } from "vitest";
-import { SequenceRunner } from "../framework.js";
+import { TestStructuralElements } from "../all-data-tests.js";
+import { RegisterTest } from "../framework.js";
 
-export const data = (run: SequenceRunner) => {
+export const data = (
+  registerTest: RegisterTest,
+  { describe }: TestStructuralElements
+) => {
   describe("Smart-fill Edge cases", () => {
-    test(`Present smart-fill invalidates candidates for Sword`, async () => {
-      await run(
-        `
+    registerTest(
+      `Present smart-fill invalidates candidates for Sword`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -20,7 +23,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │.  1 │     │     │ B   │.  1 │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -35,11 +38,10 @@ export const data = (run: SequenceRunner) => {
       │.  1 │     │     │ B   │*1 1 │*1 1 │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-      );
-    });
-    test(`Sword smart-fill invalidates candidates for Present`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Sword smart-fill invalidates candidates for Present`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -54,7 +56,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │ E   │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -69,11 +71,10 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │ E   │.  1 │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-      );
-    });
-    test(`Sword smart-fill invalidates candidates for Present, leads to solved Present`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Sword smart-fill invalidates candidates for Present, leads to solved Present`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -88,7 +89,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -104,11 +105,10 @@ export const data = (run: SequenceRunner) => {
       └─────┴─────┴─────┴─────┴─────┴─────┘
       [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
     `
-      );
-    });
-    test(`Sword smart-fill invalidates candidates for Present, leading to fully solved board`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Sword smart-fill invalidates candidates for Present, leading to fully solved board`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -123,7 +123,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -138,11 +138,10 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-      );
-    });
-    test(`Present smart-fill invalidates candidates for Sword, leads to solved Sword`, async () => {
-      await run(
-        `
+    );
+    registerTest(
+      `Present smart-fill invalidates candidates for Sword, leads to solved Sword`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -157,7 +156,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -173,10 +172,9 @@ export const data = (run: SequenceRunner) => {
       └─────┴─────┴─────┴─────┴─────┴─────┘
       [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
     `
-      );
-    });
-    // test(`Present smart-fill invalidates candidates for Sword, leads to solved Sword`, async () => {
-    //   await run(
+    );
+    // test(`Present smart-fill invalidates candidates for Sword, leads to solved Sword`, async (args) => {
+    //   await run(args,
     //     `
     //   ┌─────┬─────┬─────┬─────┬─────┬─────┐
     //   │     │     │     │     │ B   │     │
@@ -210,9 +208,9 @@ export const data = (run: SequenceRunner) => {
     // `
     //   );
     // });
-    test(`Present smart-fill invalidates candidates for Sword, leading to fully solved board`, async () => {
-      await run(
-        `
+    registerTest(
+      `Present smart-fill invalidates candidates for Sword, leading to fully solved board`,
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -227,7 +225,7 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `,
-        `
+      `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -242,12 +240,11 @@ export const data = (run: SequenceRunner) => {
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `
-      );
-    });
+    );
   });
-  test(`Out-of-bounds should be ignored when calculating valid spots`, async () => {
-    await run(
-      `
+  registerTest(
+    `Out-of-bounds should be ignored when calculating valid spots`,
+    `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -262,7 +259,7 @@ export const data = (run: SequenceRunner) => {
     │ F   │ E   │     │     │     │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `,
-      `
+    `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │>P   │  p  │     │     │     │     │
     ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -277,10 +274,10 @@ export const data = (run: SequenceRunner) => {
     │ F   │ E   │     │*1   │*1   │ B   │
     └─────┴─────┴─────┴─────┴─────┴─────┘
   `
-    );
-  });
-  test.skip(`Shapes with smart-fill information (sowrd/presents) but no user-entered tiles for that shape should trigger suggestions within the smart-fill area`, async () => {
-    await run(
+  );
+  /*
+  test.skip(`Shapes with smart-fill information (sowrd/presents) but no user-entered tiles for that shape should trigger suggestions within the smart-fill area`, async (args) => {
+    await run(args,
       `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │ B   │     │     │     │
@@ -313,8 +310,8 @@ export const data = (run: SequenceRunner) => {
   `
     );
   });
-  test.skip(`Suggestions should be displayed correctly when two incomplete shapes are present due to user input`, async () => {
-    await run(
+  test.skip(`Suggestions should be displayed correctly when two incomplete shapes are present due to user input`, async (args) => {
+    await run(args,
       `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │ B   │     │     │     │
@@ -347,4 +344,5 @@ export const data = (run: SequenceRunner) => {
   `
     );
   });
+  */
 };
