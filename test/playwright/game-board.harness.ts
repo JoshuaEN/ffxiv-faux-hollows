@@ -42,13 +42,25 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return tileData;
   }
 
-  protected async setUserSelection(index: number, tileState: TileState) {
+  async getTileState(index: number) {
+    return await this.#getTile(index).tileState();
+  }
+
+  getTileLocator(index: number) {
+    return this.#getTile(index).locator;
+  }
+
+  getPopover() {
+    return this.#rootLocator.getByTestId("popover-picker");
+  }
+
+  async setUserSelection(index: number, tileState: TileState) {
     const tile = this.#getTile(index);
     const alreadyCorrectState = (await tile.tileState()) === tileState;
 
     await tile.locator.click();
 
-    const popover = this.#rootLocator.getByTestId("popover-picker");
+    const popover = this.getPopover();
     await expect(popover).toBeVisible();
 
     const button = popover.getByTestId(`popover-picker-button-${tileState}`);
@@ -174,9 +186,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
       }
 
       await boardTile.click();
-      const primaryOptions = await this.#getPopoverOptionSet(
-        "popover-picker-primary-option"
-      );
+      const primaryOptions = await this.getPopoverPrimaryOptions();
       cell.suggestions = {
         Fox: 0,
         Present: 0,
@@ -192,9 +202,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
         cell.suggestions.Fox = 1;
       }
 
-      const secondaryOptions = await this.#getPopoverOptionSet(
-        "popover-picker-secondary-option"
-      );
+      const secondaryOptions = await this.getPopoverSecondaryOptions();
 
       const allOptions = [...primaryOptions, null, ...secondaryOptions];
       expect(allOptions, "All options should be unique").toEqual(
@@ -283,6 +291,14 @@ export class GameBoardHarness extends BaseSequenceRunner {
       }
     }
     return tiles;
+  }
+
+  getPopoverPrimaryOptions() {
+    return this.#getPopoverOptionSet("popover-picker-primary-option");
+  }
+
+  getPopoverSecondaryOptions() {
+    return this.#getPopoverOptionSet("popover-picker-secondary-option");
   }
 
   #stringIsTileState<T extends object>(

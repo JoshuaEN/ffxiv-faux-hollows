@@ -111,8 +111,12 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
   popoverRef.value?.focus();
 };
 
-const pickTile = (index: number, tileState: TileState) => {
+const hidePicker = () => {
   popoverData.value = null;
+};
+
+const pickTile = (index: number, tileState: TileState) => {
+  hidePicker();
   props.board.setUserState(index, tileState);
   data.board = props.board;
 };
@@ -139,7 +143,7 @@ const pickTile = (index: number, tileState: TileState) => {
       :tile="tile"
       :data-testid="`game-tile-index-${index}`"
       :data-test-tile="tile"
-      @mousedown="(ev: MouseEvent) => { ev.preventDefault(); ev.stopImmediatePropagation(); showTilePicker(tile, index); }"
+      @mousedown="(ev: MouseEvent) => { ev.preventDefault(); ev.stopImmediatePropagation(); popoverOpen && index === popoverData?.index ? hidePicker() : showTilePicker(tile, index); }"
     />
   </main>
   <div
