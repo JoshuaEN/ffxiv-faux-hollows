@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, shallowReactive } from "vue";
-import { Board } from "../game/board.js";
-import {
-  CombinedTileState,
-  TileState,
-  SolveStep,
-} from "../game/types/index.js";
-import GameTile from "./game-tile.vue";
+import { Board } from "~/src/game/board.js";
+import { CombinedTileState, TileState } from "~/src/game/types/index.js";
+import GameTile from "~/src/components/game-tile.vue";
 import {
   useFloating,
   offset,
@@ -15,7 +11,8 @@ import {
   autoUpdate,
   arrow,
 } from "@floating-ui/vue";
-import BaseTile from "./base-tile.vue";
+import BaseTile from "~/src/components/base-tile.vue";
+import { getPickerOptions } from "./game-board.utils.js";
 
 const popoverAnchorRef = ref(null);
 const popoverAnchorRefs = ref<unknown[]>([]);
@@ -59,59 +56,10 @@ const hideTilePicker = () => {
 
 const showTilePicker = (tileState: CombinedTileState, index: number) => {
   popoverAnchorRef.value = popoverAnchorRefs.value[index] as null;
-  const states = [
-    TileState.Unknown,
-    TileState.Empty,
-    TileState.Blocked,
-    TileState.Sword,
-    TileState.Present,
-    TileState.Fox,
-  ];
-  const primaryOptions: TileState[] = [];
-  if (
-    typeof tileState === "string" &&
-    tileState in TileState &&
-    tileState !== TileState.Unknown
-  ) {
-    if (tileState === TileState.Empty) {
-      primaryOptions.push(TileState.Unknown);
-    } else {
-      primaryOptions.push(TileState.Empty);
-    }
-  } else {
-    switch (data.board.solveState.solveStep) {
-      case SolveStep.FillBlocked: {
-        primaryOptions.push(TileState.Blocked);
-        break;
-      }
-      case SolveStep.FillSword:
-      case SolveStep.FillPresent:
-      case SolveStep.SuggestTiles: {
-        const suggestions = data.board.solveState.getSuggestion(index);
-        primaryOptions.push(TileState.Empty);
-        for (const state of [TileState.Sword, TileState.Present] as const) {
-          if ((suggestions?.[state] ?? 0) > 0) {
-            primaryOptions.push(state);
-          }
-        }
-        break;
-      }
-      case SolveStep.Done:
-      default: {
-        primaryOptions.push(TileState.Empty);
-        break;
-      }
-    }
-  }
-
-  const secondaryOptions: TileState[] = [];
-  const userState = data.board.getUserState(index);
-  for (const state of states) {
-    if (userState !== state && !primaryOptions.includes(state)) {
-      secondaryOptions.push(state);
-    }
-  }
-  popoverData.value = { index, primaryOptions, secondaryOptions };
+  popoverData.value = {
+    index,
+    ...getPickerOptions(data.board, tileState, index),
+  };
   popoverRef.value?.focus();
   window.requestAnimationFrame(() =>
     (popoverRef.value?.querySelector("button") as HTMLElement | null)?.focus()
@@ -231,6 +179,7 @@ const pickTile = (index: number, tileState: TileState) => {
   <div>{{ data.board.solveState?.solveStep }}</div>
   <main class="debug">
     <div v-for="(tile, index) in data.board.tiles" :key="index">
+      {{ index }} <br />
       <template v-if="tile === TileState.Blocked">X</template>
       <template
         v-if="data.board.solveState?.getSuggestion(index)?.Blocked ?? 0 > 0"
