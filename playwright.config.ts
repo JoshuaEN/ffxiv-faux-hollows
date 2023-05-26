@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { cpus } from "os";
 
 /**
  * Read environment variables from file.
@@ -20,7 +21,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: isCI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: isCI ? 1 : undefined,
+  workers: isCI ? 1 : Math.floor(cpus().length * 0.75),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
