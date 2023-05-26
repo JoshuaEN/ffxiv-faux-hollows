@@ -12,7 +12,8 @@
     "test:ci": "vitest run",
     "test:ci:coverage": "vitest run --coverage",
     "e2e": "playwright test",
-    "e2e:debug": "playwright test --ui --debug",
+    "e2e:ui": "playwright test --ui",
+    "e2e:ui:debug": "playwright test --ui --debug",
     "lint": "eslint .",
     "script:load-community-data": "node --max-old-space-size=8192 --loader ts-node/esm --es-module-specifier-resolution=node ./scripts/load-community-data.ts --path"
   },
