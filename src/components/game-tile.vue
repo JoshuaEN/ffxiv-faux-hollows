@@ -45,8 +45,8 @@ defineProps<{ tile: CombinedTileState }>();
   border: 2px solid white;
 }
 .nextTarget {
-  color: gold;
+  color: #ffd700;
   background-color: var(--board-unknown-background-color);
-  /* background-color: transparent; */
+  border: 2px dotted #ffd700;
 }
 </style>
