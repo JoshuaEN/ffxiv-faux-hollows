@@ -169,9 +169,9 @@ describe("solve", () => {
             continue;
             break; // eslint
           }
-          case SmartFillTileState.Blocked:
-          case SmartFillTileState.Sword:
-          case SmartFillTileState.Present: {
+          case SmartFillTileState.SmartFillBlocked:
+          case SmartFillTileState.SmartFillSword:
+          case SmartFillTileState.SmartFillPresent: {
             cells.push({ smartFill: tile });
             continue;
             break; // eslint

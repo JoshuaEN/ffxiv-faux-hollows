@@ -12,7 +12,10 @@ const props = defineProps<{ tile: CombinedTileState }>();
 <template>
   <button :class="{ [`${tile}`]: !Array.isArray(tile) }">
     <svg
-      v-if="tile === TileState.Blocked || tile === SmartFillTileState.Blocked"
+      v-if="
+        tile === TileState.Blocked ||
+        tile === SmartFillTileState.SmartFillBlocked
+      "
       viewBox="3 3 18 18"
     >
       <!-- Custom icon -->
@@ -24,7 +27,7 @@ const props = defineProps<{ tile: CombinedTileState }>();
     <svg
       v-else-if="
         tile === TileState.Sword ||
-        tile === SmartFillTileState.Sword ||
+        tile === SmartFillTileState.SmartFillSword ||
         tile === SuggestTileState.SuggestSword
       "
       viewBox="0 0 24 24"
@@ -38,7 +41,7 @@ const props = defineProps<{ tile: CombinedTileState }>();
     <svg
       v-else-if="
         tile === TileState.Present ||
-        tile === SmartFillTileState.Present ||
+        tile === SmartFillTileState.SmartFillPresent ||
         tile === SuggestTileState.SuggestPresent
       "
       viewBox="0 0 24 24"

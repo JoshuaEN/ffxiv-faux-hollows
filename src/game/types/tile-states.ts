@@ -17,9 +17,9 @@ export type TargetTileState =
   | TileState.Fox;
 
 export enum SmartFillTileState {
-  Blocked = "SmartFillBlocked",
-  Present = "SmartFillPresent",
-  Sword = "SmartFillSword",
+  SmartFillBlocked = "SmartFillBlocked",
+  SmartFillPresent = "SmartFillPresent",
+  SmartFillSword = "SmartFillSword",
 }
 
 export enum SuggestTileState {

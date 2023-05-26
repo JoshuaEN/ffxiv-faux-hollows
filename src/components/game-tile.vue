@@ -15,9 +15,9 @@ defineProps<{ tile: CombinedTileState }>();
     :tile="tile"
     :class="{
       smartFill:
-        tile === SmartFillTileState.Blocked ||
-        tile === SmartFillTileState.Sword ||
-        tile === SmartFillTileState.Present,
+        tile === SmartFillTileState.SmartFillBlocked ||
+        tile === SmartFillTileState.SmartFillSword ||
+        tile === SmartFillTileState.SmartFillPresent,
       suggestion:
         tile === SuggestTileState.SuggestSword ||
         tile === SuggestTileState.SuggestPresent ||

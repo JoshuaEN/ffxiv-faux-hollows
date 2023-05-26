@@ -65,9 +65,9 @@ describe("calculatedSolveState", () => {
 
   class SolveStateSequenceRunner extends BaseSequenceRunner {
     static #smartFillMap = {
-      [TileState.Blocked]: SmartFillTileState.Blocked,
-      [TileState.Sword]: SmartFillTileState.Sword,
-      [TileState.Present]: SmartFillTileState.Present,
+      [TileState.Blocked]: SmartFillTileState.SmartFillBlocked,
+      [TileState.Sword]: SmartFillTileState.SmartFillSword,
+      [TileState.Present]: SmartFillTileState.SmartFillPresent,
     };
     #userSelected: TileState[];
 

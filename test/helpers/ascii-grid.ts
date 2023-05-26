@@ -38,9 +38,9 @@ const tileStateMap: Record<string, TileState | undefined> = {
   F: TileState.Fox,
 };
 const smartFillStateMap: Record<string, SmartFillTileState | undefined> = {
-  b: SmartFillTileState.Blocked,
-  s: SmartFillTileState.Sword,
-  p: SmartFillTileState.Present,
+  b: SmartFillTileState.SmartFillBlocked,
+  s: SmartFillTileState.SmartFillSword,
+  p: SmartFillTileState.SmartFillPresent,
 };
 const promptTileStateMap: Record<string, SuggestTileState | undefined> = {
   s: SuggestTileState.SuggestSword,

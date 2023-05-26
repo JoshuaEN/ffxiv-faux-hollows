@@ -31,15 +31,15 @@ export function solve(
     if (smartFill !== null) {
       switch (smartFill) {
         case TileState.Sword: {
-          tiles[i] = SmartFillTileState.Sword;
+          tiles[i] = SmartFillTileState.SmartFillSword;
           continue;
         }
         case TileState.Present: {
-          tiles[i] = SmartFillTileState.Present;
+          tiles[i] = SmartFillTileState.SmartFillPresent;
           continue;
         }
         case TileState.Blocked: {
-          tiles[i] = SmartFillTileState.Blocked;
+          tiles[i] = SmartFillTileState.SmartFillBlocked;
           continue;
         }
         default: {
