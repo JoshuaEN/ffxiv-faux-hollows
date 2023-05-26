@@ -104,11 +104,22 @@ export class GameBoardHarness extends BaseSequenceRunner {
         // The solver only provides tile suggestions for the recommended tile,
         // and then only provides a Yes or No indication for each possible suggestion for the recommended tiles
         // So, here we map from the suggestion weights to Yes or No indicator (1 or 0) if this tile is recommended,
+        // Further, when a suggestion is being shown (in FillX mode), only that will be a primary (recommended) action.
         // Otherwise, we provide undefined.
         suggestion !== undefined
           ? {
-              Sword: suggestion.Sword > 0 ? 1 : 0,
-              Present: suggestion.Present > 0 ? 1 : 0,
+              Sword:
+                suggestion.Sword > 0 &&
+                (prompt === undefined ||
+                  prompt === SuggestTileState.SuggestSword)
+                  ? 1
+                  : 0,
+              Present:
+                suggestion.Present > 0 &&
+                (prompt === undefined ||
+                  prompt === SuggestTileState.SuggestPresent)
+                  ? 1
+                  : 0,
               // Fox is not currently supported by the Actual loader
               // Fox: suggestion.Fox > 0 ? 1 : 0,
               Fox: 0,
@@ -192,14 +203,18 @@ export class GameBoardHarness extends BaseSequenceRunner {
         Present: 0,
         Sword: 0,
       };
-      if (primaryOptions.includes(TileState.Sword)) {
-        cell.suggestions.Sword = 1;
-      }
-      if (primaryOptions.includes(TileState.Present)) {
-        cell.suggestions.Present = 1;
-      }
-      if (primaryOptions.includes(TileState.Fox)) {
-        cell.suggestions.Fox = 1;
+
+      // We skip loading suggestions for smart-fill because the expected test data does not include it (since it is implied by Smart Fill itself)
+      if (cell.smartFill == null) {
+        if (primaryOptions.includes(TileState.Sword)) {
+          cell.suggestions.Sword = 1;
+        }
+        if (primaryOptions.includes(TileState.Present)) {
+          cell.suggestions.Present = 1;
+        }
+        if (primaryOptions.includes(TileState.Fox)) {
+          cell.suggestions.Fox = 1;
+        }
       }
 
       const secondaryOptions = await this.getPopoverSecondaryOptions();
@@ -221,12 +236,8 @@ export class GameBoardHarness extends BaseSequenceRunner {
           primaryOptions,
           "Should have no primary options when the user has selected something"
         ).toHaveLength(1);
-        if (cell.userSelection === TileState.Empty) {
-          expect(primaryOptions[0]).toEqual(TileState.Unknown);
-        } else {
-          expect(primaryOptions[0]).toEqual(TileState.Empty);
-        }
-      } else {
+        expect(primaryOptions[0]).toEqual(TileState.Unknown);
+      } else if (cell.smartFill === null) {
         for (const state of [
           TileState.Sword,
           TileState.Present,
@@ -243,6 +254,18 @@ export class GameBoardHarness extends BaseSequenceRunner {
               `${primaryOptions.join()} should not include ${state}`
             ).toBe(false);
           }
+        }
+      } else {
+        switch (cell.smartFill) {
+          case SmartFillTileState.SmartFillBlocked:
+            expect(primaryOptions).toEqual([TileState.Blocked]);
+            break;
+          case SmartFillTileState.SmartFillSword:
+            expect(primaryOptions).toEqual([TileState.Sword]);
+            break;
+          case SmartFillTileState.SmartFillPresent:
+            expect(primaryOptions).toEqual([TileState.Present]);
+            break;
         }
       }
       cells[tileIndex] = cell;
