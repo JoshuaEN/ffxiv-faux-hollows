@@ -53,6 +53,10 @@ const popoverOpen = computed(
 const props = defineProps<{ board: Board }>();
 const data = shallowReactive({ board: props.board });
 
+const hideTilePicker = () => {
+  popoverData.value = null;
+};
+
 const showTilePicker = (tileState: CombinedTileState, index: number) => {
   popoverAnchorRef.value = popoverAnchorRefs.value[index] as null;
   const states = [
@@ -111,12 +115,22 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
   popoverRef.value?.focus();
 };
 
-const hidePicker = () => {
-  popoverData.value = null;
+const tileClicked = (
+  ev: MouseEvent,
+  tile: CombinedTileState,
+  index: number
+) => {
+  ev.preventDefault();
+  ev.stopImmediatePropagation();
+  if (popoverOpen.value && index === popoverData.value?.index) {
+    hideTilePicker();
+  } else {
+    showTilePicker(tile, index);
+  }
 };
 
 const pickTile = (index: number, tileState: TileState) => {
-  hidePicker();
+  hideTilePicker();
   props.board.setUserState(index, tileState);
   data.board = props.board;
 };
@@ -143,12 +157,12 @@ const pickTile = (index: number, tileState: TileState) => {
       :tile="tile"
       :data-testid="`game-tile-index-${index}`"
       :data-test-tile="tile"
-      @mousedown="(ev: MouseEvent) => { ev.preventDefault(); ev.stopImmediatePropagation(); popoverOpen && index === popoverData?.index ? hidePicker() : showTilePicker(tile, index); }"
+      @mousedown="(ev: MouseEvent) => tileClicked(ev, tile, index)"
     />
   </main>
   <div
     v-if="popoverOpen && popoverData"
-    :ref="(el) => { popoverRef = el as HTMLDivElement | null; popoverRef?.focus(); }"
+    :ref="(el) => { popoverRef = el as HTMLDivElement | null; }"
     class="overlay"
     data-testid="popover-picker"
     :class="[popoverPlacement]"
