@@ -1,3 +1,4 @@
+import { assert } from "../helpers.js";
 import { BOARD_CELLS } from "./constants.js";
 import { solve } from "./solver/index.js";
 import {
@@ -44,11 +45,16 @@ export class Board {
     return this.#boardIssues;
   }
 
-  getUserState(index: number) {
-    return this.#userSelectedStates[index];
+  getUserState(index: number): TileState {
+    const userState = this.#userSelectedStates[index];
+    if (import.meta.env.DEV) {
+      assert(userState !== undefined, "Out of range");
+    }
+
+    return userState ?? TileState.Unknown;
   }
 
-  setUserState(index: number, state: TileState) {
+  setUserState(index: number, state: TileState): void {
     const oldState = this.#userSelectedStates[index];
     if (oldState === undefined) {
       if (import.meta.env.DEV) {
