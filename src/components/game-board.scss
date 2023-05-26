@@ -4,7 +4,14 @@ main {
   gap: 0.25rem;
 
   &.focusTile .tile:not(.focused) {
-    opacity: 0.75;
+    opacity: 0.70;
+
+    &.suggestion {
+      opacity: calc(0.70 * 0.50);
+    }
+    &.smartFill {
+      opacity: calc(0.70 * 0.95);
+    }
   }
 }
 
