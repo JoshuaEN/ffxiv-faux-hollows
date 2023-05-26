@@ -21,6 +21,25 @@ test("it should open the menu when clicking on a blank tile", async ({
   // Assert
   await expect(harness.getPopover()).toBeVisible();
 });
+test("it should focus the first button after opening the menu", async ({
+  page,
+  request,
+  context,
+}) => {
+  // Arrange
+  await page.goto(".");
+  const harness = new GameBoardHarness(page.locator("html"), {
+    page,
+    request,
+    context,
+  });
+
+  // Act
+  await harness.getTileLocator(0).click();
+
+  // Assert
+  await expect(harness.getPopover().locator("button").first()).toBeFocused();
+});
 test("it should close the menu when clicking on a tile when the tile's menu is open", async ({
   page,
   request,

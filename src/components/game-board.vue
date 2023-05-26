@@ -113,6 +113,9 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
   }
   popoverData.value = { index, primaryOptions, secondaryOptions };
   popoverRef.value?.focus();
+  window.requestAnimationFrame(() =>
+    (popoverRef.value?.querySelector("button") as HTMLElement | null)?.focus()
+  );
 };
 
 const tileClicked = (
