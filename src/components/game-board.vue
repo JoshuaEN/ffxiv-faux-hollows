@@ -60,6 +60,8 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
     index,
     ...getPickerOptions(data.board, tileState, index),
   };
+
+  // We need to do this to prevent the @focusout event from closing this popover if this popover is replacing another popover
   popoverRef.value?.focus();
   window.requestAnimationFrame(() =>
     (popoverRef.value?.querySelector("button") as HTMLElement | null)?.focus()
