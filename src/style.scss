@@ -5,24 +5,31 @@
 
   --board-unknown-color: var(--font-color);
   --board-unknown-background-color: hsl(40, 20%, 21%);
+  --board-unknown-outline-color: hsl(40, 20%, 41%);
 
-  --board-empty-color: hsl(39, 18%, 35%);
+  --board-empty-color: hsl(39, 18%, 55%);
   --board-empty-background-color: var(--board-unknown-background-color);
+  --board-empty-outline-color: var(--board-unknown-outline-color);
 
-  --board-blocked-color: hsl(0, 0%, 35%);
+  --board-blocked-color: hsl(0, 0%, 55%);
   --board-blocked-background-color: hsl(0, 0%, 21%);
+  --board-blocked-outline-color: hsl(0, 0%, 41%);
 
   --board-sword-color: var(--font-color);
   --board-sword-background-color: #2b4f8a;
+  --board-sword-outline-color: hsl(217, 52%, 55%);
 
   --board-sword-suggestion-color: #1b2c49;
   --board-sword-suggestion-background-color: var(--board-sword-background-color);
+  --board-sword-suggestion-outline-color: var(--board-sword-outline-color);
 
   --board-present-color: var(--font-color);
   --board-present-background-color: #89302d;
+  --board-present-outline-color: hsl(2, 51%, 56%);
 
   --board-fox-color: var(--font-color);
   --board-fox-background-color: #795720;
+  --board-fox-outline-color: hsl(37, 58%, 50%);
 
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -43,8 +50,10 @@
 .Blocked, .SmartFillBlocked {
   --tile-color: var(--board-blocked-color);
   --tile-background-color: var(--board-blocked-background-color);
+  --tile-outline-color: var(--board-blocked-outline-color);
   color: var(--board-blocked-color);
-  background-color: var(--board-blocked-background-color);
+  background-color: var(--tile-background-color);
+
   rect {
     fill: var(--tile-background-color);
   }
@@ -52,18 +61,21 @@
 .Sword, .SmartFillSword, .SuggestSword {
   --tile-color: var(--board-sword-color);
   --tile-background-color: var(--board-sword-background-color);
+  --tile-outline-color: var(--board-sword-outline-color);
   color: var(--board-sword-color);
   background-color: var(--tile-background-color);
 }
 .Present, .SmartFillPresent, .SuggestPresent {
   --tile-color: var(--board-present-color);
   --tile-background-color: var(--board-present-background-color);
+  --tile-outline-color: var(--board-present-outline-color);
   color: var(--board-present-color);
   background-color: var(--tile-background-color);
 }
 .Fox, .SuggestFox {
   --tile-color: var(--board-fox-color);
   --tile-background-color: var(--board-fox-background-color);
+  --tile-outline-color: var(--board-fox-outline-color);
   color: var(--board-fox-color);
   background-color: var(--tile-background-color);
 }
@@ -71,6 +83,7 @@
 .Empty {
   --tile-color: var(--board-empty-color);
   --tile-background-color: var(--board-empty-background-color);
+  --tile-outline-color: var(--board-empty-outline-color);
   color: var(--board-empty-color);
   background-color: var(--tile-background-color);
 }
@@ -78,6 +91,7 @@
 .Unknown {
   --tile-color: var(--board-unknown-color);
   --tile-background-color: var(--board-unknown-background-color);
+  --tile-outline-color: var(--board-unknown-outline-color);
   color: var(--tile-color);
   background-color: var(--tile-background-color);
 }
@@ -110,16 +124,21 @@ button {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: outline-color 0.25s;
   outline: 0;
 }
-button:hover {
+button:hover, button:focus {
   filter: brightness(140%);
   opacity: 1 !important;
 }
-button:focus,
-button:focus-visible {
-  outline: 2px solid var(--font-color);
+button:focus, button.focused {
+  filter: brightness(120%);
+  opacity: 1 !important;
+}
+
+*:focus,
+*:focus-visible,
+button.focused {
+  outline: 3px solid var(--tile-outline-color, var(--font-color));
 }
 
 #app {
