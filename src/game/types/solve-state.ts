@@ -13,6 +13,12 @@ type PartialTileSuggestion = Omit<TileSuggestion, "FinalWeight">;
 
 export type SmartFill = TileState.Present | TileState.Sword | TileState.Blocked;
 
+interface FoxOdds {
+  confirmedFoxes: number;
+  unconfirmedFoxes: number;
+  totalFoxesForPatterns: number;
+}
+
 export enum SolveStep {
   /**
    * The user should fill in the remaining blocked tiles
@@ -78,7 +84,9 @@ export class SolveState {
     readonly solveState: IndeterminateSolveState,
     readonly suggestions: ReadonlyMap<number, TileSuggestion>,
     readonly peakSuggestions: TileSuggestion,
-    readonly solveStep: SolveStep
+    readonly solveStep: SolveStep,
+    readonly foxOdds: ReadonlyMap<number, FoxOdds>,
+    readonly totalCandidatePatterns: number
   ) {}
 
   getSmartFill(index: number) {
@@ -87,6 +95,33 @@ export class SolveState {
 
   getSuggestion(index: number): Readonly<TileSuggestion> | null {
     return this.suggestions.get(index) ?? null;
+  }
+
+  getFoxOdds(
+    index: number
+  ): Readonly<{
+    confirmedFoxes: number;
+    unconfirmedFoxes: number;
+    odds: number;
+  }> | null {
+    const foxDetails = this.foxOdds.get(index);
+    if (foxDetails === undefined) {
+      return null;
+    }
+
+    // This is both the number of fox candidates and the number of patterns foxes were present on for this tile (because, for a given pattern, a fox is either confirmed or unconfirmed on a tile)
+    const foxesOnIndex =
+      foxDetails.confirmedFoxes + foxDetails.unconfirmedFoxes;
+    // Of all possible patterns (accounting for uncovered Presents/Swords), what percent may have a fox on this tile
+    const oddsOfPatternHavingFox = foxesOnIndex / this.totalCandidatePatterns;
+    // Of all possible foxes given the current possible patterns, what percent of the time will the fox be on this tile.
+    const oddsOfTileHavingFoxInPatternsWithFoxes =
+      foxesOnIndex / foxDetails.totalFoxesForPatterns;
+    return {
+      confirmedFoxes: foxDetails.confirmedFoxes,
+      unconfirmedFoxes: foxDetails.unconfirmedFoxes,
+      odds: oddsOfPatternHavingFox * oddsOfTileHavingFoxInPatternsWithFoxes,
+    };
   }
 
   getPeakSuggestions() {
@@ -103,6 +138,8 @@ export class IndeterminateSolveState {
   #smartFills = new Map<number, SmartFill>();
   #suggestions = new Map<number, PartialTileSuggestion>();
   #patternIdentifier: string | null = null;
+  #foxOdds = new Map<number, FoxOdds>();
+  #totalCandidatePatterns: number = -1;
 
   constructor(userSelectedStates: readonly TileState[]) {
     this.#userStates = userSelectedStates.slice();
@@ -155,6 +192,36 @@ export class IndeterminateSolveState {
     suggestion[state] += value;
 
     this.#suggestions.set(index, suggestion);
+  }
+
+  addConfirmedFoxOdd(index: number, totalFoxesForPattern: number) {
+    const prev = this.#foxOdds.get(index) ?? {
+      confirmedFoxes: 0,
+      unconfirmedFoxes: 0,
+      totalFoxesForPatterns: 0,
+    };
+    this.#foxOdds.set(index, {
+      confirmedFoxes: prev.confirmedFoxes + 1,
+      unconfirmedFoxes: prev.unconfirmedFoxes,
+      totalFoxesForPatterns: prev.totalFoxesForPatterns + totalFoxesForPattern,
+    });
+  }
+
+  addUnconfirmedFoxOdd(index: number, totalFoxesForPattern: number) {
+    const prev = this.#foxOdds.get(index) ?? {
+      confirmedFoxes: 0,
+      unconfirmedFoxes: 0,
+      totalFoxesForPatterns: 0,
+    };
+    this.#foxOdds.set(index, {
+      confirmedFoxes: prev.confirmedFoxes,
+      unconfirmedFoxes: prev.unconfirmedFoxes + 1,
+      totalFoxesForPatterns: prev.totalFoxesForPatterns + totalFoxesForPattern,
+    });
+  }
+
+  setTotalCandidatePatterns(totalCandidatePatterns: number) {
+    this.#totalCandidatePatterns = totalCandidatePatterns;
   }
 
   deleteSuggestionsAt(index: number) {
@@ -240,7 +307,14 @@ export class IndeterminateSolveState {
         FinalWeight: finalWeight,
       });
     }
-    return new SolveState(this, suggestions, peakSuggestions, solveStep);
+    return new SolveState(
+      this,
+      suggestions,
+      peakSuggestions,
+      solveStep,
+      this.#foxOdds,
+      this.#totalCandidatePatterns
+    );
   }
 
   static #createTileSuggestion(): TileSuggestion {

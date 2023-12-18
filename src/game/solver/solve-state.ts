@@ -9,6 +9,7 @@ import {
 import { calculateStatesCandidates } from "./state-candidates.js";
 import { getIdentifierCandidates } from "./identifier-candidates.js";
 import { lengthEquals } from "../../helpers.js";
+import { solve } from "./solver.js";
 
 export function calculatedSolveState(
   userSelected: readonly TileState[],
@@ -36,11 +37,9 @@ export function calculatedSolveState(
   /**
    * Identify and Verify Blocked Tiles
    */
-  const blocked = new Set<number>();
   const allBlockedIdentified = lengthEquals(identifierCandidates, 1);
   if (allBlockedIdentified) {
     for (const index of identifierCandidates[0].Blocked) {
-      blocked.add(index);
       solveState.setSmartFill(index, TileState.Blocked);
     }
   }
@@ -70,23 +69,33 @@ export function calculatedSolveState(
   }
 
   const mainShapesSolved = solved.Present > -1 && solved.Sword > -1;
-  // Is everything solved?
-  if (mainShapesSolved && userStatesIndexList[TileState.Fox].size > 0) {
-    return { solveState: solveState.finalize(SolveStep.Done), issues };
-  }
+  solveState.setTotalCandidatePatterns(candidatePatterns.length);
 
   /**
    * Identify fox candidates
    */
 
-  // If the user has entered a fox, we can skip all of this
   let anyFoxes = false;
+  // If the user has entered a fox, we can skip all of this
   if (userStatesIndexList[TileState.Fox].size === 0) {
     for (const pattern of candidatePatterns) {
       for (const confirmedFox of pattern.ConfirmedFoxes) {
         if (solveState.isEmptyAt(confirmedFox)) {
           anyFoxes = true;
           solveState.addSuggestion(confirmedFox, TileState.Fox, 1);
+          solveState.addConfirmedFoxOdd(
+            confirmedFox,
+            pattern.ConfirmedFoxes.length + pattern.UnconfirmedFoxes.length
+          );
+        }
+      }
+      for (const unconfirmedFox of pattern.UnconfirmedFoxes) {
+        if (solveState.isEmptyAt(unconfirmedFox)) {
+          anyFoxes = true;
+          solveState.addUnconfirmedFoxOdd(
+            unconfirmedFox,
+            pattern.ConfirmedFoxes.length + pattern.UnconfirmedFoxes.length
+          );
         }
       }
     }
