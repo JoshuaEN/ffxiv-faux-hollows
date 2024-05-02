@@ -84,16 +84,7 @@ export function calculatedSolveState(
           solveState.addSuggestion(confirmedFox, TileState.Fox, 1);
           solveState.addConfirmedFoxOdd(
             confirmedFox,
-            pattern.ConfirmedFoxes.length + pattern.UnconfirmedFoxes.length
-          );
-        }
-      }
-      for (const unconfirmedFox of pattern.UnconfirmedFoxes) {
-        if (solveState.isEmptyAt(unconfirmedFox)) {
-          anyFoxes = true;
-          solveState.addUnconfirmedFoxOdd(
-            unconfirmedFox,
-            pattern.ConfirmedFoxes.length + pattern.UnconfirmedFoxes.length
+            pattern.ConfirmedFoxes.length
           );
         }
       }

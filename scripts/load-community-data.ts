@@ -34,7 +34,6 @@ const colors = {
   "rgb(164, 194, 244)": TileState.Sword, // #a4c2f4
   "rgb(159, 197, 232)": TileState.Sword, // #9fc5e8 // There are two slightly different colors for Swords
   "rgb(255, 0, 255)": "ConfirmedFox", // #ff00ff
-  "rgb(255, 153, 0)": "UnconfirmedFox", // #ff9900
   "rgb(255, 255, 255)": "Empty", // #ffffff
   "rgb(217, 217, 217)": null, // #d9d9d9
 } as const;
@@ -125,14 +124,12 @@ for (const htmlFile of fs
       const set: Partial<ExtendedCommunityDataPattern> & {
         Blocked: number[];
         ConfirmedFoxes: number[];
-        UnconfirmedFoxes: number[];
       } = {
         Blocked: [],
         Present: undefined,
         Sword: undefined,
         Sword3x2: undefined,
         ConfirmedFoxes: [],
-        UnconfirmedFoxes: [],
       };
 
       const errorPrefix = `Invalid state in file ${htmlFile} (${identifier}) for table at ${rowIndex},${columnIndex}\n`;
@@ -215,10 +212,6 @@ for (const htmlFile of fs
             }
             case "ConfirmedFox": {
               set.ConfirmedFoxes.push(index);
-              break;
-            }
-            case "UnconfirmedFox": {
-              set.UnconfirmedFoxes.push(index);
               break;
             }
             case "Empty": {
@@ -332,7 +325,6 @@ for (const htmlFile of fs
       Sword: pattern.Sword,
       Sword3x2: pattern.Sword3x2,
       ConfirmedFoxes: pattern.ConfirmedFoxes,
-      UnconfirmedFoxes: pattern.UnconfirmedFoxes,
     });
   }
 

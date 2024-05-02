@@ -15,7 +15,6 @@ export type SmartFill = TileState.Present | TileState.Sword | TileState.Blocked;
 
 interface FoxOdds {
   confirmedFoxes: number;
-  unconfirmedFoxes: number;
   totalFoxesForPatterns: number;
 }
 
@@ -99,7 +98,6 @@ export class SolveState {
 
   getFoxOdds(index: number): Readonly<{
     confirmedFoxes: number;
-    unconfirmedFoxes: number;
     odds: number;
   }> | null {
     const foxDetails = this.foxOdds.get(index);
@@ -108,8 +106,7 @@ export class SolveState {
     }
 
     // This is both the number of fox candidates and the number of patterns foxes were present on for this tile (because, for a given pattern, a fox is either confirmed or unconfirmed on a tile)
-    const foxesOnIndex =
-      foxDetails.confirmedFoxes + foxDetails.unconfirmedFoxes;
+    const foxesOnIndex = foxDetails.confirmedFoxes;
     // Of all possible patterns (accounting for uncovered Presents/Swords), what percent may have a fox on this tile
     const oddsOfPatternHavingFox = foxesOnIndex / this.totalCandidatePatterns;
     // Of all possible foxes given the current possible patterns, what percent of the time will the fox be on this tile.
@@ -117,7 +114,6 @@ export class SolveState {
       foxesOnIndex / foxDetails.totalFoxesForPatterns;
     return {
       confirmedFoxes: foxDetails.confirmedFoxes,
-      unconfirmedFoxes: foxDetails.unconfirmedFoxes,
       odds: oddsOfPatternHavingFox * oddsOfTileHavingFoxInPatternsWithFoxes,
     };
   }
@@ -195,25 +191,10 @@ export class IndeterminateSolveState {
   addConfirmedFoxOdd(index: number, totalFoxesForPattern: number) {
     const prev = this.#foxOdds.get(index) ?? {
       confirmedFoxes: 0,
-      unconfirmedFoxes: 0,
       totalFoxesForPatterns: 0,
     };
     this.#foxOdds.set(index, {
       confirmedFoxes: prev.confirmedFoxes + 1,
-      unconfirmedFoxes: prev.unconfirmedFoxes,
-      totalFoxesForPatterns: prev.totalFoxesForPatterns + totalFoxesForPattern,
-    });
-  }
-
-  addUnconfirmedFoxOdd(index: number, totalFoxesForPattern: number) {
-    const prev = this.#foxOdds.get(index) ?? {
-      confirmedFoxes: 0,
-      unconfirmedFoxes: 0,
-      totalFoxesForPatterns: 0,
-    };
-    this.#foxOdds.set(index, {
-      confirmedFoxes: prev.confirmedFoxes,
-      unconfirmedFoxes: prev.unconfirmedFoxes + 1,
       totalFoxesForPatterns: prev.totalFoxesForPatterns + totalFoxesForPattern,
     });
   }
