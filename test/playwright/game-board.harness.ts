@@ -14,7 +14,11 @@ export class GameBoardHarness extends BaseSequenceRunner {
   constructor(rootLocator: Locator, args: PlaywrightTestArgs) {
     super(
       (message: string) => expect("FAIL", message).toBeFalsy() as never,
-      expect
+      <T>(actual: T, msg?: string) => ({
+        toEqual(expected) {
+          expect(actual, msg).toBe(expected);
+        },
+      })
     );
     this.#rootLocator = rootLocator;
     this.#page = args.page;
@@ -67,6 +71,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
 
     if (alreadyCorrectState) {
       await expect(button).not.toBeVisible();
+      await tile.locator.click();
       await this.#rootLocator.getByTestId(`game-tile-index-${index}`).focus();
       await this.#page.focus("body");
     } else {

@@ -103,7 +103,7 @@ const pickTile = (index: number, tileState: TileState) => {
   <main :class="{ focusTile: popoverOpen }" data-testid="game-board">
     <GameTile
       v-for="(tile, index) in data.board.tiles"
-      :ref="(el) => (popoverAnchorRefs[index] = el as any)"
+      :ref="(el: any) => (popoverAnchorRefs[index] = el)"
       :key="index"
       class="tile"
       :class="{ focused: popoverOpen && index === popoverData?.index }"

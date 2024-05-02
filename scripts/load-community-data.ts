@@ -348,7 +348,7 @@ await browser.close();
 
 fs.writeFileSync(
   path.join(__dirname, "..", "src", "game", "generated-community-data.ts"),
-  prettier.format(
+  await prettier.format(
     `
 // AUTO GENERATED FILE
 // DO NOT EDIT DIRECTLY

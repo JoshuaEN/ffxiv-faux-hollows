@@ -97,9 +97,7 @@ export class SolveState {
     return this.suggestions.get(index) ?? null;
   }
 
-  getFoxOdds(
-    index: number
-  ): Readonly<{
+  getFoxOdds(index: number): Readonly<{
     confirmedFoxes: number;
     unconfirmedFoxes: number;
     odds: number;
@@ -139,7 +137,7 @@ export class IndeterminateSolveState {
   #suggestions = new Map<number, PartialTileSuggestion>();
   #patternIdentifier: string | null = null;
   #foxOdds = new Map<number, FoxOdds>();
-  #totalCandidatePatterns: number = -1;
+  #totalCandidatePatterns = -1;
 
   constructor(userSelectedStates: readonly TileState[]) {
     this.#userStates = userSelectedStates.slice();

@@ -142,6 +142,7 @@ export function loadAsciiGrid(str: string) {
       }
 
       switch (column0) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         case Slot1Mode.UserAction: {
           const userSelection = tileStateMap[column1];
           if (userSelection === undefined) {
@@ -203,6 +204,7 @@ export function loadAsciiGrid(str: string) {
           });
           continue;
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         case Slot1Mode.ExistingState: {
           const userSelection =
             column1 === " " ? TileState.Unknown : tileStateMap[column1];

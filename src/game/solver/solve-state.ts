@@ -9,7 +9,6 @@ import {
 import { calculateStatesCandidates } from "./state-candidates.js";
 import { getIdentifierCandidates } from "./identifier-candidates.js";
 import { lengthEquals } from "../../helpers.js";
-import { solve } from "./solver.js";
 
 export function calculatedSolveState(
   userSelected: readonly TileState[],
