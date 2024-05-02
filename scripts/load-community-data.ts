@@ -1,6 +1,5 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import glob from "glob";
 import path from "path";
 import process from "process";
 import fs from "fs";
@@ -54,12 +53,14 @@ const setsByIdentifier: Record<string, CommunityDataIdentifierPatterns> = {};
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
-for (const htmlFile of glob.sync(path.join(args.path, "*.html"), {
-  absolute: true,
-})) {
+for (const htmlFile of fs
+  .readdirSync(args.path)
+  .filter((file) => file.endsWith(".html"))
+  .map((file) => path.join(args.path, file))) {
   if (
     htmlFile.endsWith("Board Patterns.html") ||
-    htmlFile.endsWith("How to Use.html")
+    htmlFile.endsWith("How to Use.html") ||
+    htmlFile.endsWith("Edits.html")
   ) {
     continue;
   }
