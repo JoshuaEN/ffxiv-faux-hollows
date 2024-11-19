@@ -23,7 +23,7 @@ export function lengthAtLeast<T extends ArrayLike<unknown>, L extends number>(
 
 export function assertLengthAtLeast<
   T extends ArrayLike<unknown>,
-  L extends number
+  L extends number,
 >(arr: T, len: L): asserts arr is T & LengthAtLeast<T, L> {
   if (!lengthAtLeast(arr, len)) {
     throw new Error(

@@ -16,7 +16,12 @@
     "e2e:ui": "playwright test --ui",
     "e2e:ui:debug": "playwright test --ui --debug",
     "lint": "eslint .",
-    "script:load-community-data": "node --max-old-space-size=8192 --loader ts-node/esm --es-module-specifier-resolution=node ./scripts/load-community-data.ts --path"
+    "script:load-community-data": "node --max-old-space-size=8192 --loader ts-node/esm --es-module-specifier-resolution=node ./scripts/load-community-data.ts --path",
+    "script:sim": "pnpx esbuild --define:import.meta.env.DEV=true --platform=node ./scripts/sim/sim.ts --sourcemap --source-root=./ --bundle --format=esm --outfile=./dist/sim/sim.js && node ./dist/sim/sim.js",
+    "script:full-solve": "node ./scripts/full-solve/build-full-solve.js",
+    "postscript:full-solve": "node --max-old-space-size=8152 ./dist/full-solve/full-solve.js",
+    "script:full-solve:all:debug-last-attempt": "node ./dist/full-solve/full-solve.js",
+    "script:full-solve:all": "node ./scripts/full-solve/run-all-solvers.js"
   },
   "dependencies": {
     "@floating-ui/vue": "^1.0.6",
@@ -33,6 +38,8 @@
     "@typescript-eslint/parser": "^7.8.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitest/coverage-v8": "^1.5.3",
+    "decimal.js": "^10.4.3",
+    "esbuild": "^0.21.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.25.0",

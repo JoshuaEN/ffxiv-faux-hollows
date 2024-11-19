@@ -1,5 +1,7 @@
 import { BOARD_CELLS } from "../constants.js";
-import { TargetTileState, TileState } from "./tile-states.js";
+import { calculateSuggestionWeight } from "../solver/modules/index.js";
+import { TargetTileState, TileState } from "./../types/tile-states.js";
+import { CommunityDataPattern } from "./community-data.js";
 
 export interface TileSuggestion {
   [TileState.Blocked]: number;
@@ -9,9 +11,11 @@ export interface TileSuggestion {
   FinalWeight: number;
 }
 
-type PartialTileSuggestion = Omit<TileSuggestion, "FinalWeight">;
+export type PartialTileSuggestion = Omit<TileSuggestion, "FinalWeight">;
 
 export type SmartFill = TileState.Present | TileState.Sword | TileState.Blocked;
+
+export type Recommendation = TileState.Sword | TileState.Present;
 
 interface FoxOdds {
   confirmedFoxes: number;
@@ -57,26 +61,13 @@ export enum StateTileEligibility {
 }
 
 /**
- * When calculating the finalWeight of a tile, the Present weight is multiplied by this
- * 4 is used because a present is 2x2
+ * There is an edge case where there is some smart fill information for a shape, however:
+ * 1. Parts of the shape are still unknown
+ * 2. The user has not entered any of that shape (if they had, we would be in FillShape mode)
+ * In this case, we want to recommend the smart fill tiles for that shape since we know it will
+ * uncover information.
  */
-const PRESENT_WEIGHT_FACTOR = 4;
-/**
- * When calculating the finalWeight of a tile, the Sword weight is multiplied by this
- * 6 is sued because a sword is 2x3 or 3x2
- */
-const SWORD_WEIGHT_FACTOR = 6;
-/**
- * When calculating the finalWeight of a tile, the combined Present and Sword weight
- * is multiplied by this prior to adding the Fox weight.
- * This is so the Fox weight is only used as tie-breaks.
- *
- * The maximum value of a Fox weight varies based on the pattern, as different patterns have different
- * amounts of possible Present and Sword arrangements. This number can easily exceed 9, but does not approach 100
- * Thus, 1,000 was chosen to always have at least one 0 between the Present+Sword weight and the Fox weight,
- * for easier debugging.
- */
-const DISAMBIGUATION_FACTOR = 1_000;
+const SMART_FILL_WEIGHT_VALUE = 1_000_000;
 
 export class SolveState {
   constructor(
@@ -130,10 +121,19 @@ export class SolveState {
 export class IndeterminateSolveState {
   #userStates: readonly TileState[];
   #smartFills = new Map<number, SmartFill>();
+  #smartFillsReverse: Record<SmartFill, number[]> = {
+    [TileState.Sword]: [],
+    [TileState.Present]: [],
+    [TileState.Blocked]: [],
+  };
   #suggestions = new Map<number, PartialTileSuggestion>();
   #patternIdentifier: string | null = null;
   #foxOdds = new Map<number, FoxOdds>();
-  #totalCandidatePatterns = -1;
+  #candidatePatterns: CommunityDataPattern[] = [];
+  #solved = {
+    [TileState.Sword]: false,
+    [TileState.Present]: false,
+  };
 
   constructor(userSelectedStates: readonly TileState[]) {
     this.#userStates = userSelectedStates.slice();
@@ -155,9 +155,17 @@ export class IndeterminateSolveState {
     return this.#patternIdentifier;
   }
 
+  getCandidatePatterns() {
+    return [...this.#candidatePatterns];
+  }
+
+  getSolved() {
+    return { ...this.#solved };
+  }
+
   setSmartFill(index: number, state: SmartFill) {
+    const currentState = this.#smartFills.get(index);
     if (import.meta.env.DEV) {
-      const currentState = this.#smartFills.get(index);
       if (currentState !== undefined && currentState !== state) {
         console.error(
           `${index} was already set to state ${
@@ -166,7 +174,21 @@ export class IndeterminateSolveState {
         );
       }
     }
+    if (currentState === state) {
+      return false;
+    }
     this.#smartFills.set(index, state);
+    if (currentState !== undefined) {
+      this.#smartFillsReverse[currentState] = this.#smartFillsReverse[
+        currentState
+      ].filter((i) => i === index);
+    }
+    this.#smartFillsReverse[state].push(index);
+    return true;
+  }
+
+  setSolved(state: TileState.Sword | TileState.Present, solved: boolean) {
+    this.#solved[state] = solved;
   }
 
   addSuggestion(index: number, state: TargetTileState, value: number) {
@@ -199,8 +221,8 @@ export class IndeterminateSolveState {
     });
   }
 
-  setTotalCandidatePatterns(totalCandidatePatterns: number) {
-    this.#totalCandidatePatterns = totalCandidatePatterns;
+  setCandidatePatterns(candidatePatterns: CommunityDataPattern[]) {
+    this.#candidatePatterns = candidatePatterns;
   }
 
   deleteSuggestionsAt(index: number) {
@@ -211,6 +233,13 @@ export class IndeterminateSolveState {
     for (const [, suggestion] of this.#suggestions) {
       suggestion[state] = 0;
     }
+  }
+
+  resetSmartFillFor(state: SmartFill) {
+    for (const index of this.#smartFillsReverse[state]) {
+      this.#smartFills.delete(index);
+    }
+    this.#smartFillsReverse[state] = [];
   }
 
   isEmptyAt(index: number) {
@@ -248,11 +277,29 @@ export class IndeterminateSolveState {
   finalize(solveStep: SolveStep) {
     const suggestions = new Map<number, TileSuggestion>();
     const peakSuggestions = IndeterminateSolveState.#createTileSuggestion();
-    for (let index = 0; index < BOARD_CELLS; index++) {
-      const suggestion = this.#suggestions.get(index);
-      if (suggestion === undefined) {
-        continue;
+
+    const suggestSmartFill = {
+      [TileState.Sword]: false,
+      [TileState.Present]: false,
+    };
+    for (const state of [TileState.Sword, TileState.Present] as const) {
+      if (
+        !this.#solved[state] &&
+        this.#smartFillsReverse[state].length > 0 &&
+        this.#userStates.every((tile) => tile !== state)
+      ) {
+        suggestSmartFill[state] = true;
       }
+    }
+
+    for (let index = 0; index < BOARD_CELLS; index++) {
+      const suggestion = this.#suggestions.get(index) ?? {
+        Blocked: 0,
+        Fox: 0,
+        Present: 0,
+        Sword: 0,
+      };
+
       const processState = (
         state:
           | TileState.Blocked
@@ -270,11 +317,22 @@ export class IndeterminateSolveState {
       processState(TileState.Sword);
       processState(TileState.Present);
       processState(TileState.Fox);
-      const finalWeight =
-        (suggestion[TileState.Present] * PRESENT_WEIGHT_FACTOR +
-          suggestion[TileState.Sword] * SWORD_WEIGHT_FACTOR) *
-          DISAMBIGUATION_FACTOR +
-        suggestion[TileState.Fox];
+      const smartFill = this.getSmartFill(index);
+      const smartFillOverrideWeight =
+        (suggestSmartFill[TileState.Present] &&
+          smartFill === TileState.Present) ||
+        (suggestSmartFill[TileState.Sword] && smartFill === TileState.Sword)
+          ? SMART_FILL_WEIGHT_VALUE
+          : 0;
+
+      const finalWeight = calculateSuggestionWeight(
+        suggestion,
+        smartFillOverrideWeight
+      );
+
+      if (finalWeight <= 0) {
+        continue;
+      }
 
       peakSuggestions.FinalWeight = Math.max(
         peakSuggestions.FinalWeight,
@@ -286,13 +344,20 @@ export class IndeterminateSolveState {
         FinalWeight: finalWeight,
       });
     }
+
+    for (const state of [TileState.Sword, TileState.Present] as const) {
+      if (suggestSmartFill[state]) {
+        this.resetSmartFillFor(state);
+      }
+    }
+
     return new SolveState(
       this,
       suggestions,
       peakSuggestions,
       solveStep,
       this.#foxOdds,
-      this.#totalCandidatePatterns
+      this.#candidatePatterns.length
     );
   }
 

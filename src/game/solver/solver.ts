@@ -2,12 +2,12 @@ import { assertNever } from "../../helpers.js";
 import { BOARD_CELLS } from "../constants.js";
 import {
   CombinedTileState,
-  SolveStep,
   TrackedStatesIndexList,
   SuggestTileState,
   TileState,
   SmartFillTileState,
 } from "../types/index.js";
+import { SolveStep } from "../types/solve-state.js";
 import { calculatedSolveState } from "./solve-state.js";
 
 export function solve(

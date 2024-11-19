@@ -1,18 +1,35 @@
-import { assert, assertLengthAtLeast, lengthEquals } from "../../helpers.js";
-import { BOARD_WIDTH, BOARD_HEIGHT } from "../constants.js";
-import { cordToIndex } from "../helpers.js";
+/**
+ * This calculator uses simply probabilities by evaluating every possible index to determine
+ * if a Sword/Present (henceforth "shape") could start there (based on user input and calculated "smart fills").
+ * Start there meaning that the top-left of the shape could start there
+ * (Swords are evaluated twice, one for each orientation).
+ * If the shape could start there, every tile that shape would cover get +1 to the shape.
+ *
+ * Because smart fills are determined as part of this process, it is sometimes necessary to
+ * re-process all tiles taking into account the new smart filled tiles.
+ */
+import {
+  assert,
+  assertLengthAtLeast,
+  lengthEquals,
+} from "../../../../helpers.js";
+import { BOARD_WIDTH, BOARD_HEIGHT } from "../../../constants.js";
+import { cordToIndex } from "../../../helpers.js";
 import {
   BoardIssue,
   BoardIssueSeverity,
   CommunityDataPattern,
+  StateCandidatesResult,
+  TileState,
+  TrackedStatesIndexList,
+} from "~/src/game/types";
+import { BoundingBox, getBoundingBox } from "../../helpers.js";
+import {
   IndeterminateSolveState,
   SolveState,
   SolveStep,
   StateTileEligibility,
-  TileState,
-  TrackedStatesIndexList,
-} from "../types/index.js";
-import { BoundingBox, getBoundingBox } from "./helpers.js";
+} from "~/src/game/types/solve-state.js";
 
 interface ShapeData {
   readonly state: TileState.Sword | TileState.Present;
@@ -26,19 +43,7 @@ export function calculateStatesCandidates(
   solveState: IndeterminateSolveState,
   userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
   patterns: readonly CommunityDataPattern[]
-):
-  | {
-      solved: { Present: number; Sword: number };
-      solveState: SolveState;
-      issues: BoardIssue[];
-      candidatePatterns: CommunityDataPattern[];
-    }
-  | {
-      solved: { Present: number; Sword: number };
-      solveState: null;
-      issues: BoardIssue[];
-      candidatePatterns: CommunityDataPattern[];
-    } {
+): StateCandidatesResult {
   return recursiveCalculateStatesCandidates(
     solveState,
     userStatesIndexList,
@@ -183,6 +188,10 @@ function recursiveCalculateStatesCandidates(
     };
   }
 
+  if (solved[TileState.Sword] >= 0) {
+    solveState.setSolved(TileState.Sword, true);
+  }
+
   if (
     userStatesIndexList[TileState.Present].size > 0 &&
     solved[TileState.Present] < 0
@@ -193,6 +202,10 @@ function recursiveCalculateStatesCandidates(
       issues,
       candidatePatterns,
     };
+  }
+
+  if (solved[TileState.Present] >= 0) {
+    solveState.setSolved(TileState.Present, true);
   }
 
   return { solved, solveState: null, issues, candidatePatterns };

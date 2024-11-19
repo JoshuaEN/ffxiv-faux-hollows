@@ -4,12 +4,14 @@ import { solve } from "./solver/index.js";
 import {
   BoardIssue,
   CombinedTileState,
-  SolveState,
   TrackedStatesIndexList,
   TileState,
-  IndeterminateSolveState,
-  SolveStep,
 } from "./types/index.js";
+import {
+  IndeterminateSolveState,
+  SolveState,
+  SolveStep,
+} from "./types/solve-state.js";
 
 export class Board {
   readonly #userSelectedStates: TileState[] = [];
@@ -55,6 +57,11 @@ export class Board {
   }
 
   setUserState(index: number, state: TileState): void {
+    this.#setUserStateWithoutRecalculation(index, state);
+    this.#recalculateSolveState();
+  }
+
+  #setUserStateWithoutRecalculation(index: number, state: TileState) {
     const oldState = this.#userSelectedStates[index];
     if (oldState === undefined) {
       if (import.meta.env.DEV) {
@@ -73,7 +80,9 @@ export class Board {
     if (this.#isTrackedState(state)) {
       this.#trackedUserSelectedStates[state].add(index);
     }
+  }
 
+  #recalculateSolveState() {
     const { tiles, solveState, issues } = solve(
       this.#userSelectedStates,
       this.#trackedUserSelectedStates
@@ -87,5 +96,18 @@ export class Board {
     tileState: TileState
   ): tileState is keyof TrackedStatesIndexList<Set<number>> {
     return Object.hasOwn(this.#trackedUserSelectedStates, tileState);
+  }
+
+  clone(): Board {
+    const newBoard = new Board();
+    for (let index = 0; index < this.#userSelectedStates.length; index++) {
+      const state = this.#userSelectedStates[index];
+      if (state === TileState.Unknown || state === undefined) {
+        continue;
+      }
+      newBoard.#setUserStateWithoutRecalculation(index, state);
+    }
+    newBoard.#recalculateSolveState();
+    return newBoard;
   }
 }

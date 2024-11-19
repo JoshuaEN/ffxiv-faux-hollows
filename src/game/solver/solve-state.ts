@@ -1,14 +1,16 @@
 import {
   BoardIssue,
-  IndeterminateSolveState,
-  SolveState,
-  SolveStep,
   TrackedStatesIndexList,
   TileState,
 } from "../types/index.js";
-import { calculateStatesCandidates } from "./state-candidates.js";
 import { getIdentifierCandidates } from "./identifier-candidates.js";
 import { lengthEquals } from "../../helpers.js";
+import { calculateStatesCandidates } from "./modules/index.js";
+import {
+  SolveState,
+  IndeterminateSolveState,
+  SolveStep,
+} from "../types/solve-state.js";
 
 export function calculatedSolveState(
   userSelected: readonly TileState[],
@@ -68,7 +70,7 @@ export function calculatedSolveState(
   }
 
   const mainShapesSolved = solved.Present > -1 && solved.Sword > -1;
-  solveState.setTotalCandidatePatterns(candidatePatterns.length);
+  solveState.setCandidatePatterns(candidatePatterns);
 
   /**
    * Identify fox candidates
