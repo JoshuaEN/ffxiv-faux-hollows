@@ -31,8 +31,8 @@ export interface ShapeData {
 }
 
 export interface ProcessedPattern {
-  pattern: CommunityDataPattern;
-  boundingBox: {
+  readonly pattern: CommunityDataPattern;
+  readonly boundingBox: {
     [TileState.Sword]: BoundingBox;
     [TileState.Present]: BoundingBox;
   };
@@ -41,6 +41,10 @@ export interface ProcessedPattern {
 export function createCommunityDataStateCandidatesFoxOmitsSolver(
   updateSolveState: (
     shapes: readonly ShapeData[],
+    only: {
+      onlySword: ProcessedPattern | null;
+      onlyPresent: ProcessedPattern | null;
+    },
     filteredPatterns: ProcessedPattern[],
     solveState: IndeterminateSolveState,
     userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>
@@ -247,7 +251,13 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       solveState.setSolved(TileState.Present, true);
     }
 
-    updateSolveState(shapes, filteredPatterns, solveState, userStatesIndexList);
+    updateSolveState(
+      shapes,
+      { onlySword, onlyPresent },
+      filteredPatterns,
+      solveState,
+      userStatesIndexList
+    );
 
     return {
       solved,

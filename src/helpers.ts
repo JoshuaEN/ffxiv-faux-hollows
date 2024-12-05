@@ -57,3 +57,15 @@ export function assert(value: boolean, message?: string): asserts value {
     }`
   );
 }
+
+export function assertDefined<T>(
+  value: T,
+  message?: string
+): asserts value is NonNullable<T> {
+  if (value !== null && value !== undefined) {
+    return;
+  }
+  throw new Error(
+    `Assertion failed, given value is not defined (received ${value === null ? "null" : "undefined"})${message ?? ""}`
+  );
+}

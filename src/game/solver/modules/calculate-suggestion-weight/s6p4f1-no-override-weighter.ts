@@ -14,7 +14,7 @@ const SWORD_WEIGHT_FACTOR = 6;
 
 export function calculateSuggestionWeight(
   suggestion: PartialTileSuggestion,
-  smartFillOverrideWeight: number
+  _: number
 ) {
   const finalPresentWeight =
     suggestion[TileState.Present] * PRESENT_WEIGHT_FACTOR;

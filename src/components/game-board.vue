@@ -90,6 +90,8 @@ const pickTile = (index: number, tileState: TileState) => {
 </script>
 
 <template>
+  <div>Identifier: {{ data.board.solveState.getPatternIdentifier() }}</div>
+  <div>Total candidate patterns: {{ data.board.solveState.totalCandidatePatterns }}</div>
   <div
     v-for="issue in data.board.issues"
     :key="issue.message"

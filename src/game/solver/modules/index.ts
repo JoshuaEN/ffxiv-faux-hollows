@@ -6,9 +6,9 @@ import {
 import * as communityDataWeightedCalculator from "./calculate-state-candidates/community-data-state-candidates/weighted.js";
 import * as communityDataFoxOmitsCalculator from "./calculate-state-candidates/community-data-state-candidates/fox-omits.js";
 import * as communityDataBuckets from "./calculate-state-candidates/community-data-state-candidates/buckets.js";
-import * as communityDataPerfect from "./calculate-state-candidates/community-data-state-candidates/perfect.js";
-import * as communityDataPerfectPunishEmpty from "./calculate-state-candidates/community-data-state-candidates/perfect-punish-empty.js";
-import * as communityDataBucketsFixedWeight from "./calculate-state-candidates/community-data-state-candidates/buckets-fixed-weight.js";
+import * as communityDataBucketsDepth from "./calculate-state-candidates/community-data-state-candidates/buckets-depth.js";
+import * as communityDataRecursive from "./calculate-state-candidates/community-data-state-candidates/recursive.js";
+import * as communityDataRecursiveFast from "./calculate-state-candidates/community-data-state-candidates/recursive-fast.js";
 import * as communityDataCalculator from "./calculate-state-candidates/community-data-state-candidates.js";
 import * as pureWeightedCalculator from "./calculate-state-candidates/pure-weighted-state-candidates.js";
 
@@ -23,14 +23,12 @@ export const calculateStatesCandidates: CalculateStatesCandidatesFunction =
           ? communityDataWeightedCalculator.calculateStatesCandidates
           : import.meta.env["SOLVER"] === "community-data-buckets"
             ? communityDataBuckets.calculateStatesCandidates
-            : import.meta.env["SOLVER"] ===
-                "community-data-buckets-fixed-weight"
-              ? communityDataBucketsFixedWeight.calculateStatesCandidates
-              : import.meta.env["SOLVER"] === "community-data-perfect"
-                ? communityDataPerfect.calculateStatesCandidates
-                : import.meta.env["SOLVER"] ===
-                    "community-data-perfect-punish-empty"
-                  ? communityDataPerfectPunishEmpty.calculateStatesCandidates
+            : import.meta.env["SOLVER"] === "community-data-buckets-depth"
+              ? communityDataBucketsDepth.calculateStatesCandidates
+              : import.meta.env["SOLVER"] === "community-data-recursive"
+                ? communityDataRecursive.calculateStatesCandidates
+                : import.meta.env["SOLVER"] === "community-data-recursive-fast"
+                  ? communityDataRecursiveFast.calculateStatesCandidates
                   : assertUnreachable();
 
 import * as s6p4_f1 from "./calculate-suggestion-weight/s6p4-f1-weighter.js";

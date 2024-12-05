@@ -8,9 +8,9 @@ export default defineConfig({
   define: {
     // https://vitest.dev/guide/in-source.html#production-build
     "import.meta.vitest": "undefined",
-    "import.meta.env.DEV": "undefined",
-    "import.meta.env.SOLVER": "'community-data-perfect'",
-    "import.meta.env.WEIGHTER": "'s1'",
+    // "import.meta.env.DEV": "undefined",
+    "import.meta.env.SOLVER": "'community-data-recursive-fast'",
+    "import.meta.env.WEIGHTER": "'s6p4-f1'",
   },
   plugins: [
     vue(),

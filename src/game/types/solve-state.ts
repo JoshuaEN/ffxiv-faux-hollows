@@ -143,6 +143,15 @@ export class IndeterminateSolveState {
     return this.#userStates[index];
   }
 
+  anyUserStateSet() {
+    for (const state of this.#userStates) {
+      if (state !== TileState.Blocked && state !== TileState.Unknown) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   getSmartFill(index: number) {
     return this.#smartFills.get(index) ?? null;
   }

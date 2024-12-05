@@ -33,6 +33,8 @@ export interface AutoSolveResultStepTaken {
   stepNumber: number;
   patternsRemaining: CommunityDataPattern[];
   foxCandidatesRemaining: { index: number; inPatterns: number }[];
+  solvedSword: boolean;
+  solvedPresent: boolean;
 }
 interface IntermediateSolveResult {
   steps: AutoSolveResultStepTaken[];
@@ -332,6 +334,8 @@ function autoSolver(
                     stepNumber: totalStepsToUncover,
                     patternsRemaining: [...patternsRemaining],
                     foxCandidatesRemaining,
+                    solvedSword: solved[TileState.Sword],
+                    solvedPresent: solved[TileState.Present],
                   },
                 ],
                 stepsToSoFar: newStepsToSoFar,

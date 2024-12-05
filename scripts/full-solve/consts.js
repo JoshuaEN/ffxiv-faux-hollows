@@ -2,10 +2,9 @@ export const bestSolver = "community-data-fox-omits";
 export const solvers = [
   bestSolver,
   "community-data-buckets",
-  "community-data-buckets-fixed-weight",
   "community-data-weighted",
-  "community-data-perfect",
-  "community-data-perfect-punish-empty",
+  "community-data-recursive",
+  "community-data-recursive-fast",
   "community-data",
   "pure-weighted",
 ];
@@ -20,7 +19,6 @@ export const map = [
   [solvers[4], [bestWeighter]],
   [solvers[5], [bestWeighter]],
   [solvers[6], [bestWeighter]],
-  [solvers[7], [bestWeighter]],
 ];
 
 if (map.length !== solvers.length) {

@@ -2,7 +2,14 @@ import { cordToIndex, indexToCord } from "../helpers.js";
 import { CommunityDataPattern } from "../types/community-data.js";
 import { TileState } from "../types/tile-states.js";
 
-export class BoundingBox {
+export interface BoundingBoxArea {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+export class BoundingBox implements BoundingBoxArea {
   readonly shortSide: number;
   readonly longSide: number;
   #indexes: number[] | undefined;
@@ -21,9 +28,16 @@ export class BoundingBox {
     }
   }
 
-  contains(other: BoundingBox | null) {
+  contains(other: number | BoundingBoxArea | null) {
     if (other === null) {
       return false;
+    }
+    if (typeof other === "number") {
+      other = {
+        ...indexToCord(other),
+        height: 1,
+        width: 1,
+      };
     }
     return (
       this.x <= other.x &&
@@ -44,6 +58,26 @@ export class BoundingBox {
       this.#indexes = cords;
     }
     return this.#indexes;
+  }
+
+  static fromPoints(
+    minPoint: { x: number; y: number },
+    maxPoint: { x: number; y: number }
+  ): BoundingBox {
+    return BoundingBox.fromXYs(minPoint.x, minPoint.y, maxPoint.x, maxPoint.y);
+  }
+  static fromXYs(
+    minPointX: number,
+    minPointY: number,
+    maxPointX: number,
+    maxPointY: number
+  ) {
+    return new BoundingBox(
+      minPointX,
+      minPointY,
+      maxPointX - minPointX + 1,
+      maxPointY - minPointY + 1
+    );
   }
 }
 
@@ -73,7 +107,7 @@ export function getBoundingBox(
     maxY = Math.max(maxY, y);
   }
 
-  return new BoundingBox(minX, minY, maxX - minX + 1, maxY - minY + 1);
+  return BoundingBox.fromXYs(minX, minY, maxX, maxY);
 }
 
 export function getCommunityDataPatternBoundingBox(

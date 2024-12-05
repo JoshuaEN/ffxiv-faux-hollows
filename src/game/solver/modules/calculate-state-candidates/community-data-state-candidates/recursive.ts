@@ -26,7 +26,7 @@ function calculateWeight(results: ReturnType<typeof recursiveSolver>) {
 
 export const calculateStatesCandidates =
   createCommunityDataStateCandidatesFoxOmitsSolver(
-    (shapes, filteredPatterns, solveState) => {
+    (shapes, _only, filteredPatterns, solveState) => {
       // Smart fill
       const indexByShapes = getIndexByShapes(filteredPatterns);
       for (const [state, commonIndexes] of indexByShapes) {
@@ -193,34 +193,7 @@ function recursiveSolver(
 
         let val = 0;
         let moves = 1;
-        if (
-          state === TileState.Fox &&
-          found[TileState.Sword] &&
-          found[TileState.Present]
-        ) {
-          assert(filteredPatterns.length === 1);
-          const remainingFoxCandidates = pattern.pattern.ConfirmedFoxes.filter(
-            (f) => tiles[f] === TileState.Unknown
-          ).length;
-          // Simulate multiple calls to resolve foxes
-          if (remainingFoxCandidates === 1) {
-            val = 1;
-            moves = 1;
-          } else if (remainingFoxCandidates === 2) {
-            val = 1 + 2;
-            moves = 2;
-          } else if (remainingFoxCandidates === 3) {
-            val = 1 + 2 + 2 + 3 + 3;
-            moves = 5;
-          } else if (remainingFoxCandidates === 4) {
-            val = 1 + 2 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 4 + 4 + 4 + 4;
-            moves = 16;
-          } else {
-            throw new Error(
-              `Unexpected remaining fox candidates ${remainingFoxCandidates}`
-            );
-          }
-        } else if (state === TileState.Fox) {
+        if (state === TileState.Fox) {
           // Coin flip
 
           // We want to avoid actually setting the tile to empty because this explodes the possible board states
@@ -359,31 +332,21 @@ function recursiveSolver(
 }
 
 const cacheForFillRecursive = new Map<string, number>();
-const cacheForSolver = new Map<
-  string,
-  Map<number, { min: number; max: number; total: number; count: number }>
->();
 
 function fillFilterRecurse(
   tiles: readonly TileState[],
   filteredPatterns: readonly ProcessedPattern[]
 ): number {
-  const { key, cachedValue } = checkCache(tiles, filteredPatterns);
+  // const key = checkCache(tiles, filteredPatterns);
 
-  if (cachedValue !== undefined) {
-    return cachedValue;
-  }
+  // const cachedValue = cacheForFillRecursive.get(key);
+  // if (cachedValue !== undefined) {
+  //   return cachedValue;
+  // }
 
   const found = validateTiles(tiles);
 
   if (done(found)) {
-    return 0;
-  }
-  if (
-    found[TileState.Sword] &&
-    found[TileState.Present] &&
-    found[TileState.Fox]
-  ) {
     return 0;
   }
 
@@ -480,14 +443,15 @@ function fillFilterRecurse(
     throw new Error(`Gained patterns`);
   }
 
-  const { key: postKey, cachedValue: postCachedValue } = checkCache(
-    tiles,
-    newFilteredPatterns
-  );
+  const postKey = checkCache(tiles, newFilteredPatterns);
+  const postCache = cacheForFillRecursive.get(postKey);
+  if (postCache !== undefined) {
+    return postCache;
+  }
 
   const result = recursiveSolver(tiles, newFilteredPatterns);
   const weight = calculateWeight(result);
-  cacheForFillRecursive.set(key, weight);
+  // cacheForFillRecursive.set(key, weight);
   cacheForFillRecursive.set(postKey, weight);
   return weight;
 }
@@ -497,28 +461,12 @@ function checkCache(
   filteredPatterns: readonly ProcessedPattern[]
 ) {
   const key = `T${tiles.join(",")}P${filteredPatterns
-    .toSorted((a, b) => {
-      const sDiff = a.pattern.Sword - b.pattern.Sword;
-      const sODiff =
-        (a.pattern.Sword3x2 ? 0 : 1) - (b.pattern.Sword3x2 ? 0 : 1);
-      const pDiff = a.pattern.Present - b.pattern.Present;
-
-      if (sDiff !== 0) {
-        return sDiff;
-      }
-      if (sODiff !== 0) {
-        return sODiff;
-      }
-      return pDiff;
-    })
     .map(
       (p) =>
         `${p.pattern.Sword}${p.pattern.Sword3x2 ? "w" : "t"}${p.pattern.Present}`
     )
     .join(",")}`; //F${pattern.pattern.ConfirmedFoxes.join(",")}`;
-  const cachedValue = cacheForFillRecursive.get(key);
-  const cachedValueForSolver = cacheForSolver.get(key);
-  return { key, cachedValue, cachedValueForSolver };
+  return key;
 }
 
 function validateTiles(tiles: readonly TileState[]) {

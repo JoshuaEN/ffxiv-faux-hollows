@@ -3,7 +3,7 @@ import { createCommunityDataStateCandidatesFoxOmitsSolver } from "./base-fox-omi
 
 export const calculateStatesCandidates =
   createCommunityDataStateCandidatesFoxOmitsSolver(
-    (shapes, filteredPatterns, solveState) => {
+    (shapes, _only, filteredPatterns, solveState) => {
       for (const { state } of shapes) {
         const startIndexTracker = new Set<string>();
         const commonIndexes = new Map<number, number>();

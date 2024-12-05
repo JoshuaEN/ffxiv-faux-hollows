@@ -39,6 +39,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitest/coverage-v8": "^1.5.3",
     "decimal.js": "^10.4.3",
+    "easy-table": "^1.2.0",
     "esbuild": "^0.21.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "^9.1.0",
@@ -55,5 +56,6 @@
     "vue-eslint-parser": "^9.4.2",
     "vue-tsc": "^1.8.27",
     "yargs": "^17.7.2"
-  }
+  },
+  "packageManager": "pnpm@9.0.6+sha1.648f6014eb363abb36618f2ba59282a9eeb3e879"
 }

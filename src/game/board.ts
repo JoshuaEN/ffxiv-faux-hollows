@@ -83,13 +83,15 @@ export class Board {
   }
 
   #recalculateSolveState() {
-    const { tiles, solveState, issues } = solve(
-      this.#userSelectedStates,
-      this.#trackedUserSelectedStates
-    );
-    this.#solveState = solveState;
-    this.#boardIssues = issues;
-    this.#tiles = tiles;
+    for (let i = 0; i < 10_000; i++) {
+      const { tiles, solveState, issues } = solve(
+        this.#userSelectedStates,
+        this.#trackedUserSelectedStates
+      );
+      this.#solveState = solveState;
+      this.#boardIssues = issues;
+      this.#tiles = tiles;
+    }
   }
 
   #isTrackedState(
