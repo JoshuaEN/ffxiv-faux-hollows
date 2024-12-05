@@ -1,12 +1,12 @@
+import { assertLengthAtLeast } from "~/src/helpers.js";
+import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
 import { createCommunityDataStateCandidatesFoxOmitsSolver } from "./base-fox-omits.js";
 import { TileState } from "~/src/game/types/tile-states.js";
+import { findIncompleteSmartFills } from "../../../helpers/incomplete-smart-fill.js";
 
 export const calculateStatesCandidates =
   createCommunityDataStateCandidatesFoxOmitsSolver(
     (shapes, { onlySword, onlyPresent }, filteredPatterns, solveState) => {
-      // for (let i = 0; i < BOARD_CELLS; i++) {
-      //   if ()
-      // }
       const indexSets = new Map<number, Map<string, number>>();
       for (const { state } of shapes) {
         const commonIndexes = new Map<number, number>();
@@ -35,9 +35,20 @@ export const calculateStatesCandidates =
           ) {
             solveState.setSmartFill(index, state);
           } else {
-            // solveState.addSuggestion(index, state, count);
+            solveState.addSuggestion(index, state, count);
           }
         }
+      }
+
+      applyFoxSuggestions(filteredPatterns, solveState);
+
+      const incompleteSmartFills = findIncompleteSmartFills(solveState);
+
+      if (incompleteSmartFills.Sword) {
+        solveState.resetSmartFillFor(TileState.Sword);
+      }
+      if (incompleteSmartFills.Present) {
+        solveState.resetSmartFillFor(TileState.Present);
       }
 
       for (const [index, sets] of indexSets) {
@@ -47,16 +58,24 @@ export const calculateStatesCandidates =
           min = Math.min(min, count);
           max = Math.max(max, count);
         }
-        if (solveState.getSmartFill(index) === null) {
+        if (solveState.isEmptyAt(index)) {
           const sdev = getStandardDeviation(Array.from(sets.values()));
-          solveState.addSuggestion(
+          const foxOdds = solveState.getFoxOdds(index) ?? {
+            confirmedFoxes: 0,
+            totalFoxesForPatterns: 0,
+          };
+          solveState.setFinalWeight(
             index,
-            TileState.Sword,
-            1000 - sdev + sets.size
+            1000 * (100 - Math.round(sdev * 1000) / 1000 + sets.size) +
+              foxOdds.confirmedFoxes
           );
-          // solveState.addSuggestion(index, TileState.Present);
-          // console.log(index, sdev, Array.from(sets.values()), sets.size);
-          // solveState.addSuggestion(index, TileState.Fox, max);
+        }
+      }
+
+      if (filteredPatterns.length === 1) {
+        assertLengthAtLeast(filteredPatterns, 1);
+        for (const index of filteredPatterns[0].pattern.ConfirmedFoxes) {
+          solveState.setFinalWeight(index, 1);
         }
       }
     }

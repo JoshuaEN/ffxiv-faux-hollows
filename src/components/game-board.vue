@@ -201,11 +201,11 @@ const pickTile = (index: number, tileState: TileState) => {
         >F:{{ data.board.solveState?.getSuggestion(index)?.Fox }}&nbsp;
       </template>
       <br />
-      {{ data.board.solveState?.getSuggestion(index)?.FinalWeight }}
+      {{ data.board.solveState?.getFinalWeight(index)?.value ?? 0}}
       <br />
       {{
-        data.board.solveState?.getPeakSuggestions().FinalWeight ===
-        data.board.solveState?.getSuggestion(index)?.FinalWeight
+        data.board.solveState?.getMaxTileWeight() ===
+        data.board.solveState?.getFinalWeight(index)?.value
           ? "*"
           : ""
       }}

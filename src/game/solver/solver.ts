@@ -20,7 +20,7 @@ export function solve(
   );
 
   const tiles: CombinedTileState[] = [];
-  const peakSuggestions = solveState.getPeakSuggestions();
+  const maxTileWeight = solveState.getMaxTileWeight();
   for (let i = 0; i < BOARD_CELLS; i++) {
     const userState = userSelected[i];
     if (userState !== undefined && userState !== TileState.Unknown) {
@@ -48,9 +48,8 @@ export function solve(
       }
     }
 
-    const suggestion = solveState.getSuggestion(i);
-
     // For Fill Sword and Fill Present we want to highlight the valid tiles
+    const suggestion = solveState.getSuggestion(i);
     if (solveState.solveStep === SolveStep.FillSword) {
       if ((suggestion?.[TileState.Sword] ?? 0) > 0) {
         tiles[i] = SuggestTileState.SuggestSword;
@@ -62,16 +61,30 @@ export function solve(
         continue;
       }
     } else if (solveState.solveStep === SolveStep.SuggestTiles) {
-      if (suggestion?.FinalWeight === peakSuggestions.FinalWeight) {
+      const finalWeight = solveState.getFinalWeight(i);
+      if (finalWeight?.value === maxTileWeight) {
         const tileSuggestions: SuggestTileState[] = [];
-        if (suggestion[TileState.Present] > 0) {
-          tileSuggestions.push(SuggestTileState.SuggestPresent);
+        if (suggestion !== null) {
+          if (suggestion[TileState.Present] > 0) {
+            tileSuggestions.push(SuggestTileState.SuggestPresent);
+          }
+          if (suggestion[TileState.Sword] > 0) {
+            tileSuggestions.push(SuggestTileState.SuggestSword);
+          }
+          if (suggestion[TileState.Fox] > 0) {
+            tileSuggestions.push(SuggestTileState.SuggestFox);
+          }
         }
-        if (suggestion[TileState.Sword] > 0) {
-          tileSuggestions.push(SuggestTileState.SuggestSword);
-        }
-        if (suggestion[TileState.Fox] > 0) {
-          tileSuggestions.push(SuggestTileState.SuggestFox);
+        if (tileSuggestions.length === 0) {
+          if (import.meta.env.DEV) {
+            throw new Error(`Failed to generate any suggestions for ${i}`);
+          } else {
+            tileSuggestions.push(
+              SuggestTileState.SuggestSword,
+              SuggestTileState.SuggestPresent,
+              SuggestTileState.SuggestFox
+            );
+          }
         }
         tiles[i] = tileSuggestions;
         continue;

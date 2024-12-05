@@ -15,13 +15,15 @@ import {
   CommunityDataPattern,
   StateCandidatesResult,
   TileState,
-  TrackedStatesIndexList,
 } from "../../../types/index.js";
 import {
   BoundingBox,
   getBoundingBox,
   getCommunityDataPatternBoundingBox,
-} from "../../helpers.js";
+} from "../../bounding-box.js";
+import { applyFoxSuggestions } from "../../helpers/apply-fox-suggestions.js";
+import { setFinalWeightsFromSuggestions } from "../../helpers/weight-applier.js";
+import { calculateSuggestionWeight } from "../index.js";
 
 interface ShapeData {
   readonly state: TileState.Sword | TileState.Present;
@@ -41,7 +43,6 @@ interface ProcessedPattern {
 
 export function calculateStatesCandidates(
   solveState: IndeterminateSolveState,
-  userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
   patterns: readonly CommunityDataPattern[]
 ): StateCandidatesResult {
   const issues: BoardIssue[] = [];
@@ -52,14 +53,18 @@ export function calculateStatesCandidates(
       title: "Swords",
       longSide: 3,
       shortSide: 2,
-      boundingBox: getBoundingBox(userStatesIndexList[TileState.Sword]),
+      boundingBox: getBoundingBox(
+        solveState.userStatesIndexList[TileState.Sword]
+      ),
     },
     {
       state: TileState.Present,
       title: "Present / Box",
       longSide: 2,
       shortSide: 2,
-      boundingBox: getBoundingBox(userStatesIndexList[TileState.Present]),
+      boundingBox: getBoundingBox(
+        solveState.userStatesIndexList[TileState.Present]
+      ),
     },
   ] as const;
 
@@ -227,17 +232,22 @@ export function calculateStatesCandidates(
     }
   }
 
+  const candidatePatterns = filteredPatterns.map(({ pattern }) => pattern);
+  applyFoxSuggestions(candidatePatterns, solveState);
+  setFinalWeightsFromSuggestions(solveState, calculateSuggestionWeight);
+
   return {
     solved,
     solveState:
-      onlySword === null && userStatesIndexList[TileState.Sword].size > 0
+      onlySword === null &&
+      solveState.userStatesIndexList[TileState.Sword].size > 0
         ? solveState.finalize(SolveStep.FillSword)
         : onlyPresent === null &&
-            userStatesIndexList[TileState.Present].size > 0
+            solveState.userStatesIndexList[TileState.Present].size > 0
           ? solveState.finalize(SolveStep.FillPresent)
           : null,
     issues,
-    candidatePatterns: filteredPatterns.map(({ pattern }) => pattern),
+    candidatePatterns,
   };
 }
 

@@ -14,13 +14,12 @@ import {
   CommunityDataPattern,
   StateCandidatesResult,
   TileState,
-  TrackedStatesIndexList,
 } from "../../../../types/index.js";
 import {
   BoundingBox,
   getBoundingBox,
   getCommunityDataPatternBoundingBox,
-} from "../../../helpers.js";
+} from "../../../bounding-box.js";
 
 export interface ShapeData {
   readonly state: TileState.Sword | TileState.Present;
@@ -46,13 +45,11 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       onlyPresent: ProcessedPattern | null;
     },
     filteredPatterns: ProcessedPattern[],
-    solveState: IndeterminateSolveState,
-    userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>
+    solveState: IndeterminateSolveState
   ) => void
 ) {
   return function calculateStatesCandidates(
     solveState: IndeterminateSolveState,
-    userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
     patterns: readonly CommunityDataPattern[]
   ): StateCandidatesResult {
     const issues: BoardIssue[] = [];
@@ -63,14 +60,18 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
         title: "Swords",
         longSide: 3,
         shortSide: 2,
-        boundingBox: getBoundingBox(userStatesIndexList[TileState.Sword]),
+        boundingBox: getBoundingBox(
+          solveState.userStatesIndexList[TileState.Sword]
+        ),
       },
       {
         state: TileState.Present,
         title: "Present / Box",
         longSide: 2,
         shortSide: 2,
-        boundingBox: getBoundingBox(userStatesIndexList[TileState.Present]),
+        boundingBox: getBoundingBox(
+          solveState.userStatesIndexList[TileState.Present]
+        ),
       },
     ] as const;
 
@@ -125,8 +126,10 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       };
 
       const userFoundFox =
-        userStatesIndexList[TileState.Fox].size > 0
-          ? Array.from(userStatesIndexList[TileState.Fox].keys())[0] ?? null
+        solveState.userStatesIndexList[TileState.Fox].size > 0
+          ? Array.from(
+              solveState.userStatesIndexList[TileState.Fox].keys()
+            )[0] ?? null
           : null;
 
       for (const shape of shapes) {
@@ -255,21 +258,23 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       shapes,
       { onlySword, onlyPresent },
       filteredPatterns,
-      solveState,
-      userStatesIndexList
+      solveState
     );
+
+    const candidatePatterns = filteredPatterns.map(({ pattern }) => pattern);
 
     return {
       solved,
       solveState:
-        onlySword === null && userStatesIndexList[TileState.Sword].size > 0
+        onlySword === null &&
+        solveState.userStatesIndexList[TileState.Sword].size > 0
           ? solveState.finalize(SolveStep.FillSword)
           : onlyPresent === null &&
-              userStatesIndexList[TileState.Present].size > 0
+              solveState.userStatesIndexList[TileState.Present].size > 0
             ? solveState.finalize(SolveStep.FillPresent)
             : null,
       issues,
-      candidatePatterns: filteredPatterns.map(({ pattern }) => pattern),
+      candidatePatterns,
     };
   };
 }

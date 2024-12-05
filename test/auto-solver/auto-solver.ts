@@ -12,7 +12,7 @@ import {
   assertUnreachable,
 } from "~/src/helpers.js";
 import { Board } from "~/src/game/board.js";
-import { getCommunityDataPatternBoundingBox } from "~/src/game/solver/helpers.js";
+import { getCommunityDataPatternBoundingBox } from "~/src/game/solver/bounding-box.js";
 import { CommunityDataPattern } from "~/src/game/types/community-data.js";
 import { SolveStep } from "~/src/game/types/solve-state.js";
 

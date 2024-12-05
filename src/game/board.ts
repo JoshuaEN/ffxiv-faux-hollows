@@ -31,7 +31,8 @@ export class Board {
     );
     this.#tiles = new Array<TileState>(BOARD_CELLS).fill(TileState.Unknown);
     this.#solveState = new IndeterminateSolveState(
-      this.#userSelectedStates
+      this.#userSelectedStates,
+      this.#trackedUserSelectedStates
     ).finalize(SolveStep.FillBlocked);
   }
 
@@ -83,15 +84,15 @@ export class Board {
   }
 
   #recalculateSolveState() {
-    for (let i = 0; i < 10_000; i++) {
-      const { tiles, solveState, issues } = solve(
-        this.#userSelectedStates,
-        this.#trackedUserSelectedStates
-      );
-      this.#solveState = solveState;
-      this.#boardIssues = issues;
-      this.#tiles = tiles;
-    }
+    // for (let i = 0; i < 10_000; i++) {
+    const { tiles, solveState, issues } = solve(
+      this.#userSelectedStates,
+      this.#trackedUserSelectedStates
+    );
+    this.#solveState = solveState;
+    this.#boardIssues = issues;
+    this.#tiles = tiles;
+    // }
   }
 
   #isTrackedState(

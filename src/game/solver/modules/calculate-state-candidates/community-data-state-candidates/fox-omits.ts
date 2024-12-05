@@ -1,3 +1,6 @@
+import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
+import { setFinalWeightsFromSuggestions } from "../../../helpers/weight-applier.js";
+import { calculateSuggestionWeight } from "../../index.js";
 import { createCommunityDataStateCandidatesFoxOmitsSolver } from "./base-fox-omits.js";
 
 export const calculateStatesCandidates =
@@ -20,5 +23,8 @@ export const calculateStatesCandidates =
           }
         }
       }
+
+      applyFoxSuggestions(filteredPatterns, solveState);
+      setFinalWeightsFromSuggestions(solveState, calculateSuggestionWeight);
     }
   );

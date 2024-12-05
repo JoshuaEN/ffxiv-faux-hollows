@@ -14,17 +14,20 @@ import {
 
 export function calculatedSolveState(
   userSelected: readonly TileState[],
-  userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>
+  _userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>
 ): { solveState: SolveState; issues: BoardIssue[] } {
   const issues: BoardIssue[] = [];
-  const solveState = new IndeterminateSolveState(userSelected);
+  const solveState = new IndeterminateSolveState(
+    userSelected,
+    _userStatesIndexList
+  );
 
   const {
     identifierCandidates,
     patternIdentifierCandidates,
     error: identifierCandidatesError,
     warning: identifierCandidatesWarning,
-  } = getIdentifierCandidates(userStatesIndexList[TileState.Blocked]);
+  } = getIdentifierCandidates(_userStatesIndexList[TileState.Blocked]);
 
   if (identifierCandidatesWarning instanceof BoardIssue) {
     issues.push(identifierCandidatesWarning);
@@ -58,11 +61,7 @@ export function calculatedSolveState(
     solveState: calculateStatesCandidatesSolvedState,
     issues: calculateStatesCandidatesIssues,
     candidatePatterns,
-  } = calculateStatesCandidates(
-    solveState,
-    userStatesIndexList,
-    identifierCandidate.Patterns
-  );
+  } = calculateStatesCandidates(solveState, identifierCandidate.Patterns);
 
   issues.push(...calculateStatesCandidatesIssues);
   if (calculateStatesCandidatesSolvedState !== null) {
@@ -72,28 +71,7 @@ export function calculatedSolveState(
   const mainShapesSolved = solved.Present > -1 && solved.Sword > -1;
   solveState.setCandidatePatterns(candidatePatterns);
 
-  /**
-   * Identify fox candidates
-   */
-
-  let anyFoxes = false;
-  // If the user has entered a fox, we can skip all of this
-  if (userStatesIndexList[TileState.Fox].size === 0) {
-    for (const pattern of candidatePatterns) {
-      for (const confirmedFox of pattern.ConfirmedFoxes) {
-        if (solveState.isEmptyAt(confirmedFox)) {
-          anyFoxes = true;
-          solveState.addSuggestion(confirmedFox, TileState.Fox, 1);
-          solveState.addConfirmedFoxOdd(
-            confirmedFox,
-            pattern.ConfirmedFoxes.length
-          );
-        }
-      }
-    }
-  }
-
-  if (mainShapesSolved && !anyFoxes) {
+  if (mainShapesSolved && solveState.anyFoxes() === false) {
     return { solveState: solveState.finalize(SolveStep.Done), issues };
   }
 

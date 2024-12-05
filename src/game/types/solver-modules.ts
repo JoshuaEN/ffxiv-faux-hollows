@@ -3,9 +3,8 @@ import { CommunityDataPattern } from "./community-data.js";
 import {
   SolveState,
   IndeterminateSolveState,
-  PartialTileSuggestion,
+  TileSuggestion,
 } from "./solve-state.js";
-import { TrackedStatesIndexList } from "./tile-states.js";
 
 export type StateCandidatesResult =
   | {
@@ -28,11 +27,7 @@ export type StateCandidatesResult =
     };
 export type CalculateStatesCandidatesFunction = (
   solveState: IndeterminateSolveState,
-  userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
   patterns: readonly CommunityDataPattern[]
 ) => StateCandidatesResult;
 
-export type CalculateSuggestionWeight = (
-  suggestion: PartialTileSuggestion,
-  smartFillOverrideWeight: number
-) => number;
+export type CalculateSuggestionWeight = (suggestion: TileSuggestion) => number;

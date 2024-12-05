@@ -1,4 +1,4 @@
-import { PartialTileSuggestion } from "~/src/game/types/solve-state.js";
+import { TileSuggestion } from "~/src/game/types/solve-state.js";
 import { TileState } from "~/src/game/types/tile-states.js";
 
 /**
@@ -23,14 +23,7 @@ const SWORD_WEIGHT_FACTOR = 6;
  */
 const DISAMBIGUATION_FACTOR = 1_000;
 
-export function calculateSuggestionWeight(
-  suggestion: PartialTileSuggestion,
-  smartFillOverrideWeight: number
-) {
-  if (smartFillOverrideWeight > 0) {
-    return smartFillOverrideWeight;
-  }
-
+export function calculateSuggestionWeight(suggestion: TileSuggestion) {
   const finalPresentWeight =
     suggestion[TileState.Present] * PRESENT_WEIGHT_FACTOR;
 

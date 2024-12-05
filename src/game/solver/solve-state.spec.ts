@@ -110,6 +110,7 @@ describe("calculatedSolveState", () => {
       for (const index of this.indexes()) {
         const smartFill = solveState.getSmartFill(index);
         const suggestion = solveState.getSuggestion(index);
+        const finalWeight = solveState.getFinalWeight(index);
         const data: CellTestData = {
           userSelection: this.#userSelected[index],
           smartFill:
@@ -119,10 +120,9 @@ describe("calculatedSolveState", () => {
         };
         data.suggestions = suggestion ?? undefined;
         data.recommended =
-          suggestion !== null &&
-          suggestion.FinalWeight > 0 &&
-          solveState.getPeakSuggestions().FinalWeight ===
-            suggestion.FinalWeight;
+          finalWeight !== null &&
+          finalWeight.value > 0 &&
+          solveState.getMaxTileWeight() === finalWeight.value;
 
         cells.push(data);
       }

@@ -21,15 +21,16 @@ import {
   CommunityDataPattern,
   StateCandidatesResult,
   TileState,
-  TrackedStatesIndexList,
 } from "~/src/game/types";
-import { BoundingBox, getBoundingBox } from "../../helpers.js";
+import { BoundingBox, getBoundingBox } from "../../bounding-box.js";
 import {
   IndeterminateSolveState,
-  SolveState,
   SolveStep,
   StateTileEligibility,
 } from "~/src/game/types/solve-state.js";
+import { applyFoxSuggestions } from "../../helpers/apply-fox-suggestions.js";
+import { setFinalWeightsFromSuggestions } from "../../helpers/weight-applier.js";
+import { calculateSuggestionWeight } from "../index.js";
 
 interface ShapeData {
   readonly state: TileState.Sword | TileState.Present;
@@ -41,36 +42,17 @@ interface ShapeData {
 
 export function calculateStatesCandidates(
   solveState: IndeterminateSolveState,
-  userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
   patterns: readonly CommunityDataPattern[]
 ): StateCandidatesResult {
-  return recursiveCalculateStatesCandidates(
-    solveState,
-    userStatesIndexList,
-    patterns,
-    0
-  );
+  return recursiveCalculateStatesCandidates(solveState, patterns, 0);
 }
 
 const RECURSION_LIMIT = 10;
 function recursiveCalculateStatesCandidates(
   solveState: IndeterminateSolveState,
-  userStatesIndexList: TrackedStatesIndexList<ReadonlySet<number>>,
   patterns: readonly CommunityDataPattern[],
   limitCounter: number
-):
-  | {
-      solved: { Present: number; Sword: number };
-      solveState: SolveState;
-      issues: BoardIssue[];
-      candidatePatterns: CommunityDataPattern[];
-    }
-  | {
-      solved: { Present: number; Sword: number };
-      solveState: null;
-      issues: BoardIssue[];
-      candidatePatterns: CommunityDataPattern[];
-    } {
+): StateCandidatesResult {
   const issues: BoardIssue[] = [];
 
   const shapes: readonly ShapeData[] = [
@@ -79,14 +61,18 @@ function recursiveCalculateStatesCandidates(
       title: "Swords",
       longSide: 3,
       shortSide: 2,
-      boundingBox: getBoundingBox(userStatesIndexList[TileState.Sword]),
+      boundingBox: getBoundingBox(
+        solveState.userStatesIndexList[TileState.Sword]
+      ),
     },
     {
       state: TileState.Present,
       title: "Present / Box",
       longSide: 2,
       shortSide: 2,
-      boundingBox: getBoundingBox(userStatesIndexList[TileState.Present]),
+      boundingBox: getBoundingBox(
+        solveState.userStatesIndexList[TileState.Present]
+      ),
     },
   ] as const;
 
@@ -138,7 +124,6 @@ function recursiveCalculateStatesCandidates(
     if (repeatPass !== null && limitCounter < RECURSION_LIMIT) {
       return recursiveCalculateStatesCandidates(
         solveState,
-        userStatesIndexList,
         patterns,
         limitCounter + 1
       );
@@ -157,12 +142,14 @@ function recursiveCalculateStatesCandidates(
     if (repeatPass !== null && limitCounter < RECURSION_LIMIT) {
       return recursiveCalculateStatesCandidates(
         solveState,
-        userStatesIndexList,
         patterns,
         limitCounter + 1
       );
     }
   }
+
+  solveState.setSolved(TileState.Sword, solved[TileState.Sword] > -1);
+  solveState.setSolved(TileState.Present, solved[TileState.Present] > -1);
 
   const candidatePatterns = patterns.filter(
     (p) =>
@@ -171,13 +158,15 @@ function recursiveCalculateStatesCandidates(
       (candidates[TileState.Present].size < 1 ||
         candidates[TileState.Present].has(`${p.Present}`))
   );
+  applyFoxSuggestions(candidatePatterns, solveState);
+  setFinalWeightsFromSuggestions(solveState, calculateSuggestionWeight);
 
   // If the user has entered at least one Sword (or Present), but not enough to fully solve them
   // then the user should input the remaining tiles,
   // as based on the revealed piece they have enough information to fill in the remaining parts of the shape.
   // Note: We calculated suggestions so the UI can provide contextual help to the user.
   if (
-    userStatesIndexList[TileState.Sword].size > 0 &&
+    solveState.userStatesIndexList[TileState.Sword].size > 0 &&
     solved[TileState.Sword] < 0
   ) {
     return {
@@ -193,7 +182,7 @@ function recursiveCalculateStatesCandidates(
   }
 
   if (
-    userStatesIndexList[TileState.Present].size > 0 &&
+    solveState.userStatesIndexList[TileState.Present].size > 0 &&
     solved[TileState.Present] < 0
   ) {
     return {

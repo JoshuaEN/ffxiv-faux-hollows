@@ -12,6 +12,7 @@ import {
 } from "./base-fox-omits.js";
 import { TileState } from "~/src/game/types/tile-states.js";
 import { assert } from "~/src/helpers.js";
+import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
 
 function calculateWeight(results: ReturnType<typeof recursiveSolver>) {
   let sumOfAvg = 0;
@@ -38,10 +39,20 @@ export const calculateStatesCandidates =
       }
 
       const tiles = new Array<TileState>(BOARD_CELLS).fill(TileState.Unknown);
+      const userStateCounts = {
+        [TileState.Sword]: 0,
+        [TileState.Present]: 0,
+      };
       for (let index = 0; index < BOARD_CELLS; index++) {
         const tileState = solveState.getUserState(index);
         assert(tileState !== undefined);
         if (tileState !== TileState.Unknown) {
+          if (
+            tileState === TileState.Sword ||
+            tileState === TileState.Present
+          ) {
+            userStateCounts[tileState] += 1;
+          }
           tiles[index] = tileState;
           continue;
         }
@@ -52,42 +63,84 @@ export const calculateStatesCandidates =
         }
       }
       const count = countTiles(tiles);
-      if (count[TileState.Sword] > 0 && count[TileState.Sword] < 6) {
-        return;
-      }
-      if (count[TileState.Present] > 0 && count[TileState.Present] < 4) {
-        return;
-      }
-      const found = validateTiles(tiles);
-      if (done(found)) {
-        return;
-      }
+      let incompleteSword =
+        count[TileState.Sword] > 0 && count[TileState.Sword] < 6;
+      let incompletePresent =
+        count[TileState.Present] > 0 && count[TileState.Present] < 4;
 
-      const results = recursiveSolver(tiles, filteredPatterns);
+      if (incompleteSword && userStateCounts[TileState.Sword] === 0) {
+        incompleteSword = false;
+        solveState.resetSmartFillFor(TileState.Sword);
+        for (let index = 0; index < BOARD_CELLS; index++) {
+          if (tiles[index] === TileState.Sword) {
+            tiles[index] = TileState.Unknown;
+          }
+        }
+      }
+      if (incompletePresent && userStateCounts[TileState.Present] === 0) {
+        incompletePresent = false;
+        solveState.resetSmartFillFor(TileState.Present);
+        for (let index = 0; index < BOARD_CELLS; index++) {
+          if (tiles[index] === TileState.Present) {
+            tiles[index] = TileState.Unknown;
+          }
+        }
+      }
+      // if (done(found)) {
+      //   return;
+      // }
 
-      for (let i = 0; i < BOARD_CELLS; i++) {
-        if (
-          filteredPatterns.every((p) =>
-            p.boundingBox.Sword.indexes().includes(i)
-          )
-        ) {
-          solveState.setSmartFill(i, TileState.Sword);
-        } else if (
-          filteredPatterns.every((p) =>
-            p.boundingBox.Present.indexes().includes(i)
-          )
-        ) {
-          solveState.setSmartFill(i, TileState.Present);
-        } else if (results.has(i)) {
-          const result = results.get(i);
-          assert(result !== undefined);
-          solveState.addSuggestion(
-            i,
-            TileState.Sword,
-            1_000_000 - result.total / result.count
+      const results =
+        incompleteSword || incompletePresent
+          ? (new Map() as ReturnType<typeof recursiveSolver>)
+          : recursiveSolver(tiles, filteredPatterns);
+      const swordIndexCounts = new Map<number, number>();
+      const presentIndexCounts = new Map<number, number>();
+      for (const pattern of filteredPatterns) {
+        for (const index of pattern.boundingBox.Sword.indexes()) {
+          swordIndexCounts.set(index, (swordIndexCounts.get(index) ?? 0) + 1);
+        }
+        for (const index of pattern.boundingBox.Present.indexes()) {
+          presentIndexCounts.set(
+            index,
+            (presentIndexCounts.get(index) ?? 0) + 1
           );
         }
       }
+
+      for (let index = 0; index < BOARD_CELLS; index++) {
+        const swordIndexCount = swordIndexCounts.get(index) ?? 0;
+        const presentIndexCount = presentIndexCounts.get(index) ?? 0;
+        const result = results.get(index);
+        if (result !== undefined) {
+          solveState.setFinalWeight(
+            index,
+            1_000_000 - result.total / result.count,
+            result
+          );
+        }
+        if (solveState.isEmptyAt(index)) {
+          if (swordIndexCount > 0) {
+            solveState.addSuggestion(index, TileState.Sword, swordIndexCount);
+          }
+          if (presentIndexCount > 0) {
+            solveState.addSuggestion(
+              index,
+              TileState.Present,
+              presentIndexCount
+            );
+          }
+          if (result === undefined) {
+            if (swordIndexCount === filteredPatterns.length) {
+              solveState.setSmartFill(index, TileState.Sword);
+            } else if (presentIndexCount === filteredPatterns.length) {
+              solveState.setSmartFill(index, TileState.Present);
+            }
+          }
+        }
+      }
+
+      applyFoxSuggestions(filteredPatterns, solveState);
     }
   );
 

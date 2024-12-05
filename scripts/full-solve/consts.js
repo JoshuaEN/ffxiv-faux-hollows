@@ -9,7 +9,7 @@ export const solvers = [
   "pure-weighted",
 ];
 export const bestWeighter = "s6p4-f1";
-export const weighters = [bestWeighter, "s6p4f1_noOverride", "s6p4f1"];
+export const weighters = [bestWeighter, "s6p4f1"];
 
 export const map = [
   [solvers[0], weighters],

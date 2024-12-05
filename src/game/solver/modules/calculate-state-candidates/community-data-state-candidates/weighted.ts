@@ -1,5 +1,8 @@
 import { TileState } from "~/src/game/types/tile-states.js";
 import { createCommunityDataStateCandidatesFoxOmitsSolver } from "./base-fox-omits.js";
+import { setFinalWeightsFromSuggestions } from "../../../helpers/weight-applier.js";
+import { calculateSuggestionWeight } from "../../index.js";
+import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
 
 export const calculateStatesCandidates =
   createCommunityDataStateCandidatesFoxOmitsSolver(
@@ -27,5 +30,7 @@ export const calculateStatesCandidates =
           }
         }
       }
+      applyFoxSuggestions(filteredPatterns, solveState);
+      setFinalWeightsFromSuggestions(solveState, calculateSuggestionWeight);
     }
   );
