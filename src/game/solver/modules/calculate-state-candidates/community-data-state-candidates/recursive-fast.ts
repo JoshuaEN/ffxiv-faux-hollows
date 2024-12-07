@@ -105,9 +105,6 @@ export const calculateStatesCandidates =
       if (recalc) {
         count = calculateTileStats(tiles);
       }
-      // if (done(found)) {
-      //   return;
-      // }
 
       const results =
         incompleteSword || incompletePresent
@@ -261,21 +258,6 @@ function recursiveSolver(
       }
     }
     if (
-      // map[TileState.Fox].length > 0 ||
-      // (map[TileState.Sword].length > 0
-      //   ? map[TileState.Present].length > 0 ||
-      //     map[TileState.Fox].length > 0 ||
-      //     map[TileState.Empty].length > 0
-      //   : map[TileState.Present].length > 0
-      //     ? map[TileState.Fox].length > 0 || map[TileState.Empty].length > 0
-      //     : map[TileState.Fox].length > 0 && map[TileState.Empty].length > 0)
-      // // ||
-      // // (filteredPatterns.length < 2 &&
-      // //   (map[TileState.Sword].length > 0 ||
-      // //     map[TileState.Present].length > 0 ||
-      // //     map[TileState.Fox].length > 0))
-      // // // We intentionally ignore this index if there are only empty matches because if every remaining pattern
-      // // // is empty
       map[TileState.Sword].length > 0 ||
       map[TileState.Present].length > 0 ||
       map[TileState.Fox].length > 0
@@ -290,10 +272,6 @@ function recursiveSolver(
       patternsByIndexes.set(index, map);
     }
   }
-
-  // if (patternsByIndexes.size === 0 && filteredPatterns.length === 1) {
-  //   debugger;
-  // }
 
   for (const [index, map] of patternsByIndexes) {
     for (const state of [
@@ -328,12 +306,6 @@ function recursiveSolver(
             filteredPatterns,
             index
           );
-          // filteredPatterns.filter(
-          //   (p) =>
-          //     (p.boundingBox[TileState.Present].indexes().includes(index) ||
-          //       p.boundingBox[TileState.Sword].indexes().includes(index) ||
-          //       p.pattern.ConfirmedFoxes.includes(index)) !== true
-          // );
 
           val =
             // We are branching into two different paths here
@@ -356,9 +328,7 @@ function recursiveSolver(
           moves = foxMissingFilteredPatterns.length > 0 ? 2 : 1;
         } else if (state === TileState.Empty) {
           const newTiles = [...tiles];
-          // newTiles[index] = TileState.Empty;
           const newTilesByState = { ...tilesByState };
-          // newTilesByState[TileState.Empty] += 1;
           const newFilteredPatterns = filterForEmpty(filteredPatterns, index);
           val =
             fillFilterRecurse(newTilesByState, newTiles, newFilteredPatterns) +
@@ -372,6 +342,7 @@ function recursiveSolver(
           const indexesToFill = pattern.boundingBox[state].indexes();
           for (const index of indexesToFill) {
             newTiles[index] = state;
+            // We only do this down here because indexesToFill is all indexes, so doing it above would over-count.
             newTilesByState[state] += 1;
           }
           const newBoundingBox = getBoundingBox(indexesToFill);
@@ -405,7 +376,7 @@ function recursiveSolver(
   return scoreByIndex;
 }
 
-const cacheForFillRecursive: Record<string, number> = {}; // new Map<string, number>();
+const cacheForFillRecursive: Record<string, number> = {};
 
 function fillFilterRecurse(
   tileStats: ReturnType<typeof calculateTileStats>,
@@ -504,7 +475,6 @@ function fillFilterRecurse(
     throw new Error(`Gained patterns`);
   }
 
-  // const postKey = getCacheKey(tiles, newFilteredPatterns);
   const postKey = `${tileStats.patternSword}${tileStats.patternSword3x2 ? "w" : "h"} ${tileStats.patternPresent} ${tileStats.patternFox}${getCacheKey(tiles, newFilteredPatterns)}`;
   const postCache = cacheForFillRecursive[postKey];
   if (postCache !== undefined) {
@@ -521,30 +491,10 @@ function getCacheKey(
   tiles: readonly TileState[],
   filteredPatterns: readonly ProcessedPattern[]
 ) {
-  // let resultA = tiles.join("");
   let result = "";
-  // for (const tile of tiles) {
-  //   // result += tile;
-  //   // continue;
-  //   switch (tile) {
-  //     case TileState.Sword:
-  //       result += "S";
-  //       break;
-  //     case TileState.Present:
-  //       result += "P";
-  //       break;
-  //     case TileState.Fox:
-  //       result += "F";
-  //       break;
-  //     default:
-  //       result += "_";
-  //       break;
-  //   }
-  // }
-
   for (const p of filteredPatterns) {
     const pattern = p.pattern;
-    result += `${pattern.Sword}${pattern.Sword3x2 ? "w" : "t"}${pattern.Present}`;
+    result += `${pattern.Sword}${pattern.Sword3x2 ? "w" : "t"}${pattern.Present}z`;
   }
   return result;
 }

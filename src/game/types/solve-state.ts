@@ -120,21 +120,67 @@ export class SolveState {
   }
 }
 
+/**
+ * The indeterminate solve state is created and managed by the solver steps,
+ * being converted into a SolveState for use in the game board.
+ */
 export class IndeterminateSolveState {
+  /**
+   * User states represent the tiles the user has manually entered.
+   */
   #userStates: readonly TileState[];
+  /**
+   * User states index list is a reverse lookup of tile state to a list of indexes.
+   */
   #userStatesIndexList: Readonly<TrackedStatesIndexList<ReadonlySet<number>>>;
+  /**
+   * Smart fills represent a tile which has a known state based on the tiles the user has entered.
+   * For example, if a user enters the top-left and bottom-right of a Sword,
+   * the remaining four tiles which make up the Sword could automatically be determined (smart filled).
+   * Generally speaking, smart fill can work off of process of elimination. So, a user may have entered none of the tiles of a type being smart filled.
+   */
   #smartFills = new Map<number, SmartFill>();
+  /**
+   * Smart fills reverse is a reverse lookup of smart fill state to a list of indexes.
+   */
   #smartFillsReverse: Record<SmartFill, number[]> = {
     [TileState.Sword]: [],
     [TileState.Present]: [],
     [TileState.Blocked]: [],
   };
+  /**
+   * Suggestions represent the possibility for a tile to be in a particular state.
+   * Some solvers use the numeric value of the suggestion as part of the final weight,
+   * but there is no intrinsic meaning or unit of measure assigned to the numeric value beyond
+   * zero (or absent) meaning the state is not possible, and greater than zero meaning the state is possible.
+   */
   #suggestions = new Map<number, TileSuggestion>();
+  /**
+   * Final weights represent the "score" assigned to each tile by the solver.
+   * The tile(s) with the highest final weight will be shown as suggestions in the UI.
+   */
   #finalWeights = new Map<number, SolverWeight>();
+  /**
+   * Identifier of the pattern, e.g. A or C→
+   */
   #patternIdentifier: string | null = null;
+  /**
+   * Fox odds represent the odds of a fox being on a given index.
+   */
   #foxOdds = new Map<number, FoxOdds>();
+  /**
+   * Fox count is a count of the total number of possible foxes across all patterns.
+   * Note that really this is currently intended to only be a flag, where greater than zero indicates a fox may still be possible to find.
+   */
   #foxCount = 0;
+  /**
+   * List of patterns which could be present.
+   */
   #candidatePatterns: CommunityDataPattern[] = [];
+
+  /**
+   * Flags indicating if each of the represented shapes have been fully found.
+   */
   #solved = {
     [TileState.Sword]: false,
     [TileState.Present]: false,
