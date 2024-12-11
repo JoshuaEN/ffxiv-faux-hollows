@@ -131,7 +131,7 @@ export const calculateStatesCandidates =
         if (result !== undefined) {
           solveState.setFinalWeight(
             index,
-            1_000_000 - result.total / result.count,
+            100_000 - Math.round((result.total / result.count) * 10000),
             result
           );
         }
