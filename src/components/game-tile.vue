@@ -7,12 +7,13 @@ import {
 } from "../game/types/index.js";
 import BaseTile from "./base-tile.vue";
 
-defineProps<{ tile: CombinedTileState }>();
+defineProps<{ tile: CombinedTileState; index: number }>();
 </script>
 
 <template>
   <BaseTile
     :tile="tile"
+    :index="index"
     :class="{
       smartFill:
         tile === SmartFillTileState.SmartFillBlocked ||

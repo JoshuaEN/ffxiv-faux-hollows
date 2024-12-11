@@ -3,6 +3,9 @@
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: hsl(30, 20%, 4%);
 
+  --board-tile-count: 6;
+  --board-tile-gap: 0.70vw;
+
   --board-unknown-color: var(--font-color);
   --board-unknown-background-color: hsl(40, 20%, 21%);
   --board-unknown-outline-color: hsl(40, 20%, 41%);
@@ -30,6 +33,9 @@
   --board-fox-color: var(--font-color);
   --board-fox-background-color: #795720;
   --board-fox-outline-color: hsl(37, 58%, 50%);
+
+  --tile-max-size: 6rem;
+  --tile-min-size: 48px; // Based on Material touch target guidelines
 
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -142,8 +148,8 @@ button.focused {
 }
 
 #app {
-  max-width: 1280px;
+  max-width: min(1280px, calc(var(--tile-max-size) * var(--board-tile-count)));
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 1rem;
 }

@@ -1,16 +1,64 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import {
   CombinedTileState,
   SmartFillTileState,
   SuggestTileState,
   TileState,
 } from "../game/types/index.js";
+import { assert, assertNever } from "../helpers.js";
+import { indexToCord } from "../game/helpers.js";
 
-const props = defineProps<{ tile: CombinedTileState }>();
+const indexMap = ["A", "B", "C", "D", "E", "F"];
+
+const props = defineProps<{ tile: CombinedTileState; index?: number }>();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const label = computed(() => {
+  const index = props.index !== undefined ? indexToCord(props.index) : null;
+  let label = "";
+  if (index !== null) {
+    label = `Tile ${indexMap[index.x] ?? index.x + 1}${index.y + 1} `;
+    if (Array.isArray(props.tile)) {
+      return `${label} Suggested to uncover`;
+    }
+    switch (props.tile) {
+      case TileState.Sword:
+        return `${label}User entered Sword`;
+      case TileState.Present:
+        return `${label}User entered Present`;
+      case TileState.Fox:
+        return `${label}User entered Fox`;
+      case TileState.Blocked:
+        return `${label}User entered Blocked`;
+      case TileState.Empty:
+        return `${label}User entered Empty`;
+      case TileState.Unknown:
+        return `${label}Unknown  `;
+      case SmartFillTileState.SmartFillSword:
+        return `${label}Automatically detected Sword`;
+      case SmartFillTileState.SmartFillBlocked:
+        return `${label}Automatically detected Blocked`;
+      case SmartFillTileState.SmartFillPresent:
+        return `${label}Automatically detected Present`;
+      case SuggestTileState.SuggestSword:
+        return `${label}Possible Sword`;
+      case SuggestTileState.SuggestPresent:
+        return `${label}Possible Present`;
+      case SuggestTileState.SuggestFox:
+        return `${label}Possible Fox`;
+      default:
+        assertNever(props.tile);
+        return `${label}`;
+    }
+  } else {
+    assert(Array.isArray(props.tile) === false);
+    return props.tile;
+  }
+});
 </script>
 
 <template>
-  <button :class="{ [`${tile}`]: !Array.isArray(tile) }">
+  <button :class="{ [`${tile}`]: !Array.isArray(tile) }" :aria-label="label">
     <svg
       v-if="
         tile === TileState.Blocked ||
@@ -84,7 +132,7 @@ const props = defineProps<{ tile: CombinedTileState }>();
     </svg>
     <!-- Material Design Icons: target-variant -->
     <svg
-      v-else-if="Array.isArray(props.tile)"
+      v-else-if="Array.isArray(tile)"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
     >
@@ -108,7 +156,7 @@ const props = defineProps<{ tile: CombinedTileState }>();
     </svg>
     <div v-else-if="tile === TileState.Unknown"></div>
     <div v-else>
-      {{ Array.isArray(props.tile) ? "*" : props.tile }}
+      {{ Array.isArray(tile) ? "*" : tile }}
     </div>
     <svg
       v-if="
@@ -145,12 +193,9 @@ const props = defineProps<{ tile: CombinedTileState }>();
 button {
   position: relative;
   display: block;
-  height: 5rem;
-  width: 5rem;
-  max-height: 5rem;
-  max-width: 5rem;
-  min-height: 5rem;
-  min-width: 5rem;
+  max-height: var(--tile-max-size);
+  min-height: var(--tile-min-size);
+  aspect-ratio: 1;
 }
 svg {
   position: absolute;

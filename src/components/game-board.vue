@@ -36,6 +36,8 @@ const {
   whileElementsMounted: autoUpdate,
 });
 
+const showDebugInfo = import.meta.env.DEV;
+
 const popoverData = ref<{
   primaryOptions: TileState[];
   secondaryOptions: TileState[];
@@ -91,7 +93,9 @@ const pickTile = (index: number, tileState: TileState) => {
 
 <template>
   <div>Identifier: {{ data.board.solveState.getPatternIdentifier() }}</div>
-  <div>Total candidate patterns: {{ data.board.solveState.totalCandidatePatterns }}</div>
+  <div>
+    Total candidate patterns: {{ data.board.solveState.totalCandidatePatterns }}
+  </div>
   <div
     v-for="issue in data.board.issues"
     :key="issue.message"
@@ -110,14 +114,21 @@ const pickTile = (index: number, tileState: TileState) => {
       class="tile"
       :class="{ focused: popoverOpen && index === popoverData?.index }"
       :tile="tile"
+      :index="index"
       :data-testid="`game-tile-index-${index}`"
       :data-test-tile="tile"
       @mousedown="(ev: MouseEvent) => tileClicked(ev, tile, index)"
     />
   </main>
+
+  <!-- Popover -->
   <div
     v-if="popoverOpen && popoverData"
-    :ref="(el) => { popoverRef = el as HTMLDivElement | null; }"
+    :ref="
+      (el) => {
+        popoverRef = el as HTMLDivElement | null;
+      }
+    "
     class="overlay"
     data-testid="popover-picker"
     :class="[popoverPlacement]"
@@ -127,7 +138,14 @@ const pickTile = (index: number, tileState: TileState) => {
       left: `${popoverX ?? 0}px`,
     }"
     tabindex="-1"
-    @focusout="$event => !($event.currentTarget as HTMLElement)?.contains($event.relatedTarget as Node) ? popoverData = null : false"
+    @focusout="
+      ($event) =>
+        !($event.currentTarget as HTMLElement)?.contains(
+          $event.relatedTarget as Node
+        )
+          ? (popoverData = null)
+          : false
+    "
   >
     <div
       ref="popoverArrowRef"
@@ -181,33 +199,39 @@ const pickTile = (index: number, tileState: TileState) => {
   </div>
 
   <div>{{ data.board.solveState?.solveStep }}</div>
-  <main class="debug">
+  <main v-if="showDebugInfo" class="debug">
     <div v-for="(tile, index) in data.board.tiles" :key="index">
       {{ index }} <br />
-      <template v-if="tile === TileState.Blocked">X</template>
+      <template
+        v-if="
+          tile === TileState.Blocked ||
+          data.board.solveState?.getSmartFill(index) === TileState.Blocked
+        "
+        >X</template
+      >
       <template
         v-if="data.board.solveState?.getSuggestion(index)?.Blocked ?? 0 > 0"
-        >B:{{ data.board.solveState?.getSuggestion(index)?.Blocked }}&nbsp;
+        >b{{ data.board.solveState?.getSuggestion(index)?.Blocked }}&nbsp;
       </template>
       <template
         v-if="data.board.solveState?.getSuggestion(index)?.Present ?? 0 > 0"
-        >P:{{ data.board.solveState?.getSuggestion(index)?.Present }}&nbsp;
+        >p{{ data.board.solveState?.getSuggestion(index)?.Present }}&nbsp;
       </template>
       <template
         v-if="data.board.solveState?.getSuggestion(index)?.Sword ?? 0 > 0"
-        >S:{{ data.board.solveState?.getSuggestion(index)?.Sword }}&nbsp;
+        >s{{ data.board.solveState?.getSuggestion(index)?.Sword }}&nbsp;
       </template>
       <template v-if="data.board.solveState?.getSuggestion(index)?.Fox ?? 0 > 0"
-        >F:{{ data.board.solveState?.getSuggestion(index)?.Fox }}&nbsp;
+        >f{{ data.board.solveState?.getSuggestion(index)?.Fox }}&nbsp;
       </template>
       <br />
-      {{ data.board.solveState?.getFinalWeight(index)?.value ?? 0}}
+      {{ data.board.solveState?.getFinalWeight(index)?.value ?? 0 }}
       <br />
       {{
         data.board.solveState?.getMaxTileWeight() ===
         data.board.solveState?.getFinalWeight(index)?.value
           ? "*"
-          : ""
+          : "&nbsp;"
       }}
     </div>
   </main>

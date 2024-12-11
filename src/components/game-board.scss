@@ -1,23 +1,25 @@
 main {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.25rem;
+  grid-template-columns: repeat(var(--board-tile-count), 1fr);
+  gap: var(--board-tile-gap);
 
   &.focusTile .tile:not(.focused) {
-    opacity: 0.70;
+    opacity: 0.7;
 
     &.suggestion {
-      opacity: calc(0.70 * 0.50);
+      opacity: calc(0.7 * 0.5);
     }
     &.smartFill {
-      opacity: calc(0.70 * 0.95);
+      opacity: calc(0.7 * 0.95);
     }
   }
 }
 
-main:not(.debug) {
-  width: 0;
+main.gameBoard {
+  max-height: 80vh;
+  aspect-ratio: 1;
 }
+
 .debug {
   div {
     display: flex;
@@ -34,6 +36,8 @@ main:not(.debug) {
   width: max-content;
   padding: 0.5rem;
   border-radius: 5px;
+  text-align: center;
+  --tile-min-size: var(--tile-max-size);
   &,
   > .arrow {
     background-color: antiquewhite;
