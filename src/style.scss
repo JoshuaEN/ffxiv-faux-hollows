@@ -1,10 +1,28 @@
 :root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
   --font-color: hsl(0, 0%, 96%);
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: hsl(30, 20%, 4%);
 
   --board-tile-count: 6;
-  --board-tile-gap: 0.70vw;
+  --board-tile-max-gap: 0.5rem;
+  --board-tile-min-gap: 0.25rem;
+  /*
+    1.25vw was roughly calculated by taking the maximum width of the board:
+    (--tile-max-size * 6 + --board-tile-max-gap * 5 + padding [1rem * 2]) = 648px
+    Then calculating what percent --board-tile-max-gap is of 648:
+    --board-tile-max-gap / 648 * 100 = 1.234567890 (repeating)
+
+    It was then rounded to 1.25 because that had a more visually stable resizing behavior.
+  */
+  --board-tile-gap: max(
+    var(--board-tile-min-gap),
+    min(min(1.25vw, 1.25vh), var(--board-tile-max-gap))
+  );
 
   --board-unknown-color: var(--font-color);
   --board-unknown-background-color: hsl(40, 20%, 21%);
@@ -23,7 +41,9 @@
   --board-sword-outline-color: hsl(217, 52%, 55%);
 
   --board-sword-suggestion-color: #1b2c49;
-  --board-sword-suggestion-background-color: var(--board-sword-background-color);
+  --board-sword-suggestion-background-color: var(
+    --board-sword-background-color
+  );
   --board-sword-suggestion-outline-color: var(--board-sword-outline-color);
 
   --board-present-color: var(--font-color);
@@ -37,11 +57,6 @@
   --tile-max-size: 6rem;
   --tile-min-size: 48px; // Based on Material touch target guidelines
 
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
   color-scheme: dark light;
   color: var(--font-color);
   background-color: var(--page-background-color);
@@ -53,7 +68,8 @@
   -webkit-text-size-adjust: 100%;
 }
 
-.Blocked, .SmartFillBlocked {
+.Blocked,
+.SmartFillBlocked {
   --tile-color: var(--board-blocked-color);
   --tile-background-color: var(--board-blocked-background-color);
   --tile-outline-color: var(--board-blocked-outline-color);
@@ -64,21 +80,26 @@
     fill: var(--tile-background-color);
   }
 }
-.Sword, .SmartFillSword, .SuggestSword {
+.Sword,
+.SmartFillSword,
+.SuggestSword {
   --tile-color: var(--board-sword-color);
   --tile-background-color: var(--board-sword-background-color);
   --tile-outline-color: var(--board-sword-outline-color);
   color: var(--board-sword-color);
   background-color: var(--tile-background-color);
 }
-.Present, .SmartFillPresent, .SuggestPresent {
+.Present,
+.SmartFillPresent,
+.SuggestPresent {
   --tile-color: var(--board-present-color);
   --tile-background-color: var(--board-present-background-color);
   --tile-outline-color: var(--board-present-outline-color);
   color: var(--board-present-color);
   background-color: var(--tile-background-color);
 }
-.Fox, .SuggestFox {
+.Fox,
+.SuggestFox {
   --tile-color: var(--board-fox-color);
   --tile-background-color: var(--board-fox-background-color);
   --tile-outline-color: var(--board-fox-outline-color);
@@ -102,10 +123,12 @@
   background-color: var(--tile-background-color);
 }
 
-.SuggestSword, .SuggestPresent, .SuggestFox {
+.SuggestSword,
+.SuggestPresent,
+.SuggestFox {
   svg:not(.suggestionIndicator) {
     color: var(--tile-background-color);
-    filter: brightness(50%)
+    filter: brightness(50%);
   }
 }
 
@@ -131,24 +154,39 @@ button {
   font-family: inherit;
   cursor: pointer;
   outline: 0;
+
+  &:disabled {
+    cursor: default;
+  }
 }
-button:hover, button:focus {
+button:hover:not(:disabled),
+button:hover:focus:not(:disabled) {
   filter: brightness(140%);
   opacity: 1 !important;
 }
-button:focus, button.focused {
+button:focus:not(:disabled),
+button:not(:disabled).focused {
   filter: brightness(120%);
   opacity: 1 !important;
 }
 
-*:focus,
-*:focus-visible,
-button.focused {
+*:focus:not(:disabled),
+*:focus-visible:not(:disabled),
+button:not(:disabled).focused {
   outline: 3px solid var(--tile-outline-color, var(--font-color));
 }
 
+.faded {
+  filter: grayscale(1);
+  opacity: 0.8;
+}
+
 #app {
-  max-width: min(1280px, calc(var(--tile-max-size) * var(--board-tile-count)));
+  max-width: min(
+    1280px,
+    calc(var(--tile-max-size) * var(--board-tile-count)) +
+      calc(var(--board-tile-max-gap) * (calc(var(--board-tile-count) - 1)))
+  );
   width: 100%;
   margin: 0 auto;
   padding: 1rem;

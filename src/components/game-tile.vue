@@ -7,7 +7,7 @@ import {
 } from "../game/types/index.js";
 import BaseTile from "./base-tile.vue";
 
-defineProps<{ tile: CombinedTileState; index: number }>();
+defineProps<{ tile: CombinedTileState; index?: number }>();
 </script>
 
 <template>

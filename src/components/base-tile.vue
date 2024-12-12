@@ -11,7 +11,11 @@ import { indexToCord } from "../game/helpers.js";
 
 const indexMap = ["A", "B", "C", "D", "E", "F"];
 
-const props = defineProps<{ tile: CombinedTileState; index?: number }>();
+const props = defineProps<{
+  tile: CombinedTileState;
+  index?: number;
+  disabled?: boolean;
+}>();
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const label = computed(() => {
   const index = props.index !== undefined ? indexToCord(props.index) : null;
@@ -58,7 +62,11 @@ const label = computed(() => {
 </script>
 
 <template>
-  <button :class="{ [`${tile}`]: !Array.isArray(tile) }" :aria-label="label">
+  <button
+    :class="{ [`${tile}`]: !Array.isArray(tile) }"
+    :aria-label="label"
+    :disabled="disabled ?? false"
+  >
     <svg
       v-if="
         tile === TileState.Blocked ||
@@ -136,7 +144,6 @@ const label = computed(() => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
     >
-      <title>target-variant</title>
       <path
         fill="currentColor"
         d="M22.08,11.04H20.08V4H13.05V2H11.04V4H4V11.04H2V13.05H4V20.08H11.04V22.08H13.05V20.08H20.08V13.05H22.08V11.04M18.07,18.07H13.05V16.06H11.04V18.07H6V13.05H8.03V11.04H6V6H11.04V8.03H13.05V6H18.07V11.04H16.06V13.05H18.07V18.07M13.05,12.05A1,1 0 0,1 12.05,13.05C11.5,13.05 11.04,12.6 11.04,12.05C11.04,11.5 11.5,11.04 12.05,11.04C12.6,11.04 13.05,11.5 13.05,12.05Z"
@@ -148,7 +155,6 @@ const label = computed(() => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
     >
-      <title>close-box-outline</title>
       <path
         fill="currentColor"
         d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"

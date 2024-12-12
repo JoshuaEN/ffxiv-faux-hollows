@@ -33,11 +33,16 @@ main.gameBoard {
   gap: 1rem;
 }
 .overlay {
-  width: max-content;
+  &,
+  .message {
+    max-width: calc(100vw - 4rem);
+    max-height: calc(50vh - 1rem);
+  }
   padding: 0.5rem;
   border-radius: 5px;
-  text-align: center;
-  --tile-min-size: var(--tile-max-size);
+  --tile-min-size: 5rem;
+  --tile-max-size: 5rem;
+  --board-tile-gap: 0.5rem;
   &,
   > .arrow {
     background-color: antiquewhite;
@@ -45,20 +50,47 @@ main.gameBoard {
     color: #000;
   }
 
-  > .buttons {
+  .buttons {
+    max-width: calc(var(--board-tile-gap) * 2 + var(--tile-max-size) * 3);
     display: flex;
-    // grid-auto-columns: minmax(0, 1fr);
-    // grid-auto-flow: column;
-    gap: 0.5rem;
-    // Render the buttons over the arrow
-    position: relative;
+    flex-wrap: wrap;
+    gap: var(--board-tile-gap);
+
     justify-content: center;
     align-items: center;
-
-    &:not(:last-child) {
-      margin-bottom: 0.5rem;
-    }
+    text-align: center;
   }
+
+  .message {
+    overflow-y: auto;
+  }
+
+  /* --tile-max-size * 3 + --board-tile-gap * 2 */
+  @media (width < 18rem) {
+  }
+
+  .game-tile-backdrop {
+    display: inline-block;
+    padding: 0.5rem;
+    border-radius: 15px;
+    background-color: var(--page-background-color);
+    width: auto;
+  }
+
+  // > .buttons {
+  //   display: flex;
+  //   // grid-auto-columns: minmax(0, 1fr);
+  //   // grid-auto-flow: column;
+  //   gap: 0.5rem;
+  //   // Render the buttons over the arrow
+  //   position: relative;
+  //   justify-content: center;
+  //   align-items: center;
+
+  //   &:not(:last-child) {
+  //     margin-bottom: 0.5rem;
+  //   }
+  // }
 
   &.top,
   &.bottom {

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, shallowReactive } from "vue";
 import { Board } from "~/src/game/board.js";
-import { CombinedTileState, TileState } from "~/src/game/types/index.js";
+import {
+  CombinedTileState,
+  SmartFillTileState,
+  TileState,
+} from "~/src/game/types/index.js";
 import GameTile from "~/src/components/game-tile.vue";
 import {
   useFloating,
@@ -21,7 +25,7 @@ const popoverArrowRef = ref(null);
 const popoverMiddleware = ref([
   offset({ mainAxis: 10 }),
   flip(),
-  shift(),
+  shift({ padding: 16 }),
   arrow({ element: popoverArrowRef }),
 ]);
 const {
@@ -39,8 +43,9 @@ const {
 const showDebugInfo = import.meta.env.DEV;
 
 const popoverData = ref<{
-  primaryOptions: TileState[];
-  secondaryOptions: TileState[];
+  primaryOptions: Set<TileState>;
+  options: TileState[];
+  message: { identifier: "SMART_FILL"; tileState: SmartFillTileState } | null;
   index: number;
 } | null>(null);
 const popoverOpen = computed(
@@ -106,7 +111,10 @@ const pickTile = (index: number, tileState: TileState) => {
     >&nbsp;
     <span class="message" data-testid="message">{{ issue.message }}</span>
   </div>
-  <main :class="{ focusTile: popoverOpen }" data-testid="game-board">
+  <main
+    :class="{ focusTile: popoverOpen, gameBoard: true }"
+    data-testid="game-board"
+  >
     <GameTile
       v-for="(tile, index) in data.board.tiles"
       :ref="(el: any) => (popoverAnchorRefs[index] = el)"
@@ -143,7 +151,7 @@ const pickTile = (index: number, tileState: TileState) => {
         !($event.currentTarget as HTMLElement)?.contains(
           $event.relatedTarget as Node
         )
-          ? (popoverData = null)
+          ? false // ? (popoverData = null)
           : false
     "
   >
@@ -160,15 +168,16 @@ const pickTile = (index: number, tileState: TileState) => {
           : undefined,
       }"
     ></div>
-    <div
-      v-if="popoverData.primaryOptions"
-      class="buttons"
-      data-testid="popover-picker-primary-options"
-    >
+    <div v-if="popoverData.options.length" class="buttons">
       <div
-        v-for="option in popoverData.primaryOptions"
+        v-for="option in popoverData.options"
         :key="`${option}`"
-        data-testid="popover-picker-primary-option"
+        :data-testid="
+          popoverData.primaryOptions.has(option)
+            ? 'popover-picker-primary-option'
+            : 'popover-picker-secondary-option'
+        "
+        :class="{ faded: !popoverData.primaryOptions.has(option) }"
       >
         <BaseTile
           :tile="option"
@@ -178,23 +187,49 @@ const pickTile = (index: number, tileState: TileState) => {
         {{ option }}
       </div>
     </div>
-    <div
-      v-if="popoverData.secondaryOptions"
-      class="buttons"
-      data-testid="popover-picker-secondary-options"
-    >
-      <div
-        v-for="option in popoverData.secondaryOptions"
-        :key="`${option}`"
-        data-testid="popover-picker-secondary-option"
-      >
-        <BaseTile
-          :tile="option"
-          :data-testid="`popover-picker-button-${option}`"
-          @click="pickTile(popoverData!.index, option)"
-        />
-        {{ option }}
-      </div>
+    <div v-if="popoverData.message" class="message">
+      <template v-if="popoverData.message.identifier === 'SMART_FILL'">
+        <p>
+          This tile must be a
+          {{
+            popoverData.message.tileState ===
+            SmartFillTileState.SmartFillBlocked
+              ? "Blocked"
+              : popoverData.message.tileState ===
+                  SmartFillTileState.SmartFillSword
+                ? "Sword"
+                : "Present"
+          }}
+          tile based on the other tiles on the board.
+        </p>
+        <p>
+          If this tile is not correct, please ensure the tiles entered onto the
+          board are correct.
+        </p>
+        <p>
+          Tip: Entered tiles have solid borders:<br /><span
+            class="game-tile-backdrop"
+            ><GameTile
+              :tile="
+                popoverData.message.tileState ===
+                SmartFillTileState.SmartFillBlocked
+                  ? TileState.Blocked
+                  : popoverData.message.tileState ===
+                      SmartFillTileState.SmartFillSword
+                    ? TileState.Sword
+                    : TileState.Present
+              "
+              :disabled="true"
+            ></GameTile></span
+          ><br />While tiles which have been automatically determined (like this
+          one) have dashed borders:<br /><span class="game-tile-backdrop"
+            ><GameTile
+              :tile="popoverData.message.tileState"
+              :disabled="true"
+            ></GameTile
+          ></span>
+        </p>
+      </template>
     </div>
   </div>
 
