@@ -6,7 +6,7 @@
 
   --font-color: hsl(0, 0%, 96%);
   --muted-font-color: hsl(0, 0%, 82%);
-  --page-background-color: hsl(30, 20%, 4%);
+  --page-background-color: hsl(27.1, 36.3%, 5.1%);
 
   --board-tile-count: 6;
   --board-tile-max-gap: 0.5rem;
@@ -51,11 +51,17 @@
   --board-present-outline-color: hsl(2, 51%, 56%);
 
   --board-fox-color: var(--font-color);
-  --board-fox-background-color: #795720;
+  --board-fox-background-color: #694b1c;
   --board-fox-outline-color: hsl(37, 58%, 50%);
+
+  --board-suggest-fox-color: var(--font-color);
+  --board-suggest-fox-background-color: #9e009e;
+  --board-suggest-fox-outline-color: hsl(300, 58%, 50%);
 
   --tile-max-size: 6rem;
   --tile-min-size: 48px; // Based on Material touch target guidelines
+
+  --tile-border-radius: 8px;
 
   color-scheme: dark light;
   color: var(--font-color);
@@ -66,6 +72,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+.suggestionIndicator {
+  top: 25%;
+  left: 25%;
+  height: 50%;
+  width: 50%;
+  color: #fff;
 }
 
 .Blocked,
@@ -98,13 +112,26 @@
   color: var(--board-present-color);
   background-color: var(--tile-background-color);
 }
-.Fox,
-.SuggestFox {
+.Fox {
   --tile-color: var(--board-fox-color);
   --tile-background-color: var(--board-fox-background-color);
   --tile-outline-color: var(--board-fox-outline-color);
   color: var(--board-fox-color);
   background-color: var(--tile-background-color);
+}
+.SuggestFox {
+  --tile-color: var(--board-suggest-fox-color);
+  --tile-background-color: var(--board-suggest-fox-background-color);
+  --tile-outline-color: var(--board-suggest-fox-outline-color);
+  color: var(--board-suggest-fox-color);
+  background-color: var(--tile-background-color);
+}
+.SuggestFox-suggestion-indicator {
+  color: var(--board-suggest-fox-background-color);
+  top: 17%;
+  left: 21.5%;
+  height: 60%;
+  width: 60%;
 }
 
 .Empty {
@@ -124,8 +151,7 @@
 }
 
 .SuggestSword,
-.SuggestPresent,
-.SuggestFox {
+.SuggestPresent {
   svg:not(.suggestionIndicator) {
     color: var(--tile-background-color);
     filter: brightness(50%);
@@ -147,7 +173,7 @@ h1 {
 
 button {
   border: 0px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--tile-border-radius);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;

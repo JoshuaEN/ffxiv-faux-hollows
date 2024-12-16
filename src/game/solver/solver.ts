@@ -50,17 +50,18 @@ export function solve(
 
     // For Fill Sword and Fill Present we want to highlight the valid tiles
     const suggestion = solveState.getSuggestion(i);
-    if (solveState.solveStep === SolveStep.FillSword) {
+    const solveStep = solveState.solveStep;
+    if (solveStep === SolveStep.FillSword) {
       if ((suggestion?.[TileState.Sword] ?? 0) > 0) {
         tiles[i] = SuggestTileState.SuggestSword;
         continue;
       }
-    } else if (solveState.solveStep === SolveStep.FillPresent) {
+    } else if (solveStep === SolveStep.FillPresent) {
       if ((suggestion?.[TileState.Present] ?? 0) > 0) {
         tiles[i] = SuggestTileState.SuggestPresent;
         continue;
       }
-    } else if (solveState.solveStep === SolveStep.SuggestTiles) {
+    } else if (solveStep === SolveStep.SuggestTiles) {
       const finalWeight = solveState.getFinalWeight(i);
       if (finalWeight?.value === maxTileWeight) {
         const tileSuggestions: SuggestTileState[] = [];
@@ -88,7 +89,21 @@ export function solve(
         }
         tiles[i] = tileSuggestions;
         continue;
+      } else {
+        const foxOdds = solveState.getFoxOdds(i);
+        tiles[i] =
+          foxOdds !== null && foxOdds.odds > 0.249
+            ? SuggestTileState.SuggestFox
+            : TileState.Unknown;
+        continue;
       }
+    } else if (solveStep === SolveStep.SuggestFoxes) {
+      const foxOdds = solveState.getFoxOdds(i);
+      tiles[i] =
+        foxOdds !== null && foxOdds.confirmedFoxes > 0
+          ? SuggestTileState.SuggestFox
+          : TileState.Unknown;
+      continue;
     }
 
     tiles[i] = TileState.Unknown;

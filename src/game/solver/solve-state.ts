@@ -75,5 +75,10 @@ export function calculatedSolveState(
     return { solveState: solveState.finalize(SolveStep.Done), issues };
   }
 
-  return { solveState: solveState.finalize(SolveStep.SuggestTiles), issues };
+  return {
+    solveState: solveState.finalize(
+      mainShapesSolved ? SolveStep.SuggestFoxes : SolveStep.SuggestTiles
+    ),
+    issues,
+  };
 }

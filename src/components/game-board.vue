@@ -151,7 +151,7 @@ const pickTile = (index: number, tileState: TileState) => {
         !($event.currentTarget as HTMLElement)?.contains(
           $event.relatedTarget as Node
         )
-          ? false // ? (popoverData = null)
+          ? (popoverData = null)
           : false
     "
   >
@@ -184,7 +184,7 @@ const pickTile = (index: number, tileState: TileState) => {
           :data-testid="`popover-picker-button-${option}`"
           @click="pickTile(popoverData!.index, option)"
         />
-        {{ option }}
+        {{ TileStateDisplayName[option] }}
       </div>
     </div>
     <div v-if="popoverData.message" class="message">

@@ -6,8 +6,9 @@ import {
   SuggestTileState,
   TileState,
 } from "../game/types/index.js";
-import { assert, assertNever } from "../helpers.js";
+import { assertNever } from "../helpers.js";
 import { indexToCord } from "../game/helpers.js";
+import { TileStateDisplayName } from "./tile.utils.js";
 
 const indexMap = ["A", "B", "C", "D", "E", "F"];
 
@@ -27,35 +28,37 @@ const label = computed(() => {
     }
     switch (props.tile) {
       case TileState.Sword:
-        return `${label}User entered Sword`;
+        return `${label}User entered ${TileStateDisplayName[props.tile]}`;
       case TileState.Present:
-        return `${label}User entered Present`;
+        return `${label}User entered ${TileStateDisplayName[props.tile]}`;
       case TileState.Fox:
-        return `${label}User entered Fox`;
+        return `${label}User entered ${TileStateDisplayName[props.tile]}`;
       case TileState.Blocked:
-        return `${label}User entered Blocked`;
+        return `${label}User entered ${TileStateDisplayName[props.tile]}`;
       case TileState.Empty:
-        return `${label}User entered Empty`;
+        return `${label}User entered ${TileStateDisplayName[props.tile]}`;
       case TileState.Unknown:
-        return `${label}Unknown  `;
+        return `${label}${TileStateDisplayName[props.tile]}  `;
       case SmartFillTileState.SmartFillSword:
-        return `${label}Automatically detected Sword`;
+        return `${label}Automatically detected ${TileStateDisplayName[TileState.Sword]}`;
       case SmartFillTileState.SmartFillBlocked:
-        return `${label}Automatically detected Blocked`;
+        return `${label}Automatically detected ${TileStateDisplayName[TileState.Blocked]}`;
       case SmartFillTileState.SmartFillPresent:
-        return `${label}Automatically detected Present`;
+        return `${label}Automatically detected ${TileStateDisplayName[TileState.Present]}`;
       case SuggestTileState.SuggestSword:
-        return `${label}Possible Sword`;
+        return `${label}Possible ${TileStateDisplayName[TileState.Sword]}`;
       case SuggestTileState.SuggestPresent:
-        return `${label}Possible Present`;
+        return `${label}Possible ${TileStateDisplayName[TileState.Present]}`;
       case SuggestTileState.SuggestFox:
-        return `${label}Possible Fox`;
+        return `${label}Possible ${TileStateDisplayName[TileState.Fox]}`;
       default:
         assertNever(props.tile);
         return `${label}`;
     }
   } else {
-    assert(Array.isArray(props.tile) === false);
+    if (Array.isArray(props.tile)) {
+      return `Suggested to uncover`;
+    }
     return props.tile;
   }
 });
@@ -160,7 +163,11 @@ const label = computed(() => {
         d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"
       />
     </svg>
-    <div v-else-if="tile === TileState.Unknown"></div>
+    <div
+      v-else-if="
+        tile === TileState.Unknown || tile === SuggestTileState.SuggestFox
+      "
+    ></div>
     <div v-else>
       {{ Array.isArray(tile) ? "*" : tile }}
     </div>
@@ -169,27 +176,26 @@ const label = computed(() => {
         tile === SuggestTileState.SuggestSword ||
         tile === SuggestTileState.SuggestPresent
       "
-      class="suggestionIndicator suggestionIndicatorTop"
+      class="suggestionIndicator"
+      :class="{ [`${tile}-suggestion-indicator`]: true }"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
     >
       <path
-        fill="#ffffff"
+        fill="currentColor"
         d="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z"
       />
     </svg>
     <svg
-      v-if="
-        tile === SuggestTileState.SuggestSword ||
-        tile === SuggestTileState.SuggestPresent
-      "
-      class="suggestionIndicator suggestionIndicatorBottom"
+      v-if="tile === SuggestTileState.SuggestFox"
+      class="suggestionIndicator"
+      :class="{ [`${tile}-suggestion-indicator`]: true }"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
     >
       <path
-        fill="#ffffff"
-        d="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z"
+        fill="currentColor"
+        d="M10,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z"
       />
     </svg>
   </button>
@@ -205,19 +211,11 @@ button {
 }
 svg {
   position: absolute;
+}
+svg:not(.suggestionIndicator) {
   height: 100%;
   width: 100%;
-}
-
-svg:not(.suggestionIndicator) {
   top: 0;
   left: 0;
-}
-
-.suggestionIndicator {
-  top: 25%;
-  left: 25%;
-  height: 50%;
-  width: 50%;
 }
 </style>

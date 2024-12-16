@@ -223,12 +223,18 @@ function autoSolver(
       case SolveStep.FillBlocked: {
         throw new Error(`Reached fill blocked?`);
       }
-      case SolveStep.SuggestTiles: {
+      case SolveStep.SuggestTiles:
+      case SolveStep.SuggestFoxes: {
         totalStepsToUncover += 1;
 
         const suggestedIndexes: number[] = [];
         for (let i = 0; i < board.tiles.length; i++) {
           if (Array.isArray(board.tiles[i])) {
+            suggestedIndexes.push(i);
+          } else if (
+            board.solveState.solveStep === SolveStep.SuggestFoxes &&
+            board.tiles[i] === SuggestTileState.SuggestFox
+          ) {
             suggestedIndexes.push(i);
           }
         }
@@ -240,8 +246,9 @@ function autoSolver(
             assert(
               suggestedIndexes.every(
                 (i) =>
-                  board.tiles[i]?.length === 1 &&
-                  board.tiles[i]?.[0] === SuggestTileState.SuggestFox
+                  (board.tiles[i]?.length === 1 &&
+                    board.tiles[i]?.[0] === SuggestTileState.SuggestFox) ||
+                  board.tiles[i] === SuggestTileState.SuggestFox
               )
             );
 

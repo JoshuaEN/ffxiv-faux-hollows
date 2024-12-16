@@ -69,3 +69,6 @@ export function assertDefined<T>(
     `Assertion failed, given value is not defined (received ${value === null ? "null" : "undefined"})${message ?? ""}`
   );
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function assertType<T>(_value: T): void {}

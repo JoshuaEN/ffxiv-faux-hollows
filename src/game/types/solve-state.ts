@@ -46,6 +46,10 @@ export enum SolveStep {
    */
   SuggestTiles = "SuggestTiles",
   /**
+   * The board is solved and we are showing fox locations
+   */
+  SuggestFoxes = "SuggestFoxes",
+  /**
    * Everything has been found
    */
   Done = "Done",

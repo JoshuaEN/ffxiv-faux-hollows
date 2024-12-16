@@ -58,7 +58,8 @@ export const getPickerOptions = (
     switch (solveStep) {
       case SolveStep.FillSword:
       case SolveStep.FillPresent:
-      case SolveStep.SuggestTiles: {
+      case SolveStep.SuggestTiles:
+      case SolveStep.SuggestFoxes: {
         primaryOptions.add(TileState.Empty);
         for (const state of [
           TileState.Sword,

@@ -33,6 +33,7 @@ main.gameBoard {
   gap: 1rem;
 }
 .overlay {
+  z-index: 9999;
   &,
   .message {
     max-width: calc(100vw - 4rem);
