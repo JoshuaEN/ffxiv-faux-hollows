@@ -1,7 +1,11 @@
 import { assert } from "~/src/helpers.js";
 import { expandedStepsTo } from "../expanded-steps-to.js";
 import { indent, patternToPictograph, stringifyMinMax } from "./helpers.js";
-import { AutoSolveIdentifierSet, AutoSolveResult } from "../auto-solver.js";
+import {
+  AutoSolveIdentifierSet,
+  AutoSolveResult,
+  AutoSolveResultStepTaken,
+} from "../auto-solver.js";
 import { TileState } from "~/src/game/types/tile-states.js";
 
 export function printAutoSolveSets(
@@ -90,13 +94,15 @@ export function printAutoSolveSets(
               stringifyMinMax("PF", bestPresentFoxSteps),
               // stringifyMinMax("bF", bestFoxSteps),
               `| ->`,
-              result.steps
-                .map((step) => `${step.index}->${step.state[0]}`)
-                .join(", "),
+              printSteps(result.steps),
             ].join(" ")
           );
         }
       }
     }
   }
+}
+
+export function printSteps(steps: AutoSolveResultStepTaken[]) {
+  return steps.map((step) => `${step.index}->${step.state[0]}`).join(", ");
 }

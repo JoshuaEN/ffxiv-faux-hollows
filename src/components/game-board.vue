@@ -17,6 +17,8 @@ import {
 } from "@floating-ui/vue";
 import BaseTile from "~/src/components/base-tile.vue";
 import { getPickerOptions } from "./game-board.utils.js";
+import SolveStepsActiveHelp from "~/src/components/solve-steps-active-help.vue";
+import { TileStateDisplayName } from "./tile.utils.js";
 
 const popoverAnchorRef = ref(null);
 const popoverAnchorRefs = ref<unknown[]>([]);
@@ -233,7 +235,10 @@ const pickTile = (index: number, tileState: TileState) => {
     </div>
   </div>
 
-  <div>{{ data.board.solveState?.solveStep }}</div>
+  <SolveStepsActiveHelp
+    v-if="data.board.solveState?.solveStep !== undefined"
+    :solve-step="data.board.solveState.solveStep"
+  />
   <main v-if="showDebugInfo" class="debug">
     <div v-for="(tile, index) in data.board.tiles" :key="index">
       {{ index }} <br />

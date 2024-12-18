@@ -5,6 +5,7 @@
   font-weight: 400;
 
   --font-color: hsl(0, 0%, 96%);
+  --highlight-color: #ff9c4e;
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: hsl(27.1, 36.3%, 5.1%);
 
@@ -170,6 +171,9 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+em {
+  color: var(--highlight-color);
+}
 
 button {
   border: 0px solid transparent;
@@ -216,4 +220,43 @@ button:not(:disabled).focused {
   width: 100%;
   margin: 0 auto;
   padding: 1rem;
+}
+
+figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+figcaption {
+  text-align: center;
+}
+
+img.in-game-tile-example,
+.in-this-tool-tile-example {
+  border-radius: 10px;
+  padding: 5px;
+}
+img.in-game-tile-example {
+  background-color: #312012;
+}
+.in-this-tool-tile-example {
+  background-color: var(--page-background-color);
+  --tile-max-size: 52px;
+  --tile-min-size: 52px;
+}
+
+.button {
+  cursor: pointer;
+
+  &:focus:not(:disabled),
+  &:hover:focus:not(:disabled) {
+    outline: none;
+    border-width: 2px;
+    filter: brightness(140%);
+  }
+
+  &:hover:not(:disabled) {
+    filter: brightness(120%);
+  }
 }

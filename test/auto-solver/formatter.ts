@@ -264,6 +264,62 @@ export function stringifyAutoSolveResults(
     // printRollup(lines, swordFoundDistribution, "count");
     // lines.unshift("Sword Found on Step");
 
+    // {
+    //   lines.push("");
+    //   lines.push(
+    //     "Checking for cases where there are 4 or less fox candidates remaining AND subquent moves do not reduce the number of fox candidates by at least one."
+    //   );
+    //   lines.push(
+    //     "The goal of this step is to validate the advice that, when there are four or less foxes, continuing to solve for the location of the other shapes has no downsides."
+    //   );
+    //   let anyIssues = false;
+    //   for (const summary of summaries) {
+    //     let startChecking = false;
+    //     let lastStepCandidatesRemaining: number = -1;
+    //     // if (
+    //     //   summary.identifier === "A←" &&
+    //     //   summary.pattern.Sword === 2 &&
+    //     //   summary.pattern.Sword3x2 === true
+    //     // ) {
+    //     //   console.log("????");
+    //     //   debugger;
+    //     // }
+    //     for (const step of summary.steps) {
+    //       if (!startChecking) {
+    //         if (
+    //           step.foxCandidatesRemaining.length > 4 ||
+    //           step.foxCandidatesRemaining.length < 1
+    //         ) {
+    //           continue;
+    //         }
+
+    //         if (step.solvedPresent && step.solvedSword) {
+    //           break;
+    //         }
+    //         startChecking = true;
+    //         lastStepCandidatesRemaining = step.foxCandidatesRemaining.length;
+    //       } else {
+    //         if (
+    //           lastStepCandidatesRemaining >= step.foxCandidatesRemaining.length
+    //         ) {
+    //           lines.push(
+    //             `${indent(2)}${summary.identifier}${patternToPictograph(summary.pattern)} on step #${step.stepNumber}, fox candidates remaining was ${step.foxCandidatesRemaining.length} and on the prior step it was ${lastStepCandidatesRemaining} |-> ${printSteps(summary.steps)}`
+    //           );
+    //           anyIssues = true;
+    //           break;
+    //         }
+    //         lastStepCandidatesRemaining = step.foxCandidatesRemaining.length;
+    //       }
+    //     }
+    //   }
+
+    //   if (!anyIssues) {
+    //     lines.push(
+    //       `${indent(2)}No cases found (this means the advice is correct)`
+    //     );
+    //   }
+    // }
+
     lines.push("");
     lines.push(
       "Below this point is more detailed breakdowns of the solve calculations performed on each identifier."
