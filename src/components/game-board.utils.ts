@@ -41,8 +41,7 @@ export const getPickerOptions = (
       userState === TileState.Blocked ? TileState.Unknown : TileState.Blocked
     );
     options.push(TileState.Blocked, TileState.Unknown);
-  }
-  if (userState !== null && tileState !== TileState.Unknown) {
+  } else if (userState !== null && tileState !== TileState.Unknown) {
     primaryOptions.add(TileState.Unknown);
 
     // Special cases: Smart fill

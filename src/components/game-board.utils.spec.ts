@@ -10,6 +10,18 @@ import { getPickerOptions } from "./game-board.utils.js";
 
 describe("getPickerOptions", () => {
   const testIndex = 5;
+  const BLOCKED_OPTIONS = Object.freeze([
+    TileState.Blocked,
+    TileState.Unknown,
+  ]) as TileState[];
+  const DEFAULT_OPTIONS = Object.freeze([
+    TileState.Empty,
+    TileState.Sword,
+    TileState.Present,
+    TileState.Unknown,
+    TileState.Fox,
+  ]) as TileState[];
+
   describe("SolveState: FillBlocked", () => {
     test("returns Blocked tile as the primary", () => {
       assertGetPickerOptions(
@@ -19,7 +31,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Blocked)
+        unsetTileOptions(BLOCKED_OPTIONS, [TileState.Blocked])
       );
     });
     test("returns Unknown tile as the primary when tile is already marked as Blocked", () => {
@@ -30,7 +42,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Blocked,
         testIndex,
-        filledTileOptions(TileState.Blocked, TileState.Unknown)
+        setTileOptions(BLOCKED_OPTIONS, TileState.Blocked, [TileState.Unknown])
       );
     });
   });
@@ -49,7 +61,23 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Sword)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Sword])
+      );
+    });
+    test(`returns Sword as primary when Sword and Fox is suggested and in solve step FillSword`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.FillSword,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 1,
+            Present: 0,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Sword])
       );
     });
     test(`returns just Sword as primary when only Sword is suggested and in solve step FillSword`, () => {
@@ -65,7 +93,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Sword)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Sword])
       );
     });
     test(`returns just Present (and empty) as primary when only Present is suggested and in solve step FillSword`, () => {
@@ -81,26 +109,10 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty, TileState.Present)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Present])
       );
     });
-    test(`returns just empty as primary when Sword and Present are not suggested and in solve step FillSword`, () => {
-      assertGetPickerOptions(
-        {
-          solveStep: SolveStep.FillSword,
-          getSuggestion: {
-            Blocked: 0,
-            Sword: 0,
-            Present: 0,
-            Fox: 0,
-          },
-        },
-        TileState.Unknown,
-        testIndex,
-        blankTileOptions(TileState.Empty)
-      );
-    });
-    test(`does not return Fox as primary when suggested and in solve step FillSword`, () => {
+    test(`returns just Fox (and empty) as primary when only Fox is suggested and in solve step FillSword`, () => {
       assertGetPickerOptions(
         {
           solveStep: SolveStep.FillSword,
@@ -113,18 +125,23 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Fox])
       );
     });
-    test("returns Unknown tile as the primary when tile is already marked as Sword", () => {
+    test(`returns just empty as primary when Sword, Present, and Fox are not suggested and in solve step FillSword`, () => {
       assertGetPickerOptions(
         {
           solveStep: SolveStep.FillSword,
-          getSuggestion: null,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 0,
+            Present: 0,
+            Fox: 0,
+          },
         },
-        TileState.Blocked,
+        TileState.Unknown,
         testIndex,
-        filledTileOptions(TileState.Blocked, TileState.Unknown)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty])
       );
     });
     test("returns Unknown tile as the primary when Sword is suggested but tile is already marked as Sword", () => {
@@ -140,7 +157,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Sword,
         testIndex,
-        filledTileOptions(TileState.Sword, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Sword, [TileState.Unknown])
       );
     });
     test("returns Unknown tile as the primary when Sword is suggested but tile is already marked as something else", () => {
@@ -156,7 +173,18 @@ describe("getPickerOptions", () => {
         },
         TileState.Present,
         testIndex,
-        filledTileOptions(TileState.Present, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Present, [TileState.Unknown])
+      );
+    });
+    test("returns Unknown tile as the primary when tile is already marked as Blocked", () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.FillSword,
+          getSuggestion: null,
+        },
+        TileState.Blocked,
+        testIndex,
+        setTileOptions(BLOCKED_OPTIONS, TileState.Blocked, [TileState.Unknown])
       );
     });
   });
@@ -175,7 +203,23 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Present)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Present])
+      );
+    });
+    test(`returns Present as primary when Fox and Present is suggested and in solve step FillPresent`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.FillPresent,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 0,
+            Present: 1,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Present])
       );
     });
     test(`returns just Sword (and empty) as primary when only Sword is suggested and in solve step FillPresent`, () => {
@@ -191,7 +235,23 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty, TileState.Sword)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Sword])
+      );
+    });
+    test(`returns just Fox (and empty) as primary when only Fox is suggested and in solve step FillPresent`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.FillPresent,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 0,
+            Present: 0,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Fox])
       );
     });
     test(`returns just Present as primary when only Present is suggested and in solve step FillPresent`, () => {
@@ -207,10 +267,10 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Present)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Present])
       );
     });
-    test(`returns just empty as primary when Sword and Present are not suggested and in solve step FillPresent`, () => {
+    test(`returns just empty as primary when Sword, Present, and Fox are not suggested and in solve step FillPresent`, () => {
       assertGetPickerOptions(
         {
           solveStep: SolveStep.FillPresent,
@@ -223,29 +283,13 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty)
-      );
-    });
-    test(`does not return Fox as primary when suggested and in solve step FillPresent`, () => {
-      assertGetPickerOptions(
-        {
-          solveStep: SolveStep.FillPresent,
-          getSuggestion: {
-            Blocked: 0,
-            Sword: 0,
-            Present: 0,
-            Fox: 1,
-          },
-        },
-        TileState.Unknown,
-        testIndex,
-        blankTileOptions(TileState.Empty)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty])
       );
     });
     test("returns Unknown tile as the primary when Present is suggested but tile is already marked as Present", () => {
       assertGetPickerOptions(
         {
-          solveStep: SolveStep.FillSword,
+          solveStep: SolveStep.FillPresent,
           getSuggestion: {
             Blocked: 0,
             Sword: 0,
@@ -255,13 +299,14 @@ describe("getPickerOptions", () => {
         },
         TileState.Present,
         testIndex,
-        filledTileOptions(TileState.Present, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Present, [TileState.Unknown])
       );
     });
+    // Note: Shouldn't really happen. The user's input should be considered unquestionable as far as a the solver is concerned when providing suggestions.
     test("returns Unknown tile as the primary when Present is suggested but tile is already marked as something else", () => {
       assertGetPickerOptions(
         {
-          solveStep: SolveStep.FillSword,
+          solveStep: SolveStep.FillPresent,
           getSuggestion: {
             Blocked: 0,
             Sword: 0,
@@ -271,7 +316,18 @@ describe("getPickerOptions", () => {
         },
         TileState.Sword,
         testIndex,
-        filledTileOptions(TileState.Sword, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Sword, [TileState.Unknown])
+      );
+    });
+    test("returns Unknown tile as the primary when tile is already marked as Blocked", () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.FillPresent,
+          getSuggestion: null,
+        },
+        TileState.Blocked,
+        testIndex,
+        setTileOptions(BLOCKED_OPTIONS, TileState.Blocked, [TileState.Unknown])
       );
     });
   });
@@ -290,7 +346,51 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty, TileState.Sword, TileState.Present)
+        unsetTileOptions(DEFAULT_OPTIONS, [
+          TileState.Empty,
+          TileState.Sword,
+          TileState.Present,
+        ])
+      );
+    });
+    test(`returns Sword and Fox (and empty) as primary when Sword and Fox is suggested`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.SuggestTiles,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 1,
+            Present: 0,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [
+          TileState.Empty,
+          TileState.Sword,
+          TileState.Fox,
+        ])
+      );
+    });
+    test(`returns Present and Fox (and empty) as primary when Present and Fox is suggested`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.SuggestTiles,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 0,
+            Present: 1,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [
+          TileState.Empty,
+          TileState.Present,
+          TileState.Fox,
+        ])
       );
     });
     test(`returns just Sword (and empty) as primary when only Sword is suggested`, () => {
@@ -306,7 +406,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty, TileState.Sword)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Sword])
       );
     });
     test(`returns just Present (and empty) as primary when only Present is suggested`, () => {
@@ -322,10 +422,26 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty, TileState.Present)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Present])
       );
     });
-    test(`returns just empty as primary when Sword and Present are not suggested`, () => {
+    test(`return just Fox (and empty) as primary when only Fox is suggested`, () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.SuggestTiles,
+          getSuggestion: {
+            Blocked: 0,
+            Sword: 0,
+            Present: 0,
+            Fox: 1,
+          },
+        },
+        TileState.Unknown,
+        testIndex,
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty, TileState.Fox])
+      );
+    });
+    test(`returns just empty as primary when Sword, Present, and Fox are not suggested`, () => {
       assertGetPickerOptions(
         {
           solveStep: SolveStep.SuggestTiles,
@@ -338,23 +454,7 @@ describe("getPickerOptions", () => {
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty)
-      );
-    });
-    test(`does not return Fox as primary when suggested`, () => {
-      assertGetPickerOptions(
-        {
-          solveStep: SolveStep.SuggestTiles,
-          getSuggestion: {
-            Blocked: 0,
-            Sword: 0,
-            Present: 0,
-            Fox: 1,
-          },
-        },
-        TileState.Unknown,
-        testIndex,
-        blankTileOptions(TileState.Empty)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty])
       );
     });
     test(`returns just Unknown as primary when the title state is set`, () => {
@@ -370,7 +470,18 @@ describe("getPickerOptions", () => {
         },
         TileState.Empty,
         testIndex,
-        filledTileOptions(TileState.Empty, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Empty, [TileState.Unknown])
+      );
+    });
+    test("returns Unknown tile as the primary when tile is already marked as Blocked", () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.SuggestTiles,
+          getSuggestion: null,
+        },
+        TileState.Blocked,
+        testIndex,
+        setTileOptions(BLOCKED_OPTIONS, TileState.Blocked, [TileState.Unknown])
       );
     });
   });
@@ -379,23 +490,34 @@ describe("getPickerOptions", () => {
     test(`returns just Empty when the title state is not set`, () => {
       assertGetPickerOptions(
         {
-          solveStep: SolveStep.SuggestTiles,
+          solveStep: SolveStep.Done,
           getSuggestion: null,
         },
         TileState.Unknown,
         testIndex,
-        blankTileOptions(TileState.Empty)
+        unsetTileOptions(DEFAULT_OPTIONS, [TileState.Empty])
       );
     });
     test(`returns just Unknown as primary when the title state is set`, () => {
       assertGetPickerOptions(
         {
-          solveStep: SolveStep.SuggestTiles,
+          solveStep: SolveStep.Done,
           getSuggestion: null,
         },
         TileState.Empty,
         testIndex,
-        filledTileOptions(TileState.Empty, TileState.Unknown)
+        setTileOptions(DEFAULT_OPTIONS, TileState.Empty, [TileState.Unknown])
+      );
+    });
+    test("returns Unknown tile as the primary when tile is already marked as Blocked", () => {
+      assertGetPickerOptions(
+        {
+          solveStep: SolveStep.Done,
+          getSuggestion: null,
+        },
+        TileState.Blocked,
+        testIndex,
+        setTileOptions(BLOCKED_OPTIONS, TileState.Blocked, [TileState.Unknown])
       );
     });
   });
@@ -410,16 +532,13 @@ describe("getPickerOptions", () => {
     },
     tileState: CombinedTileState,
     index: number,
-    expectedResult: {
-      primaryOptions: TileState[];
-      secondaryOptions: TileState[];
-    }
+    expectedResult: ReturnType<typeof getPickerOptions>
   ) {
     const board: Board = {
       solveState: {
         solveStep,
-        getSuggestion(index: number) {
-          expect(index).toEqual(index);
+        getSuggestion(actualIndex: number) {
+          expect(actualIndex).toEqual(index);
           return getSuggestion;
         },
       } as SolveState,
@@ -428,49 +547,27 @@ describe("getPickerOptions", () => {
     expect(getPickerOptions(board, tileState, index)).toEqual(expectedResult);
   }
 
-  function getTileOptions(allStates: TileState[], primaryStates: TileState[]) {
-    const primaryOptions: TileState[] = [];
-    const secondaryOptions: TileState[] = [];
+  function getTileOptions(options: TileState[], primaryStates: TileState[]) {
+    const primaryOptions = new Set<TileState>(primaryStates);
 
-    for (const state of allStates) {
-      if (primaryStates.includes(state)) {
-        primaryOptions.push(state);
-      } else {
-        secondaryOptions.push(state);
-      }
-    }
     return {
       primaryOptions,
-      secondaryOptions,
+      options,
+      message: null,
     };
   }
 
-  function blankTileOptions(...primaryStates: [TileState, ...TileState[]]) {
-    return getTileOptions(
-      [
-        TileState.Empty,
-        TileState.Blocked,
-        TileState.Sword,
-        TileState.Present,
-        TileState.Fox,
-      ],
-      primaryStates
-    );
+  function unsetTileOptions(options: TileState[], primaryStates: TileState[]) {
+    return getTileOptions(options, primaryStates);
   }
-  function filledTileOptions(
+  function setTileOptions(
+    options: TileState[],
     selectedState: TileState,
-    primaryStates: TileState.Unknown
+    primaryStates: TileState[]
   ) {
     return getTileOptions(
-      [
-        TileState.Unknown,
-        TileState.Empty,
-        TileState.Blocked,
-        TileState.Sword,
-        TileState.Present,
-        TileState.Fox,
-      ].filter((state) => state !== selectedState),
-      [primaryStates]
+      options,
+      primaryStates.filter((state) => state !== selectedState)
     );
   }
 });
