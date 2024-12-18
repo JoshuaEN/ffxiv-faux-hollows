@@ -25,7 +25,7 @@ const ariaRole = computed(() => {
   margin: 1rem 0;
   border-radius: 0.5rem;
   border-width: 2px;
-  border-style: solid;
+  border-style: var(--alert-border-style, solid);
   border-color: var(--alert-border-color);
   background-color: var(--alert-background);
   color: var(--alert-color);
@@ -33,7 +33,8 @@ const ariaRole = computed(() => {
 }
 
 .alert-Info {
-  --alert-background: hsl(30 38% 10% / 1);
+  --alert-border-style: none;
+  --alert-background: transparent;
   --alert-color: var(--text-color);
   --alert-border-color: hsl(30 38% 30% / 1);
 }
