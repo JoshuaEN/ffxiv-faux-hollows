@@ -86,7 +86,7 @@ export function printPatternSummaries(
         indexPadding.push(Math.max(totalValue.length, perRowValue.length));
       }
       if (allMatch) {
-        lines.push(`${overallPrintedCalculation.join(" ")}`);
+        lines.push(overallPrintedCalculation.join(" "));
       } else {
         lines.push(
           `${overallPrintedCalculation.map((value, index) => value.padEnd(indexPadding[index] ?? 0)).join(" ")}${indent(1)}(overall best/worse)`

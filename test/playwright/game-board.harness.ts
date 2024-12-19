@@ -13,8 +13,10 @@ export class GameBoardHarness extends BaseSequenceRunner {
   readonly #page: Page;
   constructor(rootLocator: Locator, args: PlaywrightTestArgs) {
     super(
-      (message: string) => expect("FAIL", message).toBeFalsy() as never,
-      <T>(actual: T, msg?: string) => ({
+      (message: string) => {
+        throw new Error(message);
+      },
+      (actual: unknown, msg?: string) => ({
         toEqual(expected) {
           expect(actual, msg).toBe(expected);
         },
@@ -277,13 +279,12 @@ export class GameBoardHarness extends BaseSequenceRunner {
     }
 
     const issues = await Promise.all(
-      (
-        await this.#page.getByTestId("board-issue").all()
-      ).map(
+      (await this.#page.getByTestId("board-issue").all()).map(
         async (l): Promise<BoardIssue> => ({
-          severity: (
-            await l.getByTestId("severity").first().innerText()
-          ).slice(1, -1) as unknown as BoardIssue["severity"],
+          severity: (await l.getByTestId("severity").first().innerText()).slice(
+            1,
+            -1
+          ) as unknown as BoardIssue["severity"],
           message: await l.getByTestId("message").innerText(),
           issueTiles: [],
         })

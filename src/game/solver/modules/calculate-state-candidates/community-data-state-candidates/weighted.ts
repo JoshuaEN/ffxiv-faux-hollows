@@ -11,7 +11,10 @@ export const calculateStatesCandidates =
         const startIndexTracker = new Set<string>();
         const commonIndexes = new Map<number, number>();
         for (const pattern of filteredPatterns) {
-          const key = `${state === TileState.Sword ? `${pattern.pattern.Sword}${pattern.pattern.Sword3x2}` : `${pattern.pattern.Present}`}`;
+          const key =
+            state === TileState.Sword
+              ? `${pattern.pattern.Sword}${pattern.pattern.Sword3x2}`
+              : `${pattern.pattern.Present}`;
           if (startIndexTracker.has(key)) {
             continue;
           }

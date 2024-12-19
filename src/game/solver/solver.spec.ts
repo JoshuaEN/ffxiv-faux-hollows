@@ -53,11 +53,11 @@ import { solve } from "./solver.js";
 
 describe("solve", () => {
   allTestData(
-    (title, ...states) =>
-      test(
-        title,
-        async () => await new SolverSequenceRunner().testSequence(states)
-      ),
+    (title, ...states) => {
+      test(title, async () => {
+        await new SolverSequenceRunner().testSequence(states);
+      });
+    },
     { describe }
   );
 
@@ -65,7 +65,7 @@ describe("solve", () => {
     #userSelected: TileState[];
 
     constructor() {
-      super((message) => expect("FAIL", message).toBeFalsy() as never, expect);
+      super((message) => expect.unreachable(message), expect);
       this.#userSelected = Array.from(this.indexes()).map(
         () => TileState.Unknown
       );

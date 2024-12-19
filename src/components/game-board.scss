@@ -34,16 +34,17 @@ main.gameBoard {
 }
 .overlay {
   z-index: 9999;
-  &,
-  .message {
-    max-width: calc(100vw - 4rem);
-    max-height: calc(50vh - 1rem);
-  }
   padding: 0.5rem;
   border-radius: 5px;
   --tile-min-size: 5rem;
   --tile-max-size: 5rem;
   --board-tile-gap: 0.5rem;
+
+  &,
+  .message {
+    max-width: calc(100vw - 4rem);
+    max-height: calc(50vh - 1rem);
+  }
   &,
   > .arrow {
     background-color: antiquewhite;

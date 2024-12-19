@@ -226,14 +226,14 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
         new BoardIssue(
           BoardIssueSeverity.Error,
           `Tile pattern does not match any known patterns; suggestions are not available.`,
-          shapes.reduce(
+          shapes.reduce<number[]>(
             (prev, shape) => [
               ...prev,
               ...(shape.boundingBox !== null
                 ? shape.boundingBox.indexes()
                 : []),
             ],
-            [] as number[]
+            []
           )
         )
       );
@@ -303,8 +303,6 @@ function validateUserSelection({
     return { isFatalError: false, issues };
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
-  // @ts-ignore
   if (import.meta.env.DEV) {
     if (shortSide > longSide) {
       throw new Error(

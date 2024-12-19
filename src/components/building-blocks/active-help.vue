@@ -40,40 +40,47 @@ defineProps<{ title: string }>();
 </template>
 
 <style scoped lang="scss">
+@use "../../scss/helpers.scss";
 summary {
+  --background-gradient: hsl(66 9% 45% / 0.46);
+  --background-base: #313729;
   position: relative;
   display: inline flex;
   padding: 2px;
   align-items: center;
   user-select: none;
   border-width: 3px 3px 3px 3px;
-  border-style: ridge groove ridge ridge;
+  border-style: ridge groove groove ridge;
   border-color: hsl(37, 46%, 47%);
   border-radius: 12px;
   cursor: pointer;
-  background: linear-gradient(180deg, rgba(124, 126, 106, 0.46), #31372900 80%),
-    linear-gradient(0deg, #313729, #313729);
+  background: linear-gradient(
+      180deg,
+      var(--background-gradient),
+      lab(from var(--background-base) l a b / 0) 80%
+    ),
+    linear-gradient(0deg, var(--background-base), var(--background-base));
   // I have no idea why, but without this, the z-order doesn't work correctly.
   filter: brightness(100%);
 
   &:hover {
     background: linear-gradient(
         180deg,
-        lighten(rgba(124, 126, 106, 0.46), 10%),
-        #31372900 80%
+        helpers.adjustBrightness(var(--background-gradient), 10),
+        helpers.setAlpha(var(--background-base), 0) 80%
       ),
-      linear-gradient(0deg, #313729, #313729);
+      linear-gradient(0deg, var(--background-base), var(--background-base));
   }
   &:active {
     background: linear-gradient(
         180deg,
-        lighten(rgba(124, 126, 106, 0.46), 20%),
-        #31372900 80%
+        helpers.adjustBrightness(var(--background-gradient), 20),
+        helpers.setAlpha(var(--background-base), 0) 80%
       ),
-      linear-gradient(0deg, #313729, #313729);
+      linear-gradient(0deg, var(--background-base), var(--background-base));
   }
   &:focus-within {
-    outline: 0px solid #7c7e6a;
+    outline: none;
   }
 
   &:hover,
@@ -173,7 +180,7 @@ details {
   z-index: 4;
   border-radius: 50%;
   content: "";
-  box-shadow: inset 0px -2px 1px darken(rgba(253, 222, 174, 0.8), 70%);
+  box-shadow: inset 0px -2px 1px helpers.adjustBrightness(rgba(253, 222, 174, 0.8), -70);
 }
 .icon-wrap-2 {
   width: 100%;

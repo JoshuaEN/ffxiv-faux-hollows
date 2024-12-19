@@ -17,7 +17,6 @@ const props = defineProps<{
   index?: number;
   disabled?: boolean;
 }>();
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const label = computed(() => {
   const index = props.index !== undefined ? indexToCord(props.index) : null;
   let label = "";
@@ -53,7 +52,7 @@ const label = computed(() => {
         return `${label}Possible ${TileStateDisplayName[TileState.Fox]}`;
       default:
         assertNever(props.tile);
-        return `${label}`;
+        return label;
     }
   } else {
     if (Array.isArray(props.tile)) {

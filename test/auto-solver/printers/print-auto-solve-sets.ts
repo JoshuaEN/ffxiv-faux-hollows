@@ -82,7 +82,7 @@ export function printAutoSolveSets(
 
           lines.push(
             [
-              `${indent(4)}`,
+              indent(4),
               stringifyMinMax("T", bestTotalSteps),
               stringifyMinMax("t", result.stepsTo.totalSteps),
               `s${result.stepsTo[TileState.Sword]}+${swordFullSteps}`,

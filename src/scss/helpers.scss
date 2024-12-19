@@ -1,0 +1,7 @@
+@function adjustBrightness($color, $adjustment) {
+  @return lab(from $color calc(l + $adjustment) a b / alpha);
+}
+
+@function setAlpha($color, $value) {
+  @return lab(from $color l a b / $value);
+}

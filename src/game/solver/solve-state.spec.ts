@@ -55,11 +55,11 @@ import { calculatedSolveState } from "./solve-state.js";
 
 describe("calculatedSolveState", () => {
   allTestData(
-    (title, ...states) =>
-      test(
-        title,
-        async () => await new SolveStateSequenceRunner().testSequence(states)
-      ),
+    (title, ...states) => {
+      test(title, async () => {
+        await new SolveStateSequenceRunner().testSequence(states);
+      });
+    },
     { describe }
   );
 
@@ -72,7 +72,7 @@ describe("calculatedSolveState", () => {
     #userSelected: TileState[];
 
     constructor() {
-      super((message) => expect("FAIL", message).toBeFalsy() as never, expect);
+      super((message) => expect.unreachable(message), expect);
       this.#userSelected = Array.from(this.indexes()).map(
         () => TileState.Unknown
       );

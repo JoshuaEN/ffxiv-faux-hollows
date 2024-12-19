@@ -16,9 +16,18 @@ export default defineConfig({
     vue(),
     checker({
       vueTsc: true,
-      eslint: { lintCommand: "eslint --ext .js,.ts,.vue ./" },
+      // eslint: { lintCommand: "eslint --ext .js,.ts,.vue ./" },
     }),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // https://vite.dev/config/shared-options#css-preprocessoroptions
+        // https://stackoverflow.com/a/79003101
+        api: "modern-compiler",
+      },
+    },
+  },
   test: {
     restoreMocks: true,
     unstubEnvs: true,

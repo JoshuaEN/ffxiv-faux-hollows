@@ -10,7 +10,7 @@ defineProps<{ activeHelpTitle: string }>();
   <AlertMessage :kind="AlertMessageKind.Info">
     <slot></slot>
   </AlertMessage>
-  <ActiveHelp v-model:activeHelpOpen="open" :title="activeHelpTitle">
+  <ActiveHelp v-model:active-help-open="open" :title="activeHelpTitle">
     <template #active-help>
       <slot name="active-help"></slot>
     </template>

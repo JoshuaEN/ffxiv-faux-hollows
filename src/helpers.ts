@@ -70,5 +70,5 @@ export function assertDefined<T>(
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-unnecessary-type-parameters
 export function assertType<T>(_value: T): void {}

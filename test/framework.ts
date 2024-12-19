@@ -192,7 +192,7 @@ export abstract class BaseSequenceRunner {
     if (userSelected === TileState.Unknown) {
       data.str += " ";
     } else {
-      data.str += `${userSelected.slice(0, 1).toUpperCase()}`;
+      data.str += userSelected.slice(0, 1).toUpperCase();
     }
     if (
       userSelected !== TileState.Unknown ||
