@@ -26,10 +26,10 @@
   );
 
   --board-unknown-color: var(--font-color);
-  --board-unknown-background-color: hsl(40, 20%, 21%);
-  --board-unknown-outline-color: hsl(40, 20%, 41%);
+  --board-unknown-background-color: hsl(31, 23%, 21%);
+  --board-unknown-outline-color: hsl(31, 23%, 41%);
 
-  --board-empty-color: hsl(39, 18%, 55%);
+  --board-empty-color: hsl(31, 23%, 65%);
   --board-empty-background-color: var(--board-unknown-background-color);
   --board-empty-outline-color: var(--board-unknown-outline-color);
 
