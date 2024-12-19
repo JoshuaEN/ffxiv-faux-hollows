@@ -24,7 +24,8 @@ export const calculateStatesCandidates: CalculateStatesCandidatesFunction =
             ? communityDataBuckets.calculateStatesCandidates
             : import.meta.env["SOLVER"] === "community-data-recursive"
               ? communityDataRecursive.calculateStatesCandidates
-              : import.meta.env["SOLVER"] === "community-data-recursive-fast"
+              : import.meta.env["SOLVER"] === "community-data-recursive-fast" ||
+                  import.meta.env.MODE === "test"
                 ? communityDataRecursiveFast.calculateStatesCandidates
                 : assertUnreachable();
 
@@ -37,6 +38,6 @@ export const calculateSuggestionWeight: CalculateSuggestionWeight =
     ? s6p4_f1.calculateSuggestionWeight
     : import.meta.env["WEIGHTER"] === "s6p4f1"
       ? s6p4f1.calculateSuggestionWeight
-      : import.meta.env["WEIGHTER"] === "s1"
+      : import.meta.env["WEIGHTER"] === "s1" || import.meta.env.MODE === "test"
         ? s1.calculateSuggestionWeight
         : assertUnreachable();
