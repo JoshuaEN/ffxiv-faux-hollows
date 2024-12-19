@@ -25,8 +25,7 @@ enum AsciiParts {
 enum Slot1Mode {
   UserAction = ">",
   ExistingState = " ",
-  Hexadecimal = "Hexadecimal",
-  // Suggestion = "?",
+  Suggestion = "?",
 }
 
 const tileStateMap: Record<string, TileState | undefined> = {
@@ -223,6 +222,40 @@ export function loadAsciiGrid(str: string) {
           cells.push({
             userSelection,
             smartFill,
+          });
+          break;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+        case Slot1Mode.Suggestion: {
+          if (column1 !== "f") {
+            throw new Error(
+              `${columnErrorContext}[Slot 1] Invalid character ${column1} (in suggestion mode, only the fox can be suggested)`
+            );
+          }
+          if (column2 !== " ") {
+            throw new Error(
+              `${columnErrorContext}[Slot 2] Invalid character ${column2} (in suggestion mode, only fox can be set)`
+            );
+          }
+          if (column3 !== " ") {
+            throw new Error(
+              `${columnErrorContext}[Slot 3] Invalid character ${column3} (in suggestion mode, only fox can be set)`
+            );
+          }
+          const Fox = column4 === " " ? 0 : parseInt(column4, 16);
+          if (!Number.isFinite(Fox)) {
+            throw new Error(
+              `${columnErrorContext}[Slot 4] Invalid character ${column4} (not a valid hex value)`
+            );
+          }
+
+          cells.push({
+            suggestions: {
+              Sword: 0,
+              Present: 0,
+              Fox,
+            },
+            prompt: SuggestTileState.SuggestFox,
           });
           break;
         }

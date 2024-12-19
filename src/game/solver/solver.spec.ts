@@ -71,7 +71,7 @@ describe("solve", () => {
       );
     }
 
-    protected formatSuggestions(
+    protected override formatSuggestions(
       source: FormatDataSource,
       index: number,
       data: { str: string },
@@ -90,8 +90,8 @@ describe("solve", () => {
           // So, here we map from the suggestion weights to Yes or No indicator (1 or 0) if this tile is recommended,
           // Otherwise, we provide undefined.
           suggestion !== undefined &&
-            prompt === undefined &&
-            recommended === true
+            ((prompt === undefined && recommended === true) ||
+              (prompt === SuggestTileState.SuggestFox && recommended !== true))
             ? {
                 Sword: suggestion.Sword > 0 ? 1 : 0,
                 Present: suggestion.Present > 0 ? 1 : 0,
@@ -179,12 +179,18 @@ describe("solve", () => {
           case SuggestTileState.SuggestSword:
           case SuggestTileState.SuggestPresent: {
             cells.push({ prompt: tile });
+            continue;
             break;
           }
           case SuggestTileState.SuggestFox: {
-            assert.fail(
-              `Suggest Tile State of fox is not supported in Fill mode (Fox is only valid when suggestions are an array of suggestions)`
-            );
+            cells.push({
+              suggestions: { Sword: 0, Present: 0, Fox: 1 },
+              prompt: SuggestTileState.SuggestFox,
+            });
+            continue;
+            // assert.fail(
+            //   `Suggest Tile State of fox is not supported in Fill mode (Fox is only valid when suggestions are an array of suggestions)`
+            // );
             break; // eslint
           }
           default: {

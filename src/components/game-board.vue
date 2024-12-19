@@ -127,6 +127,7 @@ const pickTile = (index: number, tileState: TileState) => {
       :index="index"
       :data-testid="`game-tile-index-${index}`"
       :data-test-tile="tile"
+      :data-test-tile-is-array="Array.isArray(tile)"
       @mousedown="(ev: MouseEvent) => tileClicked(ev, tile, index)"
     />
   </main>
@@ -179,11 +180,12 @@ const pickTile = (index: number, tileState: TileState) => {
             ? 'popover-picker-primary-option'
             : 'popover-picker-secondary-option'
         "
-        :class="{ faded: !popoverData.primaryOptions.has(option) }"
       >
         <BaseTile
           :tile="option"
           :data-testid="`popover-picker-button-${option}`"
+          :data-test-tile-state="option"
+          :class="{ faded: !popoverData.primaryOptions.has(option) }"
           @click="pickTile(popoverData!.index, option)"
         />
         {{ TileStateDisplayName[option] }}

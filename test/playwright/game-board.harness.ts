@@ -7,6 +7,8 @@ import {
 } from "~/src/game/types/index.js";
 import { BaseSequenceRunner, FormatDataSource } from "../framework.js";
 import { CellTestData } from "../helpers/ascii-grid.js";
+import { assertUnreachable } from "~/src/helpers.js";
+import { includeClass } from "./expect.js";
 
 export class GameBoardHarness extends BaseSequenceRunner {
   readonly #rootLocator: Locator;
@@ -31,15 +33,28 @@ export class GameBoardHarness extends BaseSequenceRunner {
     const tileData = {
       locator,
       combinedTileState: async () => {
-        return (await locator.getAttribute("data-test-tile"))?.split(",") ?? [];
+        const items =
+          (await locator.getAttribute("data-test-tile"))?.split(",") ?? [];
+        expect(items.length).toBeGreaterThan(0);
+        if (
+          (await locator.getAttribute("data-test-tile-is-array")) === `true`
+        ) {
+          return items;
+        } else {
+          return items[0];
+        }
       },
-      tileState: async (): Promise<TileState> => {
+      tileState: async (): Promise<
+        TileState | SmartFillTileState | SuggestTileState
+      > => {
         const combined = await tileData.combinedTileState();
         if (
-          combined.length === 1 &&
-          this.#stringIsTileState(TileState, combined[0])
+          (Array.isArray(combined) === false &&
+            this.#stringIsTileState(TileState, combined)) ||
+          this.#stringIsTileState(SmartFillTileState, combined) ||
+          this.#stringIsTileState(SuggestTileState, combined)
         ) {
-          return combined[0];
+          return combined;
         } else {
           return TileState.Unknown;
         }
@@ -60,29 +75,85 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.#rootLocator.getByTestId("popover-picker");
   }
 
-  async setUserSelection(index: number, tileState: TileState) {
+  getAllPopoverButtons() {
+    return this.getPopover().locator("button:not(:disabled)");
+  }
+
+  override async setUserSelection(index: number, tileState: TileState) {
     const tile = this.#getTile(index);
-    const alreadyCorrectState = (await tile.tileState()) === tileState;
+    const existingTileState = await tile.tileState();
+    const alreadyCorrectState = existingTileState === tileState;
+    const isSmartFilled = this.#stringIsTileState(
+      SmartFillTileState,
+      existingTileState
+    );
 
     await tile.locator.click();
 
     const popover = this.getPopover();
     await expect(popover).toBeVisible();
+    const buttons = this.getAllPopoverButtons();
 
     const button = popover.getByTestId(`popover-picker-button-${tileState}`);
 
-    if (alreadyCorrectState) {
+    if (isSmartFilled) {
+      const existingNonSmartFilledTileState =
+        this.#smartFillToTile(existingTileState);
+      expect(
+        existingNonSmartFilledTileState,
+        `Wanted to set tile ${index} to ${tileState}, but it was already smart filled as ${existingTileState}`
+      ).toEqual(tileState);
       await expect(button).not.toBeVisible();
+      await expect(buttons.nth(0)).not.toBeVisible();
+      await expect(popover).toContainText(
+        `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
+      );
       await tile.locator.click();
-      await this.#rootLocator.getByTestId(`game-tile-index-${index}`).focus();
-      await this.#page.focus("body");
+      await expect(popover).not.toBeVisible();
+      expect(await tile.tileState()).toEqual(existingTileState);
     } else {
+      await expect(buttons.nth(0)).toBeVisible();
       await expect(button).toBeVisible();
-      await button.click();
+      if (alreadyCorrectState) {
+        await expect(button).toHaveClass(includeClass("faded"));
+        await tile.locator.click();
+        await this.#rootLocator.getByTestId(`game-tile-index-${index}`).focus();
+        await this.#page.focus("body");
+      } else if (
+        (existingTileState === SuggestTileState.SuggestSword ||
+          existingTileState === SuggestTileState.SuggestPresent) &&
+        tileState === TileState.Empty
+      ) {
+        await expect(button).toHaveClass(includeClass("faded"));
+        await button.click();
+      } else {
+        await expect(button).not.toHaveClass(includeClass("faded"));
+        await button.click();
+      }
+      await expect(popover).not.toBeVisible();
+      expect(await tile.tileState()).toEqual(tileState);
     }
+  }
 
-    await expect(popover).not.toBeVisible();
-    expect(await tile.tileState()).toEqual(tileState);
+  protected override formatConcreteTileStates(
+    source: FormatDataSource,
+    index: number,
+    data: { str: string },
+    userSelected: TileState,
+    smartFill: SmartFillTileState | null | undefined
+  ) {
+    // We can't explicitly set user selected states for smart fill states in the UI, so we normalize all smart fill values on both sides to user selected states.
+    super.formatConcreteTileStates(
+      source,
+      index,
+      data,
+      userSelected !== TileState.Unknown
+        ? userSelected
+        : smartFill != null
+          ? this.#smartFillToTile(smartFill)
+          : TileState.Unknown,
+      undefined
+    );
   }
 
   protected override formatSuggestions(
@@ -127,9 +198,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
                   prompt === SuggestTileState.SuggestPresent)
                   ? 1
                   : 0,
-              // Fox is not currently supported by the Actual loader
-              // Fox: suggestion.Fox > 0 ? 1 : 0,
-              Fox: 0,
+              Fox: suggestion.Fox > 0 ? 1 : 0,
             }
           : undefined,
         prompt !== undefined ? undefined : recommended
@@ -235,16 +304,13 @@ export class GameBoardHarness extends BaseSequenceRunner {
         cell.userSelection !== undefined &&
         cell.userSelection !== TileState.Unknown
       ) {
-        expect(
-          allOptions.includes(cell.userSelection),
-          "The selected option should not be a primary or secondary suggestion"
-        ).toEqual(false);
+        expect(secondaryOptions).toContain(cell.userSelection);
         expect(
           primaryOptions,
-          "Should have no primary options when the user has selected something"
+          "Should have no primary options (except Unknown) when the user has selected something"
         ).toHaveLength(1);
         expect(primaryOptions[0]).toEqual(TileState.Unknown);
-      } else if (cell.smartFill === null) {
+      } else if (cell.smartFill === null || cell.smartFill === undefined) {
         for (const state of [
           TileState.Sword,
           TileState.Present,
@@ -263,17 +329,13 @@ export class GameBoardHarness extends BaseSequenceRunner {
           }
         }
       } else {
-        switch (cell.smartFill) {
-          case SmartFillTileState.SmartFillBlocked:
-            expect(primaryOptions).toEqual([TileState.Blocked]);
-            break;
-          case SmartFillTileState.SmartFillSword:
-            expect(primaryOptions).toEqual([TileState.Sword]);
-            break;
-          case SmartFillTileState.SmartFillPresent:
-            expect(primaryOptions).toEqual([TileState.Present]);
-            break;
-        }
+        expect(primaryOptions).toHaveLength(0);
+        expect(secondaryOptions).toHaveLength(0);
+        const buttons = this.getAllPopoverButtons();
+        await expect(buttons.nth(0)).not.toBeVisible();
+        await expect(this.getPopover()).toContainText(
+          `This tile must be a ${this.#smartFillToTile(cell.smartFill)} tile based on the other tiles on the board.`
+        );
       }
       cells[tileIndex] = cell;
     }
@@ -299,24 +361,19 @@ export class GameBoardHarness extends BaseSequenceRunner {
 
   async #getPopoverOptionSet(rootSelector: string) {
     const tileStates: string[] = Array.from(Object.values(TileState));
-    const popover = this.#rootLocator.getByTestId("popover-picker");
+    const popover = this.getPopover();
     const tiles: TileState[] = [];
     for (const item of await popover.getByTestId(rootSelector).all()) {
-      const classList = await item
+      const tileState = await item
         .locator("button")
-        .evaluate((e) => Array.from(e.classList));
-      expect(classList.length, "Only the tile should be present").toBeLessThan(
-        2
-      );
-      for (const className of classList) {
-        if (this.#stringIsTileState(TileState, className)) {
-          tiles.push(className);
-        } else {
-          expect(
-            tileStates.includes(className),
-            `${className} Should be a valid TileState (${tileStates.join()})`
-          ).toBe(true);
-        }
+        .getAttribute("data-test-tile-state");
+      if (this.#stringIsTileState(TileState, tileState)) {
+        tiles.push(tileState);
+      } else {
+        expect(
+          tileStates,
+          `${tileState} Should be a valid TileState (${tileStates.join()})`
+        ).toContain(tileState);
       }
     }
     return tiles;
@@ -335,5 +392,52 @@ export class GameBoardHarness extends BaseSequenceRunner {
     value: unknown
   ): value is T[keyof T] {
     return Object.values(tileStateEnum).includes(value);
+  }
+
+  #smartFillToTile(smartFillTileState: SmartFillTileState | undefined) {
+    return smartFillTileState === SmartFillTileState.SmartFillBlocked
+      ? TileState.Blocked
+      : smartFillTileState === SmartFillTileState.SmartFillPresent
+        ? TileState.Present
+        : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          smartFillTileState === SmartFillTileState.SmartFillSword
+          ? TileState.Sword
+          : assertUnreachable();
+  }
+
+  protected override eachIndex(
+    array: CellTestData[]
+  ): Iterable<[number, CellTestData]> {
+    const items = Array.from(super.eachIndex(array));
+
+    // Because the UI live updates as we enter data and blocks us from entering data in some cases (namely smart-fill),
+    // we have to set values for the initial state in a particular order which avoids possible issues.
+    items.sort((a, b) => {
+      const tieBreak = a[0] - b[0];
+      if (a[1].userSelection !== b[1].userSelection) {
+        if (a[1].userSelection === TileState.Unknown) {
+          return -1;
+        } else if (b[1].userSelection === TileState.Unknown) {
+          return 1;
+        } else if (a[1].userSelection === TileState.Blocked) {
+          return -1;
+        } else if (b[1].userSelection === TileState.Blocked) {
+          return 1;
+        } else {
+          return tieBreak;
+        }
+      } else if (a[1].smartFill !== b[1].smartFill) {
+        if (a[1].smartFill === SmartFillTileState.SmartFillBlocked) {
+          return -1;
+        } else if (b[1].smartFill === SmartFillTileState.SmartFillBlocked) {
+          return 1;
+        } else {
+          return tieBreak;
+        }
+      }
+      return tieBreak;
+    });
+
+    return items;
   }
 }

@@ -13,6 +13,7 @@ import {
   TrackedStatesIndexList,
 } from "../types/index.js";
 import { calculatedSolveState } from "./solve-state.js";
+import { SolveStep } from "../types/solve-state.js";
 /**
  * Legend:
  *
@@ -85,7 +86,7 @@ describe("calculatedSolveState", () => {
       this.#userSelected[index] = tileState;
     }
 
-    protected formatSuggestions(
+    protected override formatSuggestions(
       source: FormatDataSource,
       index: number,
       data: { str: string },
@@ -120,6 +121,7 @@ describe("calculatedSolveState", () => {
         };
         data.suggestions = suggestion ?? undefined;
         data.recommended =
+          solveState.solveStep !== SolveStep.SuggestFoxes &&
           finalWeight !== null &&
           finalWeight.value > 0 &&
           solveState.getMaxTileWeight() === finalWeight.value;

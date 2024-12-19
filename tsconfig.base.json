@@ -9,6 +9,7 @@
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitThis": true,
+    "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "jsx": "preserve",
     "resolveJsonModule": true,

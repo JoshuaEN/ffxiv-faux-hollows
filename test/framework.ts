@@ -45,7 +45,7 @@ export abstract class BaseSequenceRunner {
           `Initial state must not have any issues: All cells of the first item in the test sequence must only have prior state`
         );
       }
-      for (const [i, expectedData] of eachIndex(expectedDatum)) {
+      for (const [i, expectedData] of this.eachIndex(expectedDatum)) {
         if (expectedData.prompt !== undefined) {
           this.fail(
             `Cell ${i} has prompt: All cells of the first item in the test sequence must only have prior state`
@@ -97,7 +97,7 @@ export abstract class BaseSequenceRunner {
       const expected = { str: `\n${adjustedSequenceIndex}->0` };
       const actualState = await this.getState();
       const actualDatum = actualState.cells;
-      for (const [k, expectedData] of eachIndex(expectedDatum)) {
+      for (const [k, expectedData] of this.eachIndex(expectedDatum)) {
         if (k > 0 && k % BOARD_WIDTH === 0) {
           actual.str += `|\n\n${adjustedSequenceIndex}->${Math.floor(
             k / BOARD_WIDTH
@@ -138,7 +138,8 @@ export abstract class BaseSequenceRunner {
       this.expect(
         actual.str,
         actualState.debug !== undefined
-          ? `\n\u001b[34mDebug: ${actualState.debug}\u001b[31m\n`
+          ? // We inject temporal and random data in because vitest merges test failures based on this message, even if the actual/expected values are different.
+            `\n\u001b[34mDebug: ${actualState.debug} \u001b[8m | Now: ${Date.now()} | Random Value: ${Math.random()}\u001b[0m\n`
           : undefined
       ).toEqual(expected.str);
     }
@@ -273,5 +274,13 @@ export abstract class BaseSequenceRunner {
     }
     issuesStrings.sort();
     return issuesStrings;
+  }
+
+  protected *eachIndex(
+    array: CellTestData[]
+  ): Iterable<[number, CellTestData]> {
+    for (let i = 0; i < array.length; i++) {
+      yield [i, array[i] as CellTestData];
+    }
   }
 }
