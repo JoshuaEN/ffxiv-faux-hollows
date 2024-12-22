@@ -105,6 +105,7 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       issues.push(...userSelectedIssues);
 
       if (isFatalError) {
+        solveState.setCandidatePatterns(patterns);
         return {
           solved,
           solveState: solveState.finalize(
@@ -157,8 +158,9 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
         }
         if (
           anyConfirmedFoxTilesNotTaken === false &&
-          solveState.getStateEligibility(TileState.Fox, index) !==
-            StateTileEligibility.Taken
+          (solveState.getStateEligibility(TileState.Fox, index) !==
+            StateTileEligibility.Taken ||
+            solveState.getUserState(index) === TileState.Empty)
         ) {
           anyConfirmedFoxTilesNotTaken = true;
         }
@@ -237,6 +239,7 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
           )
         )
       );
+      solveState.setCandidatePatterns([]);
       return {
         solved,
         solveState: solveState.finalize(SolveStep.FillSword),
@@ -262,7 +265,7 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
     );
 
     const candidatePatterns = filteredPatterns.map(({ pattern }) => pattern);
-
+    solveState.setCandidatePatterns(candidatePatterns);
     return {
       solved,
       solveState:

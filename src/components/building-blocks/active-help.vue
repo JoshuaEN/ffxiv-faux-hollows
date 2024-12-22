@@ -5,6 +5,7 @@ defineProps<{ title: string }>();
 <template>
   <details
     :open="open"
+    class="active-help"
     @onToggle="($event: ToggleEvent) => (open = $event.newState === 'open')"
   >
     <summary>

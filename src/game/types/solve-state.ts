@@ -78,7 +78,7 @@ export class SolveState {
     readonly maxTileWeight: number,
     readonly solveStep: SolveStep,
     readonly foxOdds: ReadonlyMap<number, FoxOdds>,
-    readonly totalCandidatePatterns: number
+    readonly totalCandidatePatterns: number | null
   ) {}
 
   getSmartFill(index: number) {
@@ -105,7 +105,8 @@ export class SolveState {
     // This is both the number of fox candidates and the number of patterns foxes were present on for this tile (because, for a given pattern, a fox is either confirmed or unconfirmed on a tile)
     const foxesOnIndex = foxDetails.confirmedFoxes;
     // Of all possible patterns (accounting for uncovered Presents/Swords), what percent may have a fox on this tile
-    const oddsOfPatternHavingFox = foxesOnIndex / this.totalCandidatePatterns;
+    const oddsOfPatternHavingFox =
+      foxesOnIndex / (this.totalCandidatePatterns ?? 0);
     // Of all possible foxes given the current possible patterns, what percent of the time will the fox be on this tile.
     const oddsOfTileHavingFoxInPatternsWithFoxes =
       foxesOnIndex / foxDetails.totalFoxesForPatterns;
@@ -180,7 +181,7 @@ export class IndeterminateSolveState {
   /**
    * List of patterns which could be present.
    */
-  #candidatePatterns: CommunityDataPattern[] = [];
+  #candidatePatterns: readonly CommunityDataPattern[] | null = null;
 
   /**
    * Flags indicating if each of the represented shapes have been fully found.
@@ -247,7 +248,9 @@ export class IndeterminateSolveState {
   }
 
   getCandidatePatterns() {
-    return [...this.#candidatePatterns];
+    return this.#candidatePatterns === null
+      ? null
+      : [...this.#candidatePatterns];
   }
 
   getSolved() {
@@ -338,7 +341,7 @@ export class IndeterminateSolveState {
     this.#foxCount += 1;
   }
 
-  setCandidatePatterns(candidatePatterns: CommunityDataPattern[]) {
+  setCandidatePatterns(candidatePatterns: readonly CommunityDataPattern[]) {
     this.#candidatePatterns = candidatePatterns;
   }
 
@@ -407,7 +410,7 @@ export class IndeterminateSolveState {
       maxWeight,
       solveStep,
       this.#foxOdds,
-      this.#candidatePatterns.length
+      this.#candidatePatterns?.length ?? null
     );
   }
 

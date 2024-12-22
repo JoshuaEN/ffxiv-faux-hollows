@@ -1,0 +1,11 @@
+.chips {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: var(--board-tile-gap);
+  margin: var(--board-tile-gap) 0;
+}
+
+.chip {
+  font-family: monospace;
+}

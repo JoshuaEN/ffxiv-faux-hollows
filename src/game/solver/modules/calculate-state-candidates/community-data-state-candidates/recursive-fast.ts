@@ -111,15 +111,21 @@ export const calculateStatesCandidates =
           ? (new Map() as ReturnType<typeof recursiveSolver>)
           : recursiveSolver(count, tiles, filteredPatterns);
       const swordIndexCounts = new Map<number, number>();
+      const swordsByCount = new Map<number, number>();
       const presentIndexCounts = new Map<number, number>();
+      const presentsByCount = new Map<number, number>();
       for (const pattern of filteredPatterns) {
         for (const index of pattern.boundingBox.Sword.indexes()) {
-          swordIndexCounts.set(index, (swordIndexCounts.get(index) ?? 0) + 1);
+          const newValue = (swordIndexCounts.get(index) ?? 0) + 1;
+          swordIndexCounts.set(index, newValue);
+          swordsByCount.set(newValue, (swordsByCount.get(newValue) ?? 0) + 1);
         }
         for (const index of pattern.boundingBox.Present.indexes()) {
-          presentIndexCounts.set(
-            index,
-            (presentIndexCounts.get(index) ?? 0) + 1
+          const newValue = (presentIndexCounts.get(index) ?? 0) + 1;
+          presentIndexCounts.set(index, newValue);
+          presentsByCount.set(
+            newValue,
+            (presentsByCount.get(newValue) ?? 0) + 1
           );
         }
       }
@@ -147,9 +153,17 @@ export const calculateStatesCandidates =
             );
           }
           if (result === undefined) {
-            if (swordIndexCount === filteredPatterns.length) {
+            if (
+              swordIndexCount === filteredPatterns.length &&
+              (swordsByCount.get(filteredPatterns.length) === 6 ||
+                solveState.userStatesIndexList[TileState.Sword].size > 0)
+            ) {
               solveState.setSmartFill(index, TileState.Sword);
-            } else if (presentIndexCount === filteredPatterns.length) {
+            } else if (
+              presentIndexCount === filteredPatterns.length &&
+              (presentsByCount.get(filteredPatterns.length) === 6 ||
+                solveState.userStatesIndexList[TileState.Present].size > 0)
+            ) {
               solveState.setSmartFill(index, TileState.Present);
             }
           }

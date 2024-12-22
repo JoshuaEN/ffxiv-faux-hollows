@@ -1,11 +1,12 @@
+@use "./scss/chip.scss";
+
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
   --font-color: hsl(0, 0%, 96%);
-  --highlight-color: #ff9c4e;
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: hsl(27.1, 36.3%, 5.1%);
 
@@ -64,9 +65,13 @@
 
   --tile-border-radius: 8px;
 
+  --chip-background-color: #2f3d4e;
+  --chip-color: var(--font-color);
+
   color-scheme: dark light;
   color: var(--font-color);
   background-color: var(--page-background-color);
+  scrollbar-gutter: stable both-edges;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -162,8 +167,7 @@
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
+  justify-content: safe center;
   min-height: 100vh;
 }
 
@@ -171,8 +175,9 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-em {
-  color: var(--highlight-color);
+
+.active-help em {
+  color: #ff9c4e;
 }
 
 button {
@@ -194,9 +199,12 @@ button:hover:focus:not(:disabled) {
   filter: brightness(140%);
   opacity: 1 !important;
 }
-button:focus:not(:disabled),
-button:not(:disabled).focused {
+button:focus:not(:disabled) {
   filter: brightness(120%);
+  opacity: 1 !important;
+}
+button:not(:disabled).focused {
+  filter: brightness(150%);
   opacity: 1 !important;
 }
 
@@ -212,13 +220,16 @@ button:not(:disabled).focused {
 }
 
 #app {
-  max-width: min(
-    1280px,
+  --app-width: min(
+    min(1280px, min(75vh, 95vw)),
     calc(var(--tile-max-size) * var(--board-tile-count)) +
       calc(var(--board-tile-max-gap) * (calc(var(--board-tile-count) - 1)))
   );
-  width: 100%;
+  width: var(--app-width);
+  // max-width: var(--app-width);
+  // width: 100%;
   margin: 0 auto;
+  margin-top: min(30vmax, 1rem);
   padding: 1rem;
 }
 

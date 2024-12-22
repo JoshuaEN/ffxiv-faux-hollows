@@ -6,6 +6,7 @@ const board = new Board();
 </script>
 
 <template>
+  <h1>Faux Hollows Solver</h1>
   <GameBoard :board="board" />
 </template>
 

@@ -1,4 +1,3 @@
-import { eachIndex } from "~/src/helpers.js";
 import { TestStructuralElements } from "../all-data-tests.js";
 import { RegisterTest } from "../framework.js";
 import { EMPTY } from "../shared.js";
@@ -8,7 +7,7 @@ export const data = (
   { describe }: TestStructuralElements
 ) => {
   describe("Blocked Smart-fill", () => {
-    for (const [i, data] of eachIndex([
+    for (const [title, ...data] of [
       [
         "A Up",
         `
@@ -141,15 +140,15 @@ export const data = (
           └─────┴─────┴─────┴─────┴─────┴─────┘
         `,
       ],
-    ])) {
+    ]) {
       registerTest(
-        `auto-fills once enough blocked items have been filled in (test case [${i}] "${data[0]}")`,
+        `auto-fills once enough blocked items have been filled in (test case "${title}")`,
         EMPTY,
-        ...data.slice(1)
+        ...data
       );
     }
 
-    for (const [i, data] of eachIndex([
+    for (const [title, ...data] of [
       // Edge Cases
       ["No blocked tiles provided", EMPTY],
       // 4 of 5 blocked tiles entered by the user
@@ -298,13 +297,14 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 1
     `,
       ],
       [
         "handles blocked tile patterns with no community data (2 tiles entered)",
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
-      │     │>B1  │     │     │     │     │
+      │     │     │>B1  │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │>B2  │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -316,70 +316,68 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 2, 7
     `,
       ],
       [
         "handles blocked tile patterns with no community data (3 tiles entered)",
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
-      │     │>B1  │     │     │     │     │
+      │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B2  │     │     │     │     │
+      │     │     │>B1  │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │>B2  │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │>B3  │     │     │     │     │
-      ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │     │     │     │     │     │
-      ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │     │     │     │     │     │
-      ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 26, 31
     `,
       ],
       [
         "handles blocked tile patterns with no community data (4 tiles entered)",
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
-      │     │>B1  │     │     │     │     │
+      │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B2  │     │     │     │     │
-      ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B3  │     │     │     │     │
-      ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B4  │     │     │     │     │
+      │     │     │>B1  │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │>B4  │     │     │>B3  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │>B2  │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 19, 22, 26
     `,
       ],
       [
         "handles blocked tile patterns with no community data (5 tiles entered)",
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
-      │     │>B1  │     │     │     │     │
+      │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B2  │     │     │     │     │
+      │     │     │>B1  │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B3  │     │     │     │     │
+      │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B4  │     │     │     │     │
+      │     │>B4  │     │     │>B3  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │>B5  │     │     │     │     │
+      │     │     │>B2  │     │     │>B5  │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Tile pattern does not match any known patterns; suggestions are not available.
-      [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 19, 22, 26, 29
     `,
       ],
-    ])) {
-      registerTest(
-        `${data[0]} (test case index ${i})`,
-        EMPTY,
-        ...data.slice(1)
-      );
+    ] as const) {
+      registerTest(title, EMPTY, ...data);
     }
 
     registerTest(

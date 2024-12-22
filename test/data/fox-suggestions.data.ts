@@ -72,8 +72,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │ E   │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Tile pattern does not match any known patterns; suggestions are not available. # Issues: 24
-      [Warning] Blocked tile pattern does not match any known patterns; Fox suggestions are not available.
+      [Error] Blocked tile pattern does not match any known patterns. # Issues: 0, 1, 2, 3, 4
     `
       );
       registerTest(

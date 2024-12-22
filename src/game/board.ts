@@ -7,11 +7,7 @@ import {
   TrackedStatesIndexList,
   TileState,
 } from "./types/index.js";
-import {
-  IndeterminateSolveState,
-  SolveState,
-  SolveStep,
-} from "./types/solve-state.js";
+import { SolveState } from "./types/solve-state.js";
 
 export class Board {
   readonly #userSelectedStates: TileState[] = [];
@@ -29,11 +25,10 @@ export class Board {
     this.#userSelectedStates = new Array<TileState>(BOARD_CELLS).fill(
       TileState.Unknown
     );
-    this.#tiles = new Array<TileState>(BOARD_CELLS).fill(TileState.Unknown);
-    this.#solveState = new IndeterminateSolveState(
-      this.#userSelectedStates,
-      this.#trackedUserSelectedStates
-    ).finalize(SolveStep.FillBlocked);
+    const { tiles, solveState, issues } = this.#solve();
+    this.#solveState = solveState;
+    this.#boardIssues = issues;
+    this.#tiles = tiles;
   }
 
   get tiles(): readonly CombinedTileState[] {
@@ -85,14 +80,15 @@ export class Board {
 
   #recalculateSolveState() {
     // for (let i = 0; i < 10_000; i++) {
-    const { tiles, solveState, issues } = solve(
-      this.#userSelectedStates,
-      this.#trackedUserSelectedStates
-    );
+    const { tiles, solveState, issues } = this.#solve();
     this.#solveState = solveState;
     this.#boardIssues = issues;
     this.#tiles = tiles;
     // }
+  }
+
+  #solve() {
+    return solve(this.#userSelectedStates, this.#trackedUserSelectedStates);
   }
 
   #isTrackedState(

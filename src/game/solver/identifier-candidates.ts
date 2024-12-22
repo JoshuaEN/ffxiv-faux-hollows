@@ -28,7 +28,25 @@ export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
       break;
     }
     case 0: {
-      return { identifierCandidates: [], patternIdentifierCandidates: [] };
+      patternIdentifierCandidates = [
+        "A←",
+        "A↓",
+        "C",
+        "D↓",
+        "A",
+        "A→",
+        "B←",
+        "B",
+        "B→",
+        "B↓",
+        "C←",
+        "C→",
+        "C↓",
+        "D←",
+        "D",
+        "D→",
+      ];
+      break;
     }
     case 4: {
       // The community data lookup table does not have 4 because only 3 spots are needed to uniquely identify a board position
@@ -54,7 +72,7 @@ export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
   const identifierCandidates = patternIdentifierCandidates.map(
     (c) => communityDataByIdentifier[c]
   );
-  if (identifierCandidates.length === 0 && blockedIndexes.size === 5) {
+  if (identifierCandidates.length === 0) {
     // We are missing the pattern the user provided
     // We cannot provide any Fox suggestions, but we can provide a best-effort
     return {
@@ -62,10 +80,10 @@ export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
         { Patterns: [], Blocked: Array.from(blockedIndexes) },
       ],
       patternIdentifierCandidates: ["??"],
-      warning: new BoardIssue(
-        BoardIssueSeverity.Warning,
-        `Blocked tile pattern does not match any known patterns; Fox suggestions are not available.`,
-        []
+      error: new BoardIssue(
+        BoardIssueSeverity.Error,
+        `Blocked tile pattern does not match any known patterns.`,
+        Array.from(blockedIndexes)
       ),
     };
   }

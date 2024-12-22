@@ -3,6 +3,7 @@ import { data as foxSuggestionsData } from "./data/fox-suggestions.data.js";
 import { data as presentsSmartFillData } from "./data/presents-smart-fill.data.js";
 import { data as smartFillEdgeCasesData } from "./data/smart-fill-edge-cases.data.js";
 import { data as swordSmartFillData } from "./data/sword-smart-fill.data.js";
+import { data as otherEdgeCasesData } from "./data/other-edge-cases.data.js";
 import { RegisterTest } from "./framework.js";
 
 export interface TestStructuralElements {
@@ -18,4 +19,5 @@ export function allTestData(
   presentsSmartFillData(registerSequence, elements);
   smartFillEdgeCasesData(registerSequence, elements);
   swordSmartFillData(registerSequence, elements);
+  otherEdgeCasesData(registerSequence, elements);
 }

@@ -299,7 +299,7 @@ function autoSolver(
           }
 
           const patternsRemaining =
-            newBoard.solveState.solveState.getCandidatePatterns();
+            newBoard.solveState.solveState.getCandidatePatterns() ?? [];
           const foxCandidatesRemainingMap = new Map<number, number>();
           for (const pattern of patternsRemaining) {
             for (const foxIndex of pattern.ConfirmedFoxes) {

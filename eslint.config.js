@@ -65,6 +65,7 @@ export default typescriptEslint.config(
       "vue/html-self-closing": "off",
       "vue/html-indent": "off",
       "vue/multiline-html-element-content-newline": "off",
+      "vue/singleline-html-element-content-newline": "off",
 
       // Misc
       "block-scoped-var": "error",

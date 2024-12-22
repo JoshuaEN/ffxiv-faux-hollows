@@ -50,6 +50,9 @@ export function calculatedSolveState(
 
   // If all blocked are not present, we skip trying to find the best spot because there's no value
   if (!allBlockedIdentified) {
+    solveState.setCandidatePatterns(
+      identifierCandidates.flatMap((p) => p.Patterns)
+    );
     return { solveState: solveState.finalize(SolveStep.FillBlocked), issues };
   }
   const identifierCandidate = identifierCandidates[0];

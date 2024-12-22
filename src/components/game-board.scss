@@ -4,7 +4,7 @@ main {
   gap: var(--board-tile-gap);
 
   &.focusTile .tile:not(.focused) {
-    opacity: 0.7;
+    // opacity: 0.7;
 
     &.suggestion {
       opacity: calc(0.7 * 0.5);
@@ -16,7 +16,6 @@ main {
 }
 
 main.gameBoard {
-  max-height: 80vh;
   aspect-ratio: 1;
 }
 

@@ -21,7 +21,7 @@
 
 # Problems
 
-- [ ] If smart-fill can infer _some_ tiles, but not all of them, and the user has not entered any for that type of tile, the suggestion should be on the smart fill tile(s).
-  - [ ] Still broken if we're in suggest mode for a different tile then we are partly smart filling
-  - [ ] Also need tests
-- [ ] Entering all fox locations as empty incorrectly eliminates candidate patterns.
+- [x] If smart-fill can infer _some_ tiles, but not all of them, and the user has not entered any for that type of tile, the suggestion should be on the smart fill tile(s).
+  - [x] Still broken if we're in suggest mode for a different tile then we are partly smart filling
+  - [x] Also need tests
+- [x] Entering all fox locations as empty incorrectly eliminates candidate patterns.

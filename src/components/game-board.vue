@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowReactive } from "vue";
+import { computed, reactive, ref, shallowReactive } from "vue";
 import { Board } from "~/src/game/board.js";
 import {
   CombinedTileState,
@@ -57,7 +57,7 @@ const popoverOpen = computed(
 );
 
 const props = defineProps<{ board: Board }>();
-const data = shallowReactive({ board: props.board });
+const data = props;
 
 const hideTilePicker = () => {
   popoverData.value = null;
@@ -94,15 +94,32 @@ const tileClicked = (
 const pickTile = (index: number, tileState: TileState) => {
   hideTilePicker();
   props.board.setUserState(index, tileState);
-  data.board = props.board;
 };
 </script>
 
 <template>
-  <div>Identifier: {{ data.board.solveState.getPatternIdentifier() }}</div>
-  <div>
-    Total candidate patterns: {{ data.board.solveState.totalCandidatePatterns }}
-  </div>
+  <section class="chips">
+    <span
+      v-if="data.board.solveState.totalCandidatePatterns !== null"
+      class="chip"
+    >
+      Remaining patterns:
+      <span data-testid="remaining-patterns">{{
+        data.board.solveState.totalCandidatePatterns
+      }}</span>
+    </span>
+    <span
+      v-if="board.solveState.getPatternIdentifier() !== null"
+      class="chip"
+      data-testid="pattern-identifier"
+    >
+      {{
+        board.solveState.getPatternIdentifier()?.length === 1
+          ? `${board.solveState.getPatternIdentifier()}↑`
+          : board.solveState.getPatternIdentifier()
+      }}
+    </span>
+  </section>
   <div
     v-for="issue in data.board.issues"
     :key="issue.message"
