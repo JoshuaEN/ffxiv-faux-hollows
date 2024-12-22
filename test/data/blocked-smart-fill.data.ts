@@ -11,6 +11,7 @@ export const data = (
       [
         "A Up",
         `
+          ## 48
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │     │     │     │     │     │     │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -26,6 +27,8 @@ export const data = (
           └─────┴─────┴─────┴─────┴─────┴─────┘
         `,
         `
+          ID A
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │. 5  │. 5  │.  4 │.  4 │.  4 │.  4 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -44,6 +47,8 @@ export const data = (
       [
         "A Down (one sequence to auto-fill)",
         `
+          ID A↓
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │>B   │.224 │.224 │.  4 │.42  │.424 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -62,6 +67,7 @@ export const data = (
       [
         "C Up (two sequence to auto-fill)",
         `
+          ## 62
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │     │     │     │     │     │     │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -77,6 +83,8 @@ export const data = (
           └─────┴─────┴─────┴─────┴─────┴─────┘
         `,
         `
+          ID C
+          ## 15
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.  3 │.  4 │. 4  │. 4  │  b  │.  4 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -95,6 +103,7 @@ export const data = (
       [
         "D Left (three sequence to auto-fill)",
         `
+          ## 64
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │     │     │     │     │     │     │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -110,6 +119,7 @@ export const data = (
           └─────┴─────┴─────┴─────┴─────┴─────┘
         `,
         `
+          ## 32
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │     │     │     │     │     │     │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -125,6 +135,8 @@ export const data = (
           └─────┴─────┴─────┴─────┴─────┴─────┘
         `,
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -150,11 +162,13 @@ export const data = (
 
     for (const [title, ...data] of [
       // Edge Cases
-      ["No blocked tiles provided", EMPTY],
+      ["No blocked tiles provided", "## 252\n" + EMPTY],
       // 4 of 5 blocked tiles entered by the user
       [
         "D Left (four of five blocked tiles contain user-entered data; first blocked tile index auto-filled)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -173,6 +187,8 @@ export const data = (
       [
         "D Left (four of five blocked tiles contain user-entered data; second blocked tile index auto-filled)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -191,6 +207,8 @@ export const data = (
       [
         "D Left (four of five blocked tiles contain user-entered data; third blocked tile index auto-filled)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -209,6 +227,8 @@ export const data = (
       [
         "D Left (four of five blocked tiles contain user-entered data; fourth blocked tile index auto-filled)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -227,6 +247,8 @@ export const data = (
       [
         "D Left (four of five blocked tiles contain user-entered data; fifth blocked tile index auto-filled)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -246,6 +268,8 @@ export const data = (
       [
         "D Left (five of five blocked tiles contain user-entered data)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -265,6 +289,8 @@ export const data = (
       [
         "D Left (order of user-entered data should not matter)",
         `
+          ID D←
+          ## 16
           ┌─────┬─────┬─────┬─────┬─────┬─────┐
           │.23  │.234 │.  4 │.234 │.25  │.224 │
           ├─────┼─────┼─────┼─────┼─────┼─────┤

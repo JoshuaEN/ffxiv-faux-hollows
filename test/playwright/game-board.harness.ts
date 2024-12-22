@@ -5,8 +5,12 @@ import {
   SuggestTileState,
   TileState,
 } from "~/src/game/types/index.js";
-import { BaseSequenceRunner, FormatDataSource } from "../framework.js";
-import { CellTestData } from "../helpers/ascii-grid.js";
+import {
+  BaseSequenceRunner,
+  FormatDataSource,
+  TestGameStateSnapshot,
+} from "../framework.js";
+import { CellTestData, TestPatternData } from "../helpers/ascii-grid.js";
 import { assertUnreachable } from "~/src/helpers.js";
 import { includeClass } from "./expect.js";
 
@@ -26,6 +30,35 @@ export class GameBoardHarness extends BaseSequenceRunner {
     );
     this.#rootLocator = rootLocator;
     this.#page = args.page;
+  }
+
+  protected async getPatternData(): Promise<TestPatternData> {
+    const patternCountText =
+      (await this.getRemainingPatterns().count()) > 0
+        ? await this.getRemainingPatterns().textContent()
+        : null;
+    const remainingPatterns =
+      patternCountText === null ? null : parseInt(patternCountText, 10);
+    return {
+      patternIdentifier:
+        (await this.getPattern().count()) > 0
+          ? await this.getPattern().textContent()
+          : null,
+      remainingPatterns,
+    };
+  }
+
+  protected override formatPatterns(
+    source: FormatDataSource,
+    patternData: TestPatternData
+  ): string {
+    return super.formatPatterns(source, {
+      patternIdentifier:
+        patternData.patternIdentifier?.length === 1
+          ? `${patternData.patternIdentifier}↑`
+          : patternData.patternIdentifier,
+      remainingPatterns: patternData.remainingPatterns,
+    });
   }
 
   #getTile(index: number) {
@@ -221,11 +254,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
     }
   }
 
-  protected async getState(): Promise<{
-    cells: CellTestData[];
-    issues: BoardIssue[];
-    debug?: string | undefined;
-  }> {
+  protected async getState(): Promise<TestGameStateSnapshot> {
     const cells: CellTestData[] = [];
     const board = this.#rootLocator.getByTestId("game-board");
     const boardTiles = await board
@@ -356,6 +385,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return {
       cells,
       issues,
+      patternData: await this.getPatternData(),
     };
   }
 
@@ -387,6 +417,14 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.#getPopoverOptionSet("popover-picker-secondary-option");
   }
 
+  getPattern() {
+    return this.#rootLocator.getByTestId("pattern-identifier");
+  }
+
+  getRemainingPatterns() {
+    return this.#rootLocator.getByTestId("remaining-patterns");
+  }
+
   #stringIsTileState<T extends object>(
     tileStateEnum: T,
     value: unknown
@@ -399,8 +437,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
       ? TileState.Blocked
       : smartFillTileState === SmartFillTileState.SmartFillPresent
         ? TileState.Present
-        : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          smartFillTileState === SmartFillTileState.SmartFillSword
+        : smartFillTileState === SmartFillTileState.SmartFillSword
           ? TileState.Sword
           : assertUnreachable();
   }

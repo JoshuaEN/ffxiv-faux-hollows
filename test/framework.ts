@@ -5,13 +5,24 @@ import {
   TileState,
 } from "~/src/game/types/index.js";
 import { eachIndex } from "~/src/helpers.js";
-import { CellTestData, loadAsciiGrid } from "./helpers/ascii-grid.js";
+import {
+  CellTestData,
+  loadAsciiGrid,
+  TestPatternData,
+} from "./helpers/ascii-grid.js";
 
 export type RegisterTest = (title: string, ...states: string[]) => void;
 
 export enum FormatDataSource {
   Actual = "Actual",
   Expected = "Expected",
+}
+
+export interface TestGameStateSnapshot {
+  cells: CellTestData[];
+  issues: BoardIssue[];
+  patternData: TestPatternData;
+  debug?: string;
 }
 
 export abstract class BaseSequenceRunner {
@@ -34,7 +45,8 @@ export abstract class BaseSequenceRunner {
       if (initialState === undefined) {
         this.fail("No states provided");
       }
-      const { expectedDatum, actions, issues } = loadAsciiGrid(initialState);
+      const { expectedDatum, actions, expectedPatternData, issues } =
+        loadAsciiGrid(initialState);
       if (actions.length > 0) {
         this.fail(
           `Initial state must not have any actions: All cells of the first item in the test sequence must only have prior state`
@@ -44,6 +56,12 @@ export abstract class BaseSequenceRunner {
         this.fail(
           `Initial state must not have any issues: All cells of the first item in the test sequence must only have prior state`
         );
+      }
+      if (expectedPatternData.patternIdentifier !== null) {
+        this.fail(`Initial state must not have any pattern identifier set.`);
+      }
+      if (expectedPatternData.remainingPatterns !== null) {
+        this.fail(`Initial state must not have any remaining patterns set.`);
       }
       for (const [i, expectedData] of this.eachIndex(expectedDatum)) {
         if (expectedData.prompt !== undefined) {
@@ -83,6 +101,7 @@ export abstract class BaseSequenceRunner {
       const adjustedSequenceIndex = sequenceIndex + 1;
       const {
         expectedDatum,
+        expectedPatternData,
         actions,
         issues: expectedBoardIssues,
       } = loadAsciiGrid(state);
@@ -93,9 +112,13 @@ export abstract class BaseSequenceRunner {
       }
 
       // Assert
-      const actual = { str: `\n${adjustedSequenceIndex}->0` };
-      const expected = { str: `\n${adjustedSequenceIndex}->0` };
       const actualState = await this.getState();
+      const actual = {
+        str: `\n${this.formatPatterns(FormatDataSource.Actual, actualState.patternData)}\n${adjustedSequenceIndex}->0`,
+      };
+      const expected = {
+        str: `\n${this.formatPatterns(FormatDataSource.Expected, expectedPatternData)}\n${adjustedSequenceIndex}->0`,
+      };
       const actualDatum = actualState.cells;
       for (const [k, expectedData] of this.eachIndex(expectedDatum)) {
         if (k > 0 && k % BOARD_WIDTH === 0) {
@@ -145,6 +168,13 @@ export abstract class BaseSequenceRunner {
     }
   }
 
+  protected formatPatterns(
+    source: FormatDataSource,
+    patternData: TestPatternData
+  ) {
+    return `ID ${patternData.patternIdentifier ?? "(unavailable)"}\n## ${patternData.remainingPatterns ?? "(unavailable)"}`;
+  }
+
   protected format(
     source: FormatDataSource,
     index: number,
@@ -174,8 +204,8 @@ export abstract class BaseSequenceRunner {
   ): Promise<void> | void;
 
   protected abstract getState():
-    | Promise<{ cells: CellTestData[]; issues: BoardIssue[]; debug?: string }>
-    | { cells: CellTestData[]; issues: BoardIssue[]; debug?: string };
+    | Promise<TestGameStateSnapshot>
+    | TestGameStateSnapshot;
 
   protected *indexes(): Iterable<number> {
     for (let i = 0; i < BOARD_CELLS; i++) {

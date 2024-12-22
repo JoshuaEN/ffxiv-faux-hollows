@@ -4,6 +4,7 @@ import { allTestData } from "~/test/all-data-tests.js";
 import {
   BaseSequenceRunner,
   FormatDataSource,
+  TestGameStateSnapshot,
 } from "../../../test/framework.js";
 import { CellTestData } from "../../../test/helpers/ascii-grid.js";
 import {
@@ -105,7 +106,7 @@ describe("calculatedSolveState", () => {
       );
     }
 
-    protected getState() {
+    protected getState(): TestGameStateSnapshot {
       const { solveState, issues } = this.calculateSolveState();
       const cells: CellTestData[] = [];
       for (const index of this.indexes()) {
@@ -132,6 +133,10 @@ describe("calculatedSolveState", () => {
       return {
         cells,
         issues,
+        patternData: {
+          patternIdentifier: solveState.getPatternIdentifier(),
+          remainingPatterns: solveState.totalCandidatePatterns,
+        },
         debug: `Solve Step: ${
           solveState.solveStep
         } | Pattern: ${solveState.getPatternIdentifier()}`,

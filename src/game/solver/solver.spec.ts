@@ -1,7 +1,11 @@
 import { assert, describe, expect, test } from "vitest";
 import { assertNever, eachIndex } from "../../helpers.js";
 import { allTestData } from "~/test/all-data-tests.js";
-import { BaseSequenceRunner, FormatDataSource } from "~/test/framework.js";
+import {
+  BaseSequenceRunner,
+  FormatDataSource,
+  TestGameStateSnapshot,
+} from "~/test/framework.js";
 import { CellTestData } from "~/test/helpers/ascii-grid.js";
 import { BOARD_CELLS } from "../constants.js";
 import {
@@ -119,7 +123,7 @@ describe("solve", () => {
       this.#userSelected[index] = tileState;
     }
 
-    protected getState() {
+    protected getState(): TestGameStateSnapshot {
       const { tiles, issues, solveState } = this.#solve();
       assert.lengthOf(tiles, BOARD_CELLS);
       const cells: CellTestData[] = [];
@@ -199,7 +203,15 @@ describe("solve", () => {
         }
       }
 
-      return { cells, issues, debug: `Solve Step: ${solveState.solveStep}` };
+      return {
+        cells,
+        issues,
+        patternData: {
+          patternIdentifier: solveState.getPatternIdentifier(),
+          remainingPatterns: solveState.totalCandidatePatterns,
+        },
+        debug: `Solve Step: ${solveState.solveStep}`,
+      };
     }
     #solve() {
       const userStatesIndexList: TrackedStatesIndexList<Set<number>> = {

@@ -59,18 +59,60 @@ export interface CellTestData {
   prompt?: SuggestTileState;
 }
 
+export interface TestPatternData {
+  patternIdentifier: string | null;
+  remainingPatterns: number | null;
+}
+
 export function loadAsciiGrid(str: string) {
   const cells: CellTestData[] = [];
   const actions: { tileState: TileState; index: number }[] = [];
   const rows = str.split(/\r?\n/);
   let startFound = false;
   let logicalRowIndex = 0;
+  const patternData: TestPatternData = {
+    patternIdentifier: null,
+    remainingPatterns: null,
+  };
 
   // Process the main body of the table
   let i = 0;
   for (; i < rows.length; i++) {
     const row = rows[i]?.trim() ?? "";
-    if (!startFound && !row.startsWith(AsciiParts.TopLeft)) {
+    if (!startFound && row.startsWith("ID")) {
+      if (patternData.patternIdentifier !== null) {
+        throw new Error(`Header ID was already set`);
+      }
+      patternData.patternIdentifier = row.slice("ID ".length);
+      if (patternData.patternIdentifier.length < 0) {
+        throw new Error(`Header ID contained no value: ${row}`);
+      } else if (patternData.patternIdentifier.length > 2) {
+        throw new Error(`Header ID contained too large of a value: ${row}`);
+      }
+      if (
+        patternData.patternIdentifier[0] !== "A" &&
+        patternData.patternIdentifier[0] !== "B" &&
+        patternData.patternIdentifier[0] !== "C" &&
+        patternData.patternIdentifier[0] !== "D"
+      ) {
+        throw new Error(
+          `Header ID did not start  with A, B, C, or D: ${row} | Found pattern char: ${patternData.patternIdentifier[0]}`
+        );
+      }
+      continue;
+    } else if (!startFound && row.startsWith("## ")) {
+      if (patternData.remainingPatterns !== null) {
+        throw new Error(`Header ## (remaining patterns) was already set`);
+      }
+
+      patternData.remainingPatterns = parseInt(row.slice("## ".length), 10);
+      if (isNaN(patternData.remainingPatterns)) {
+        throw new Error(
+          `Header ## (remaining patterns) contained an invalid number`
+        );
+      }
+      continue;
+    } else if (!startFound && !row.startsWith(AsciiParts.TopLeft)) {
       continue;
     } else if (!startFound) {
       startFound = true;
@@ -378,6 +420,7 @@ export function loadAsciiGrid(str: string) {
   return {
     actions,
     expectedDatum: cells,
+    expectedPatternData: patternData,
     issues,
   };
 }
