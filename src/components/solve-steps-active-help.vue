@@ -142,7 +142,7 @@ const strategyHelpOpen = ref<boolean>(false);
     v-model:active-help-open="activeHelpOpen"
     active-help-title="Fill Gift Box or Coffer Tiles"
   >
-    <em>In this tool</em>, please fill in the remaining Gift Box tiles.
+    <em>In this tool</em>, please fill in the remaining Gift Box / Coffer tiles.
     <template #active-help>
       <p>
         <img

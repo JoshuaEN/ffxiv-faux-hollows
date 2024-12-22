@@ -45,54 +45,7 @@ export abstract class BaseSequenceRunner {
       if (initialState === undefined) {
         this.fail("No states provided");
       }
-      const { expectedDatum, actions, expectedPatternData, issues } =
-        loadAsciiGrid(initialState);
-      if (actions.length > 0) {
-        this.fail(
-          `Initial state must not have any actions: All cells of the first item in the test sequence must only have prior state`
-        );
-      }
-      if (issues.length > 0) {
-        this.fail(
-          `Initial state must not have any issues: All cells of the first item in the test sequence must only have prior state`
-        );
-      }
-      if (expectedPatternData.patternIdentifier !== null) {
-        this.fail(`Initial state must not have any pattern identifier set.`);
-      }
-      if (expectedPatternData.remainingPatterns !== null) {
-        this.fail(`Initial state must not have any remaining patterns set.`);
-      }
-      for (const [i, expectedData] of this.eachIndex(expectedDatum)) {
-        if (expectedData.prompt !== undefined) {
-          this.fail(
-            `Cell ${i} has prompt: All cells of the first item in the test sequence must only have prior state`
-          );
-        }
-        if (expectedData.recommended !== undefined) {
-          this.fail(
-            `Cell ${i} has recommended: All cells of the first item in the test sequence must only have prior state`
-          );
-        }
-        if (expectedData.suggestions !== undefined) {
-          this.fail(
-            `Cell ${i} has suggestions: All cells of the first item in the test sequence must only have prior state`
-          );
-        }
-        if (expectedData.smartFill !== null) {
-          this.fail(
-            `Cell ${i} has smartFill: All cells of the first item in the test sequence must only have prior state`
-          );
-        }
-
-        if (expectedData.userSelection === undefined) {
-          this.fail(
-            `Cell ${i} does not have a userSelection: All cells of the first item in the test sequence must only have prior state`
-          );
-        }
-
-        await this.setUserSelection(i, expectedData.userSelection);
-      }
+      await this.applyInitialState(initialState);
     }
 
     // Each loop: Act, Assert
@@ -165,6 +118,57 @@ export abstract class BaseSequenceRunner {
             `\n\u001b[34mDebug: ${actualState.debug} \u001b[8m | Now: ${Date.now()} | Random Value: ${Math.random()}\u001b[0m\n`
           : undefined
       ).toEqual(expected.str);
+    }
+  }
+
+  protected async applyInitialState(initialState: string) {
+    const { expectedDatum, actions, expectedPatternData, issues } =
+      loadAsciiGrid(initialState);
+    if (actions.length > 0) {
+      this.fail(
+        `Initial state must not have any actions: All cells of the first item in the test sequence must only have prior state`
+      );
+    }
+    if (issues.length > 0) {
+      this.fail(
+        `Initial state must not have any issues: All cells of the first item in the test sequence must only have prior state`
+      );
+    }
+    if (expectedPatternData.patternIdentifier !== null) {
+      this.fail(`Initial state must not have any pattern identifier set.`);
+    }
+    if (expectedPatternData.remainingPatterns !== null) {
+      this.fail(`Initial state must not have any remaining patterns set.`);
+    }
+    for (const [i, expectedData] of this.eachIndex(expectedDatum)) {
+      if (expectedData.prompt !== undefined) {
+        this.fail(
+          `Cell ${i} has prompt: All cells of the first item in the test sequence must only have prior state`
+        );
+      }
+      if (expectedData.recommended !== undefined) {
+        this.fail(
+          `Cell ${i} has recommended: All cells of the first item in the test sequence must only have prior state`
+        );
+      }
+      if (expectedData.suggestions !== undefined) {
+        this.fail(
+          `Cell ${i} has suggestions: All cells of the first item in the test sequence must only have prior state`
+        );
+      }
+      if (expectedData.smartFill !== null) {
+        this.fail(
+          `Cell ${i} has smartFill: All cells of the first item in the test sequence must only have prior state`
+        );
+      }
+
+      if (expectedData.userSelection === undefined) {
+        this.fail(
+          `Cell ${i} does not have a userSelection: All cells of the first item in the test sequence must only have prior state`
+        );
+      }
+
+      await this.setUserSelection(i, expectedData.userSelection);
     }
   }
 

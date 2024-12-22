@@ -7,7 +7,10 @@ defineProps<{ activeHelpTitle: string }>();
 </script>
 
 <template>
-  <AlertMessage :kind="AlertMessageKind.Info">
+  <AlertMessage
+    :kind="AlertMessageKind.Info"
+    data-testid="solve-step-help-tldr"
+  >
     <slot></slot>
   </AlertMessage>
   <ActiveHelp v-model:active-help-open="open" :title="activeHelpTitle">

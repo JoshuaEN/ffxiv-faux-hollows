@@ -1,4 +1,9 @@
-import { expect, Locator, Page, PlaywrightTestArgs } from "@playwright/test";
+import test, {
+  expect,
+  Locator,
+  Page,
+  PlaywrightTestArgs,
+} from "@playwright/test";
 import {
   BoardIssue,
   SmartFillTileState,
@@ -10,7 +15,11 @@ import {
   FormatDataSource,
   TestGameStateSnapshot,
 } from "../framework.js";
-import { CellTestData, TestPatternData } from "../helpers/ascii-grid.js";
+import {
+  CellTestData,
+  loadAsciiGrid,
+  TestPatternData,
+} from "../helpers/ascii-grid.js";
 import { assertUnreachable } from "~/src/helpers.js";
 import { includeClass } from "./expect.js";
 
@@ -112,59 +121,116 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.getPopover().locator("button:not(:disabled)");
   }
 
+  getActiveHelpEntries() {
+    return this.#rootLocator.locator(".active-help");
+  }
+
+  getActiveHelpTitles() {
+    return this.getActiveHelpEntries().locator("summary");
+  }
+
+  getSolveStateHelp() {
+    return this.#rootLocator.getByTestId("solve-step-help-tldr");
+  }
+
   override async setUserSelection(index: number, tileState: TileState) {
-    const tile = this.#getTile(index);
-    const existingTileState = await tile.tileState();
-    const alreadyCorrectState = existingTileState === tileState;
-    const isSmartFilled = this.#stringIsTileState(
-      SmartFillTileState,
-      existingTileState
-    );
-
-    await tile.locator.click();
-
-    const popover = this.getPopover();
-    await expect(popover).toBeVisible();
-    const buttons = this.getAllPopoverButtons();
-
-    const button = popover.getByTestId(`popover-picker-button-${tileState}`);
-
-    if (isSmartFilled) {
-      const existingNonSmartFilledTileState =
-        this.#smartFillToTile(existingTileState);
-      expect(
-        existingNonSmartFilledTileState,
-        `Wanted to set tile ${index} to ${tileState}, but it was already smart filled as ${existingTileState}`
-      ).toEqual(tileState);
-      await expect(button).not.toBeVisible();
-      await expect(buttons.nth(0)).not.toBeVisible();
-      await expect(popover).toContainText(
-        `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
+    await test.step(`setUserSelection(${index}, TileState.${tileState})`, async () => {
+      const tile = this.#getTile(index);
+      const existingTileState = await tile.tileState();
+      const alreadyCorrectState = existingTileState === tileState;
+      const isSmartFilled = this.#stringIsTileState(
+        SmartFillTileState,
+        existingTileState
       );
+
       await tile.locator.click();
-      await expect(popover).not.toBeVisible();
-      expect(await tile.tileState()).toEqual(existingTileState);
-    } else {
-      await expect(buttons.nth(0)).toBeVisible();
-      await expect(button).toBeVisible();
-      if (alreadyCorrectState) {
-        await expect(button).toHaveClass(includeClass("faded"));
+
+      const popover = this.getPopover();
+      await expect(popover).toBeVisible();
+      const buttons = this.getAllPopoverButtons();
+
+      const button = popover.getByTestId(`popover-picker-button-${tileState}`);
+
+      if (isSmartFilled) {
+        const existingNonSmartFilledTileState =
+          this.#smartFillToTile(existingTileState);
+        expect(
+          existingNonSmartFilledTileState,
+          `Wanted to set tile ${index} to ${tileState}, but it was already smart filled as ${existingTileState}`
+        ).toEqual(tileState);
+        await expect(button).not.toBeVisible();
+        await expect(buttons.nth(0)).not.toBeVisible();
+        await expect(popover).toContainText(
+          `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
+        );
         await tile.locator.click();
-        await this.#rootLocator.getByTestId(`game-tile-index-${index}`).focus();
-        await this.#page.focus("body");
-      } else if (
-        (existingTileState === SuggestTileState.SuggestSword ||
-          existingTileState === SuggestTileState.SuggestPresent) &&
-        tileState === TileState.Empty
-      ) {
-        await expect(button).toHaveClass(includeClass("faded"));
-        await button.click();
+        await expect(popover).not.toBeVisible();
+        expect(await tile.tileState()).toEqual(existingTileState);
       } else {
-        await expect(button).not.toHaveClass(includeClass("faded"));
-        await button.click();
+        await expect(buttons.nth(0)).toBeVisible();
+        await expect(button).toBeVisible();
+        if (alreadyCorrectState) {
+          await expect(button).toHaveClass(includeClass("faded"));
+          await tile.locator.click();
+          await this.#rootLocator
+            .getByTestId(`game-tile-index-${index}`)
+            .focus();
+          await this.#page.focus("body");
+        } else if (
+          (existingTileState === SuggestTileState.SuggestSword ||
+            existingTileState === SuggestTileState.SuggestPresent) &&
+          tileState === TileState.Empty
+        ) {
+          await expect(button).toHaveClass(includeClass("faded"));
+          await button.click();
+        } else {
+          await expect(button).not.toHaveClass(includeClass("faded"));
+          await button.click();
+        }
+        await expect(popover).not.toBeVisible();
+        expect(await tile.tileState()).toEqual(tileState);
       }
-      await expect(popover).not.toBeVisible();
-      expect(await tile.tileState()).toEqual(tileState);
+    });
+  }
+
+  syncToAsciiGrid(grid: string) {
+    return this.applyInitialState(grid);
+  }
+
+  async actionsFromAsciiGrid(grid: string) {
+    const { actions, expectedDatum, expectedPatternData, issues } =
+      loadAsciiGrid(grid);
+    {
+      const firstIssue = expectedDatum.find(
+        (d, i) =>
+          d.prompt !== undefined ||
+          d.recommended !== undefined ||
+          (d.smartFill !== undefined && d.smartFill !== null) ||
+          d.suggestions !== undefined ||
+          (d.userSelection !== TileState.Unknown &&
+            d.userSelection !== actions.find((a) => a.index === i)?.tileState)
+      );
+      if (firstIssue !== undefined) {
+        throw new Error(
+          `Only Actions must be provided, but expectedDatum contained information: ${JSON.stringify(firstIssue)}`
+        );
+      }
+      if (
+        expectedPatternData.patternIdentifier !== null ||
+        expectedPatternData.remainingPatterns !== null
+      ) {
+        throw new Error(
+          `Only Actions must be provided, but expectedPatternData contained information`
+        );
+      }
+      if (issues.length > 0) {
+        throw new Error(
+          `Only Actions must be provided, but issues contained information`
+        );
+      }
+    }
+    for (const action of actions) {
+      await this.setUserSelection(action.index, action.tileState);
     }
   }
 
