@@ -32,7 +32,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
     this.#page = args.page;
   }
 
-  protected async getPatternData(): Promise<TestPatternData> {
+  async getPatternData(): Promise<TestPatternData> {
     const patternCountText =
       (await this.getRemainingPatterns().count()) > 0
         ? await this.getRemainingPatterns().textContent()
