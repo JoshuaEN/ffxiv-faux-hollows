@@ -320,139 +320,141 @@ export class GameBoardHarness extends BaseSequenceRunner {
     }
   }
 
-  protected async getState(): Promise<TestGameStateSnapshot> {
-    const cells: CellTestData[] = [];
-    const board = this.#rootLocator.getByTestId("game-board");
-    const boardTiles = await board
-      .locator('[data-testid^="game-tile-index-"]')
-      .all();
-    let tileIndex = -1;
-    for (const boardTile of boardTiles) {
-      tileIndex++;
-      const tileDebugTile = `[Tile: ${tileIndex}]`;
-      // const tile = await boardTile.getAttribute("data-test-tile");
-      const classList = await boardTile.evaluate((e) =>
-        Array.from(e.classList)
-      );
+  protected getState(): Promise<TestGameStateSnapshot> {
+    return test.step("get state", async () => {
+      const cells: CellTestData[] = [];
+      const board = this.#rootLocator.getByTestId("game-board");
+      const boardTiles = await board
+        .locator('[data-testid^="game-tile-index-"]')
+        .all();
+      let tileIndex = -1;
+      for (const boardTile of boardTiles) {
+        tileIndex++;
+        const tileDebugTile = `[Tile: ${tileIndex}]`;
+        // const tile = await boardTile.getAttribute("data-test-tile");
+        const classList = await boardTile.evaluate((e) =>
+          Array.from(e.classList)
+        );
 
-      const cell: CellTestData = {};
-      for (const className of classList) {
-        if (className === "tile") {
-          continue;
-        }
+        const cell: CellTestData = {};
+        for (const className of classList) {
+          if (className === "tile") {
+            continue;
+          }
 
-        if (className === "nextTarget") {
-          cell.recommended = true;
-          continue;
-        }
+          if (className === "nextTarget") {
+            cell.recommended = true;
+            continue;
+          }
 
-        if (this.#stringIsTileState(TileState, className)) {
-          expect(
-            cell.userSelection,
-            `${tileDebugTile} had two (or more) user selection states: ${cell.userSelection}, ${className}`
-          ).toBeUndefined();
-          cell.userSelection = className;
-        } else if (this.#stringIsTileState(SmartFillTileState, className)) {
-          expect(
-            cell.smartFill,
-            `${tileDebugTile} had two (or more) smart fill selection states: ${cell.smartFill}, ${className}`
-          ).toBeUndefined();
-          cell.smartFill = className;
-        } else if (this.#stringIsTileState(SuggestTileState, className)) {
-          expect(
-            cell.prompt,
-            `${tileDebugTile} had two (or more) smart fill selection states: ${cell.prompt}, ${className}`
-          ).toBeUndefined();
-          cell.prompt = className;
-        }
-      }
-
-      await boardTile.click();
-      const primaryOptions = await this.getPopoverPrimaryOptions();
-      cell.suggestions = {
-        Fox: 0,
-        Present: 0,
-        Sword: 0,
-      };
-
-      // We skip loading suggestions for smart-fill because the expected test data does not include it (since it is implied by Smart Fill itself)
-      if (cell.smartFill == null) {
-        if (primaryOptions.includes(TileState.Sword)) {
-          cell.suggestions.Sword = 1;
-        }
-        if (primaryOptions.includes(TileState.Present)) {
-          cell.suggestions.Present = 1;
-        }
-        if (primaryOptions.includes(TileState.Fox)) {
-          cell.suggestions.Fox = 1;
-        }
-      }
-
-      const secondaryOptions = await this.getPopoverSecondaryOptions();
-
-      const allOptions = [...primaryOptions, null, ...secondaryOptions];
-      expect(allOptions, "All options should be unique").toEqual(
-        Array.from(new Set(allOptions))
-      );
-
-      if (
-        cell.userSelection !== undefined &&
-        cell.userSelection !== TileState.Unknown
-      ) {
-        expect(secondaryOptions).toContain(cell.userSelection);
-        expect(
-          primaryOptions,
-          "Should have no primary options (except Unknown) when the user has selected something"
-        ).toHaveLength(1);
-        expect(primaryOptions[0]).toEqual(TileState.Unknown);
-      } else if (cell.smartFill === null || cell.smartFill === undefined) {
-        for (const state of [
-          TileState.Sword,
-          TileState.Present,
-          TileState.Fox,
-        ] as const) {
-          if (cell.suggestions[state] > 0) {
+          if (this.#stringIsTileState(TileState, className)) {
             expect(
-              primaryOptions.includes(state),
-              `${primaryOptions.join()} should include ${state}`
-            ).toBe(true);
-          } else {
+              cell.userSelection,
+              `${tileDebugTile} had two (or more) user selection states: ${cell.userSelection}, ${className}`
+            ).toBeUndefined();
+            cell.userSelection = className;
+          } else if (this.#stringIsTileState(SmartFillTileState, className)) {
             expect(
-              primaryOptions.includes(state),
-              `${primaryOptions.join()} should not include ${state}`
-            ).toBe(false);
+              cell.smartFill,
+              `${tileDebugTile} had two (or more) smart fill selection states: ${cell.smartFill}, ${className}`
+            ).toBeUndefined();
+            cell.smartFill = className;
+          } else if (this.#stringIsTileState(SuggestTileState, className)) {
+            expect(
+              cell.prompt,
+              `${tileDebugTile} had two (or more) smart fill selection states: ${cell.prompt}, ${className}`
+            ).toBeUndefined();
+            cell.prompt = className;
           }
         }
-      } else {
-        expect(primaryOptions).toHaveLength(0);
-        expect(secondaryOptions).toHaveLength(0);
-        const buttons = this.getAllPopoverButtons();
-        await expect(buttons.nth(0)).not.toBeVisible();
-        await expect(this.getPopover()).toContainText(
-          `This tile must be a ${this.#smartFillToTile(cell.smartFill)} tile based on the other tiles on the board.`
+
+        await boardTile.click();
+        const primaryOptions = await this.getPopoverPrimaryOptions();
+        cell.suggestions = {
+          Fox: 0,
+          Present: 0,
+          Sword: 0,
+        };
+
+        // We skip loading suggestions for smart-fill because the expected test data does not include it (since it is implied by Smart Fill itself)
+        if (cell.smartFill == null) {
+          if (primaryOptions.includes(TileState.Sword)) {
+            cell.suggestions.Sword = 1;
+          }
+          if (primaryOptions.includes(TileState.Present)) {
+            cell.suggestions.Present = 1;
+          }
+          if (primaryOptions.includes(TileState.Fox)) {
+            cell.suggestions.Fox = 1;
+          }
+        }
+
+        const secondaryOptions = await this.getPopoverSecondaryOptions();
+
+        const allOptions = [...primaryOptions, null, ...secondaryOptions];
+        expect(allOptions, "All options should be unique").toEqual(
+          Array.from(new Set(allOptions))
         );
+
+        if (
+          cell.userSelection !== undefined &&
+          cell.userSelection !== TileState.Unknown
+        ) {
+          expect(secondaryOptions).toContain(cell.userSelection);
+          expect(
+            primaryOptions,
+            "Should have no primary options (except Unknown) when the user has selected something"
+          ).toHaveLength(1);
+          expect(primaryOptions[0]).toEqual(TileState.Unknown);
+        } else if (cell.smartFill === null || cell.smartFill === undefined) {
+          for (const state of [
+            TileState.Sword,
+            TileState.Present,
+            TileState.Fox,
+          ] as const) {
+            if (cell.suggestions[state] > 0) {
+              expect(
+                primaryOptions.includes(state),
+                `${primaryOptions.join()} should include ${state}`
+              ).toBe(true);
+            } else {
+              expect(
+                primaryOptions.includes(state),
+                `${primaryOptions.join()} should not include ${state}`
+              ).toBe(false);
+            }
+          }
+        } else {
+          expect(primaryOptions).toHaveLength(0);
+          expect(secondaryOptions).toHaveLength(0);
+          const buttons = this.getAllPopoverButtons();
+          await expect(buttons.nth(0)).not.toBeVisible();
+          await expect(this.getPopover()).toContainText(
+            `This tile must be a ${this.#smartFillToTile(cell.smartFill)} tile based on the other tiles on the board.`
+          );
+        }
+        cells[tileIndex] = cell;
       }
-      cells[tileIndex] = cell;
-    }
 
-    const issues = await Promise.all(
-      (await this.#page.getByTestId("board-issue").all()).map(
-        async (l): Promise<BoardIssue> => ({
-          severity: (await l.getByTestId("severity").first().innerText()).slice(
-            1,
-            -1
-          ) as unknown as BoardIssue["severity"],
-          message: await l.getByTestId("message").innerText(),
-          issueTiles: [],
-        })
-      )
-    );
+      const issues = await test.step("get board issues", async () =>
+        await Promise.all(
+          (await this.#page.getByTestId("board-issue").all()).map(
+            async (l): Promise<BoardIssue> => ({
+              severity: (await l.getAttribute(
+                "data-test-issue-severity"
+              )) as unknown as BoardIssue["severity"],
+              message: await l.getByTestId("message").innerText(),
+              issueTiles: [],
+            })
+          )
+        ));
 
-    return {
-      cells,
-      issues,
-      patternData: await this.getPatternData(),
-    };
+      return {
+        cells,
+        issues,
+        patternData: await this.getPatternData(),
+      };
+    });
   }
 
   async #getPopoverOptionSet(rootSelector: string) {
@@ -476,11 +478,13 @@ export class GameBoardHarness extends BaseSequenceRunner {
   }
 
   getPopoverPrimaryOptions() {
-    return this.#getPopoverOptionSet("popover-picker-primary-option");
+    return test.step("getPopoverPrimaryOptions", () =>
+      this.#getPopoverOptionSet("popover-picker-primary-option"));
   }
 
   getPopoverSecondaryOptions() {
-    return this.#getPopoverOptionSet("popover-picker-secondary-option");
+    return test.step("getPopoverSecondaryOptions", () =>
+      this.#getPopoverOptionSet("popover-picker-secondary-option"));
   }
 
   getPattern() {
