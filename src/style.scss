@@ -3,10 +3,11 @@
 :root {
   font-family: Arial, sans-serif;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 1.5;
   font-weight: 400;
 
   --font-color: hsl(0, 0%, 96%);
+  --highlight-font-color: #ff9c4e;
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: hsl(27.1, 36.3%, 5.1%);
 
@@ -176,8 +177,19 @@ h1 {
   line-height: 1.1;
 }
 
+a {
+  color: var(--highlight-font-color);
+
+  &:hover {
+    filter: brightness(120%);
+  }
+  &:active {
+    filter: brightness(140%);
+  }
+}
+
 .active-help em {
-  color: #ff9c4e;
+  color: var(--highlight-font-color);
 }
 
 button {
@@ -220,17 +232,16 @@ button:not(:disabled).focused {
 }
 
 #app {
+  display: flex;
+  flex-direction: column;
   --app-width: min(
     min(1280px, min(75vh, 95vw)),
     calc(var(--tile-max-size) * var(--board-tile-count)) +
       calc(var(--board-tile-max-gap) * (calc(var(--board-tile-count) - 1)))
   );
   width: var(--app-width);
-  // max-width: var(--app-width);
-  // width: 100%;
-  margin: 0 auto;
-  margin-top: min(30vmax, 1rem);
-  padding: 1rem;
+  margin: 1rem;
+  margin-top: 3rem;
 }
 
 figure {
@@ -269,5 +280,14 @@ img.in-game-tile-example {
 
   &:hover:not(:disabled) {
     filter: brightness(120%);
+  }
+}
+
+@media (width < 570px) {
+  #app {
+    margin-top: 1rem;
+  }
+  h1 {
+    width: min-content;
   }
 }

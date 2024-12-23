@@ -6,20 +6,57 @@ const board = new Board();
 </script>
 
 <template>
-  <h1>Faux Hollows Solver</h1>
+  <header>
+    <h1>Faux Hollows Solver</h1>
+  </header>
   <GameBoard :board="board" />
+  <div class="spacer" aria-hidden="true"></div>
+  <footer>
+    <span class="item"
+      >Powered by
+      <a
+        href="https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"
+        rel="noopener noreferrer external"
+        >u/Ylandah's Community Data Spreadsheet</a
+      >
+    </span>
+    <span class="item">Created by JoshuaEN</span>
+    <span class="item">
+      <a
+        href="https://github.com/JoshuaEN/ffxiv-faux-hollows"
+        rel="noopener noreferrer external"
+        >Source Code</a
+      >
+    </span>
+  </footer>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+<style scoped lang="scss">
+h1 {
+  margin-top: 0;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.spacer {
+  flex-grow: 1;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+footer {
+  opacity: 0.5;
+  font-size: 0.8rem;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1ch;
+  box-sizing: border-box;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+.item {
+  padding-right: 1ch;
+}
+.item:not(:last-child) {
+  border-right: 1px solid var(--font-color);
 }
 </style>

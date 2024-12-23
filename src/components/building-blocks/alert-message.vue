@@ -21,7 +21,6 @@ const ariaRole = computed(() => {
 
 <style lang="scss">
 .alert {
-  // padding: 0.5rem 1rem;
   padding: 1.5rem 1rem;
   margin: 1rem 0;
   border-radius: 0.5rem;
@@ -30,7 +29,6 @@ const ariaRole = computed(() => {
   border-color: var(--alert-border-color);
   background-color: var(--alert-background);
   color: var(--alert-color);
-  // max-width: fit-content;
 
   em {
     font-style: italic;
@@ -48,26 +46,6 @@ const ariaRole = computed(() => {
   box-shadow: 0 0 2em #b27c45 inset;
   background: #fffef0;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  // border-bottom-left-radius: 200px 7px;
-  // background-image: repeating-linear-gradient(
-  //   -45deg,
-  //   rgba(255, 255, 255, 0.25),
-  //   rgba(255, 255, 255, 0.25) 1px,
-  //   transparent 1px,
-  //   transparent 6px
-  // );
-  // background-size: 4px 4px;
-  // box-shadow: inset 0px 1px 8px 1px lab(18.72 1.09 9.57 / 1);
-  // border-radius: 1.5rem;
-  // background-clip: padding-box;
-  // background-image: repeating-linear-gradient(
-  //   -45deg,
-  //   rgba(255, 255, 255, 0.25),
-  //   rgba(255, 255, 255, 0.25) 1px,
-  //   transparent 1px,
-  //   transparent 6px
-  // );
-  // background-size: 4px 4px;
 }
 .alert-Warn {
   --alert-background: hsl(49, 100%, 34%);
