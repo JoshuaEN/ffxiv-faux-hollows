@@ -1,0 +1,25 @@
+{
+  "short_name": "Faux Hollows",
+  "name": "FFXIV Faux Hollows Solver",
+  "icons": [
+    {
+      "src": "/assets/icons/favicon-ear-v1.svg",
+      "type": "image/svg+xml",
+      "sizes": "144x144",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/favicon-ear-maskable-v2.svg",
+      "type": "image/svg+xml",
+      "sizes": "144x144",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/pwa-ids/ffxiv/faux/solver/v1",
+  "start_url": "/",
+  "background_color": "#120d08",
+  "display": "minimal-ui",
+  "scope": "/",
+  "theme_color": "#120d08",
+  "description": "Solver for the FFXIV Faux Hollows minigame"
+}

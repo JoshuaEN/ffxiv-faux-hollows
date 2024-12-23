@@ -3,6 +3,8 @@ import vue from "@vitejs/plugin-vue";
 import checker from "vite-plugin-checker";
 import { resolve, join } from "path";
 
+const rootDir = resolve(__dirname);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
@@ -32,9 +34,10 @@ export default defineConfig({
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
-    dir: join(resolve(__dirname), "src"),
+    dir: join(rootDir, "src"),
   },
   resolve: {
-    alias: [{ find: /^~/, replacement: resolve(__dirname) }],
+    alias: [{ find: /^~/, replacement: rootDir }],
   },
+  envDir: rootDir,
 });
