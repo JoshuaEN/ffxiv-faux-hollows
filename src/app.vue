@@ -13,18 +13,32 @@ const board = new Board();
   <GameBoard :board="board" />
   <div class="spacer" aria-hidden="true"></div>
   <footer>
-    <span class="item"
-      >Powered by u/Ylandah's
-      <SpreadsheetLink />
-    </span>
-    <span class="item">Created by JoshuaEN</span>
-    <span class="item">
+    <p>
+      Solver for the
       <a
-        href="https://github.com/JoshuaEN/ffxiv-faux-hollows"
+        href="https://www.finalfantasyxiv.com/"
         rel="noopener noreferrer external"
-        >Source Code</a
-      >
-    </span>
+        >Final Fantasy XIV</a
+      >&nbsp;<a
+        href="https://ffxiv.consolegameswiki.com/wiki/Faux_Hollows"
+        rel="noopener noreferrer external"
+        >Faux Hollows minigame</a
+      >.
+    </p>
+    <div class="items">
+      <span class="item"
+        >Powered by u/Ylandah's
+        <SpreadsheetLink />
+      </span>
+      <span class="item">Created by JoshuaEN</span>
+      <span class="item">
+        <a
+          href="https://github.com/JoshuaEN/ffxiv-faux-hollows/issues"
+          rel="noopener noreferrer external"
+          >Report a problem</a
+        >
+      </span>
+    </div>
   </footer>
 </template>
 
@@ -36,19 +50,22 @@ h1 {
   flex-grow: 1;
 }
 footer {
-  opacity: 0.5;
-  font-size: 0.8rem;
-  padding-top: 1rem;
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 1ch;
-  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  opacity: 0.5;
 
   &:hover {
     opacity: 1;
   }
+}
+.items {
+  display: flex;
+  flex-direction: row;
+  font-size: 0.8rem;
+  gap: 1ch;
+  box-sizing: border-box;
 }
 .item {
   padding-right: 1ch;
