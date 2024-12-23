@@ -14,6 +14,7 @@ export class Board {
   #tiles: CombinedTileState[] = [];
   #solveState: SolveState;
   #boardIssues: BoardIssue[] = [];
+  #tilesWithIssues = new Set<number>();
 
   readonly #trackedUserSelectedStates: TrackedStatesIndexList<Set<number>> = {
     [TileState.Blocked]: new Set<number>(),
@@ -41,6 +42,10 @@ export class Board {
 
   get issues(): readonly BoardIssue[] {
     return this.#boardIssues;
+  }
+
+  get tilesWithIssues(): ReadonlySet<number> {
+    return this.#tilesWithIssues;
   }
 
   getUserState(index: number): TileState {
@@ -83,6 +88,12 @@ export class Board {
     const { tiles, solveState, issues } = this.#solve();
     this.#solveState = solveState;
     this.#boardIssues = issues;
+    this.#tilesWithIssues = new Set();
+    for (const issue of issues) {
+      for (const index of issue.issueTiles) {
+        this.#tilesWithIssues.add(index);
+      }
+    }
     this.#tiles = tiles;
     // }
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, shallowReactive } from "vue";
+import { computed, ref } from "vue";
 import { Board } from "~/src/game/board.js";
 import {
   CombinedTileState,
@@ -19,6 +19,10 @@ import BaseTile from "~/src/components/base-tile.vue";
 import { getPickerOptions } from "./game-board.utils.js";
 import SolveStepsActiveHelp from "~/src/components/solve-steps-active-help.vue";
 import { TileStateDisplayName } from "./tile.utils.js";
+import AlertMessage from "./building-blocks/alert-message.vue";
+import { AlertMessageKind } from "./building-blocks/alert-message.types.js";
+import ActiveHelp from "./building-blocks/active-help.vue";
+import SpreadsheetLink from "./building-blocks/spreadsheet-link.vue";
 
 const popoverAnchorRef = ref(null);
 const popoverAnchorRefs = ref<unknown[]>([]);
@@ -120,16 +124,6 @@ const pickTile = (index: number, tileState: TileState) => {
       }}
     </span>
   </section>
-  <div
-    v-for="issue in data.board.issues"
-    :key="issue.message"
-    data-testid="board-issue"
-    class="issue"
-  >
-    <span class="severity" data-testid="severity">[{{ issue.severity }}]</span
-    >&nbsp;
-    <span class="message" data-testid="message">{{ issue.message }}</span>
-  </div>
   <main
     :class="{ focusTile: popoverOpen, gameBoard: true }"
     data-testid="game-board"
@@ -139,7 +133,10 @@ const pickTile = (index: number, tileState: TileState) => {
       :ref="(el: any) => (popoverAnchorRefs[index] = el)"
       :key="index"
       class="tile"
-      :class="{ focused: popoverOpen && index === popoverData?.index }"
+      :class="{
+        focused: popoverOpen && index === popoverData?.index,
+        hasIssue: data.board.tilesWithIssues.has(index),
+      }"
       :tile="tile"
       :index="index"
       :data-testid="`game-tile-index-${index}`"
@@ -253,9 +250,92 @@ const pickTile = (index: number, tileState: TileState) => {
       </template>
     </div>
   </div>
-
+  <AlertMessage
+    v-for="issue in data.board.issues"
+    :key="issue.message"
+    :kind="AlertMessageKind.Error"
+    data-testid="board-issue"
+    :data-test-issue-severity="issue.severity"
+  >
+    <span data-testid="message">{{ issue.message }}</span>
+  </AlertMessage>
+  <ActiveHelp v-if="data.board.issues.length > 0" title="Resolving Issues">
+    <template #active-help>
+      <p>
+        If the tiles entered <em>in this tool</em> do not match any of the
+        patterns in the <SpreadsheetLink />, an error will be display.
+      </p>
+      <p>
+        When this happens, please confirm the tiles entered
+        <em>in this tool</em> match the tiles as they appear <em>in game</em>.
+      </p>
+      <p>
+        Tip: Tiles which appear to be the source of the issue will be marked
+        with a red outline:
+        <span class="game-tiles game-tiles-has-issue">
+          <span class="game-tile-backdrop hasIssue"
+            ><GameTile :tile="TileState.Blocked" :disabled="true"></GameTile
+          ></span>
+          <span class="game-tile-backdrop hasIssue"
+            ><GameTile :tile="TileState.Empty" :disabled="true"></GameTile>
+          </span>
+          <span class="game-tile-backdrop hasIssue"
+            ><GameTile :tile="TileState.Sword" :disabled="true"></GameTile
+          ></span>
+          <span class="game-tile-backdrop hasIssue"
+            ><GameTile :tile="TileState.Present" :disabled="true"></GameTile>
+          </span>
+          <span class="game-tile-backdrop hasIssue"
+            ><GameTile :tile="TileState.Fox" :disabled="true"></GameTile>
+          </span>
+        </span>
+      </p>
+      <p>
+        Tip: Entered tiles have solid borders:<br /><span class="game-tiles">
+          <span class="game-tile-backdrop"
+            ><GameTile :tile="TileState.Blocked" :disabled="true"></GameTile
+          ></span>
+          <span class="game-tile-backdrop"
+            ><GameTile :tile="TileState.Empty" :disabled="true"></GameTile>
+          </span>
+          <span class="game-tile-backdrop"
+            ><GameTile :tile="TileState.Sword" :disabled="true"></GameTile
+          ></span>
+          <span class="game-tile-backdrop"
+            ><GameTile :tile="TileState.Present" :disabled="true"></GameTile>
+          </span>
+          <span class="game-tile-backdrop"
+            ><GameTile :tile="TileState.Fox" :disabled="true"></GameTile>
+          </span> </span
+        ><br />While tiles which have been automatically determined have dashed
+        borders:<br /><span class="game-tiles">
+          <span class="game-tile-backdrop"
+            ><GameTile
+              :tile="SmartFillTileState.SmartFillBlocked"
+              :disabled="true"
+            ></GameTile
+          ></span>
+          <span class="game-tile-backdrop"
+            ><GameTile
+              :tile="SmartFillTileState.SmartFillSword"
+              :disabled="true"
+            ></GameTile
+          ></span>
+          <span class="game-tile-backdrop"
+            ><GameTile
+              :tile="SmartFillTileState.SmartFillPresent"
+              :disabled="true"
+            ></GameTile
+          ></span>
+        </span>
+      </p>
+      <p>
+        Tip: Tiles which have been automatically determined cannot be changed.
+      </p>
+    </template>
+  </ActiveHelp>
   <SolveStepsActiveHelp
-    v-if="data.board.solveState?.solveStep !== undefined"
+    v-else-if="data.board.solveState?.solveStep !== undefined"
     :solve-step="data.board.solveState.solveStep"
   />
   <main v-if="showDebugInfo" class="debug">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpreadsheetLink from "./components/building-blocks/spreadsheet-link.vue";
 import GameBoard from "./components/game-board.vue";
 import { Board } from "./game/board.js";
 
@@ -13,12 +14,8 @@ const board = new Board();
   <div class="spacer" aria-hidden="true"></div>
   <footer>
     <span class="item"
-      >Powered by
-      <a
-        href="https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"
-        rel="noopener noreferrer external"
-        >u/Ylandah's Community Data Spreadsheet</a
-      >
+      >Powered by u/Ylandah's
+      <SpreadsheetLink />
     </span>
     <span class="item">Created by JoshuaEN</span>
     <span class="item">

@@ -6,10 +6,10 @@
   line-height: 1.5;
   font-weight: 400;
 
-  --font-color: hsl(0, 0%, 96%);
+  --font-color: #f5f5f5;
   --highlight-font-color: #ff9c4e;
   --muted-font-color: hsl(0, 0%, 82%);
-  --page-background-color: hsl(27.1, 36.3%, 5.1%);
+  --page-background-color: #120d08;
 
   --board-tile-count: 6;
   --board-tile-max-gap: 0.5rem;
@@ -224,6 +224,10 @@ button:not(:disabled).focused {
 *:focus-visible:not(:disabled),
 button:not(:disabled).focused {
   outline: 3px solid var(--tile-outline-color, var(--font-color));
+}
+
+.hasIssue {
+  outline: calc(var(--board-tile-gap) / 2) solid red;
 }
 
 .faded {

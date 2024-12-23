@@ -66,33 +66,6 @@ main.gameBoard {
     overflow-y: auto;
   }
 
-  /* --tile-max-size * 3 + --board-tile-gap * 2 */
-  @media (width < 18rem) {
-  }
-
-  .game-tile-backdrop {
-    display: inline-block;
-    padding: 0.5rem;
-    border-radius: 15px;
-    background-color: var(--page-background-color);
-    width: auto;
-  }
-
-  // > .buttons {
-  //   display: flex;
-  //   // grid-auto-columns: minmax(0, 1fr);
-  //   // grid-auto-flow: column;
-  //   gap: 0.5rem;
-  //   // Render the buttons over the arrow
-  //   position: relative;
-  //   justify-content: center;
-  //   align-items: center;
-
-  //   &:not(:last-child) {
-  //     margin-bottom: 0.5rem;
-  //   }
-  // }
-
   &.top,
   &.bottom {
     .buttons {
@@ -128,4 +101,23 @@ main.gameBoard {
       right: var(--arrow-half-size);
     }
   }
+}
+
+.game-tile-backdrop {
+  --tile-min-size: 5rem;
+  --tile-max-size: 5rem;
+  --board-tile-gap: 0.5rem;
+
+  display: inline-block;
+  padding: 0.5rem;
+  border-radius: 15px;
+  background-color: var(--page-background-color);
+  width: auto;
+}
+
+.game-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  margin: var(--board-tile-gap) 0;
+  gap: var(--board-tile-gap);
 }
