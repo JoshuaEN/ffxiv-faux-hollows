@@ -18,9 +18,6 @@ importers:
       '@eslint/js':
         specifier: ^9.17.0
         version: 9.17.0
-      '@playwright/experimental-ct-vue':
-        specifier: ^1.49.1
-        version: 1.49.1(@types/node@22.10.2)(sass@1.83.0)(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0))(vue@3.5.13(typescript@5.7.2))
       '@playwright/test':
         specifier: ^1.49.1
         version: 1.49.1
@@ -615,15 +612,6 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@playwright/experimental-ct-core@1.49.1':
-    resolution: {integrity: sha512-MZ0by8hLo/2qGHoo3SSbdxTNwKXrw06rqqA64TEiwOBjzpbYAaCuA3+BemXpMFfa0nU6ivO4h/sFdA8Zv9ns+g==}
-    engines: {node: '>=18'}
-
-  '@playwright/experimental-ct-vue@1.49.1':
-    resolution: {integrity: sha512-JkmzslZ0JrOWszf8SF4DslhRj1bKS0LRCGfDGKYQQAZ7y9eIJzqUAZJKO+Nxs80rWRkM4UU1FZ3jaJ/dp2tswA==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   '@playwright/test@1.49.1':
     resolution: {integrity: sha512-Ky+BVzPz8pL6PQxHqNRW1k3mIyv933LML7HktS8uik0bUXNCdPhoS/kLihiO1tMf/egaJb4IutXd7UywvXEW+g==}
     engines: {node: '>=18'}
@@ -809,13 +797,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.18.1':
     resolution: {integrity: sha512-Vj0WLm5/ZsD013YeUKn+K0y8p1M0jPpxOkKdbD1wB0ns53a5piVY02zjf072TblEweAbcYiFiPoSMF3kp+VhhQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@vitejs/plugin-vue@4.6.2':
-    resolution: {integrity: sha512-kqf7SGFoG+80aZG6Pf+gsZIVvGSCKE98JbiWqcCV9cThtg91Jav0yvYFC9Zb+jKetNGF6ZKeoaxgZfND21fWKw==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    peerDependencies:
-      vite: ^4.0.0 || ^5.0.0
-      vue: ^3.2.25
 
   '@vitejs/plugin-vue@5.2.1':
     resolution: {integrity: sha512-cxh314tzaWwOLqVes2gnnCtvBDcM1UMdn+iFR+UjAn411dPT3tOmqrJjbMd7koZpMAmBM/GqeV4n9ge7JSiJJQ==}
@@ -2283,37 +2264,6 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@playwright/experimental-ct-core@1.49.1(@types/node@22.10.2)(sass@1.83.0)':
-    dependencies:
-      playwright: 1.49.1
-      playwright-core: 1.49.1
-      vite: 5.4.11(@types/node@22.10.2)(sass@1.83.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-
-  '@playwright/experimental-ct-vue@1.49.1(@types/node@22.10.2)(sass@1.83.0)(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0))(vue@3.5.13(typescript@5.7.2))':
-    dependencies:
-      '@playwright/experimental-ct-core': 1.49.1(@types/node@22.10.2)(sass@1.83.0)
-      '@vitejs/plugin-vue': 4.6.2(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0))(vue@3.5.13(typescript@5.7.2))
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - vite
-      - vue
-
   '@playwright/test@1.49.1':
     dependencies:
       playwright: 1.49.1
@@ -2488,11 +2438,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.18.1
       eslint-visitor-keys: 4.2.0
-
-  '@vitejs/plugin-vue@4.6.2(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0))(vue@3.5.13(typescript@5.7.2))':
-    dependencies:
-      vite: 5.4.11(@types/node@22.10.2)(sass@1.83.0)
-      vue: 3.5.13(typescript@5.7.2)
 
   '@vitejs/plugin-vue@5.2.1(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0))(vue@3.5.13(typescript@5.7.2))':
     dependencies:
