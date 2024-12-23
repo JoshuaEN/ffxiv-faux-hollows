@@ -70,7 +70,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
     });
   }
 
-  #getTile(index: number) {
+  getTile(index: number) {
     const locator = this.#rootLocator.getByTestId(`game-tile-index-${index}`);
     const tileData = {
       locator,
@@ -106,11 +106,11 @@ export class GameBoardHarness extends BaseSequenceRunner {
   }
 
   async getTileState(index: number) {
-    return await this.#getTile(index).tileState();
+    return await this.getTile(index).tileState();
   }
 
   getTileLocator(index: number) {
-    return this.#getTile(index).locator;
+    return this.getTile(index).locator;
   }
 
   getPopover() {
@@ -133,9 +133,13 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.#rootLocator.getByTestId("solve-step-help-tldr");
   }
 
-  override async setUserSelection(index: number, tileState: TileState) {
-    await test.step(`setUserSelection(${index}, TileState.${tileState})`, async () => {
-      const tile = this.#getTile(index);
+  override async setUserSelection(
+    index: number,
+    tileState: TileState,
+    expectInvalidMove: boolean = false
+  ) {
+    await test.step(`setUserSelection(${index}, TileState.${tileState}, ${expectInvalidMove})`, async () => {
+      const tile = this.getTile(index);
       const existingTileState = await tile.tileState();
       const alreadyCorrectState = existingTileState === tileState;
       const isSmartFilled = this.#stringIsTileState(
@@ -181,6 +185,9 @@ export class GameBoardHarness extends BaseSequenceRunner {
             existingTileState === SuggestTileState.SuggestPresent) &&
           tileState === TileState.Empty
         ) {
+          await expect(button).toHaveClass(includeClass("faded"));
+          await button.click();
+        } else if (expectInvalidMove) {
           await expect(button).toHaveClass(includeClass("faded"));
           await button.click();
         } else {
@@ -230,7 +237,11 @@ export class GameBoardHarness extends BaseSequenceRunner {
       }
     }
     for (const action of actions) {
-      await this.setUserSelection(action.index, action.tileState);
+      await this.setUserSelection(
+        action.index,
+        action.tileState,
+        action.expectInvalidMove
+      );
     }
   }
 
@@ -438,7 +449,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
 
       const issues = await test.step("get board issues", async () =>
         await Promise.all(
-          (await this.#page.getByTestId("board-issue").all()).map(
+          (await this.#page.locator("[data-test-issue-severity]").all()).map(
             async (l): Promise<BoardIssue> => ({
               severity: (await l.getAttribute(
                 "data-test-issue-severity"

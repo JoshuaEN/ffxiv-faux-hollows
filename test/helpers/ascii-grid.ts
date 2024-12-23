@@ -66,7 +66,11 @@ export interface TestPatternData {
 
 export function loadAsciiGrid(str: string) {
   const cells: CellTestData[] = [];
-  const actions: { tileState: TileState; index: number }[] = [];
+  const actions: {
+    tileState: TileState;
+    index: number;
+    expectInvalidMove: boolean;
+  }[] = [];
   const rows = str.split(/\r?\n/);
   let startFound = false;
   let logicalRowIndex = 0;
@@ -235,9 +239,20 @@ export function loadAsciiGrid(str: string) {
               `${columnErrorContext}[Slot 3] Sequence number ${sequence} is duplicated`
             );
           }
+
+          let expectInvalidMove =
+            column3 === "!" ? true : column3 === " " ? false : null;
+
+          if (expectInvalidMove === null) {
+            throw new Error(
+              `${columnErrorContext}[Slot 4] Invalid expectInvalidMove flag ${column3}`
+            );
+          }
+
           actions[sequence] = {
             tileState: userSelection,
             index: cells.length,
+            expectInvalidMove,
           };
 
           cells.push({

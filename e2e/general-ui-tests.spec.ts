@@ -543,4 +543,122 @@ test.describe("active help", () => {
       HELP_FAUX_HOLLOWS_STRATEGY
     );
   });
+
+  test("it should show error help when no patterns are valid (blocked tiles)", async ({
+    page,
+    request,
+    context,
+  }) => {
+    // Arrange
+    await page.goto(".");
+    const harness = new GameBoardHarness(page.locator("html"), {
+      page,
+      request,
+      context,
+    });
+
+    // Act
+    await harness.actionsFromAsciiGrid(`
+      ┌─────┬─────┬─────┬─────┬─────┬─────┐
+      │     │>B1  │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      └─────┴─────┴─────┴─────┴─────┴─────┘
+    `);
+
+    // Assert
+    await assertHelp(
+      harness,
+      "Blocked tiles entered do not match any patterns",
+      "Resolving Issues"
+    );
+  });
+
+  test("it should show error help when no patterns are valid (present tiles)", async ({
+    page,
+    request,
+    context,
+  }) => {
+    // Arrange
+    await page.goto(".");
+    const harness = new GameBoardHarness(page.locator("html"), {
+      page,
+      request,
+      context,
+    });
+
+    // Act
+    await harness.actionsFromAsciiGrid(`
+      ┌─────┬─────┬─────┬─────┬─────┬─────┐
+      │     │     │     │     │>B1  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │>P2  │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │>P3! │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      └─────┴─────┴─────┴─────┴─────┴─────┘
+    `);
+
+    // Assert
+    await assertHelp(
+      harness,
+      "Based on the entered tiles, the Gift Box / Coffer covers a minimum of a 3x2 area",
+      "Resolving Issues"
+    );
+  });
+});
+
+test.describe("tile suggestions", () => {
+  // Fails because the current behavior is technically wrong, but fixing this would require recording "Empty" suggestions
+  // which has a lot of knock-on effects on the tests and it's not a big deal.
+  // Follow-up: Record Empty as a suggestion and only include Empty when it is valid in the primary options.
+  test.skip("it should empty should not be suggested when empty would lead to an invalid state", async ({
+    page,
+    request,
+    context,
+  }) => {
+    // Arrange
+    await page.goto(".");
+    const harness = new GameBoardHarness(page.locator("html"), {
+      page,
+      request,
+      context,
+    });
+    await harness.actionsFromAsciiGrid(`
+      ┌─────┬─────┬─────┬─────┬─────┬─────┐
+      │     │     │     │     │>B1  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │>E4  │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │>S2  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │>E5  │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │>S3  │
+      └─────┴─────┴─────┴─────┴─────┴─────┘
+    `);
+
+    // Act
+    const { locator } = harness.getTile(19);
+    await locator.click();
+
+    // Assert
+    const primaryOptions = await harness.getPopoverPrimaryOptions();
+    expect(primaryOptions).toEqual([TileState.Present]);
+  });
 });

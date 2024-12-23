@@ -21,6 +21,7 @@ export class Board {
     [TileState.Present]: new Set<number>(),
     [TileState.Sword]: new Set<number>(),
     [TileState.Fox]: new Set<number>(),
+    [TileState.Empty]: new Set<number>(),
   };
   constructor() {
     this.#userSelectedStates = new Array<TileState>(BOARD_CELLS).fill(

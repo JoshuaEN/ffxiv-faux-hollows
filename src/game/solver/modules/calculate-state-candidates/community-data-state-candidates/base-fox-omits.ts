@@ -27,6 +27,7 @@ export interface ShapeData {
   readonly longSide: number;
   readonly shortSide: number;
   readonly boundingBox: BoundingBox | null;
+  readonly userSetIndexes: ReadonlySet<number>;
 }
 
 export interface ProcessedPattern {
@@ -63,15 +64,17 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
         boundingBox: getBoundingBox(
           solveState.userStatesIndexList[TileState.Sword]
         ),
+        userSetIndexes: solveState.userStatesIndexList[TileState.Sword],
       },
       {
         state: TileState.Present,
-        title: "Present / Box",
+        title: "Gift Box / Coffer",
         longSide: 2,
         shortSide: 2,
         boundingBox: getBoundingBox(
           solveState.userStatesIndexList[TileState.Present]
         ),
+        userSetIndexes: solveState.userStatesIndexList[TileState.Present],
       },
     ] as const;
 
@@ -228,15 +231,12 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
         new BoardIssue(
           BoardIssueSeverity.Error,
           `The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct.`,
-          shapes.reduce<number[]>(
-            (prev, shape) => [
-              ...prev,
-              ...(shape.boundingBox !== null
-                ? shape.boundingBox.indexes()
-                : []),
-            ],
-            []
-          )
+          Array.from(solveState.userStatesIndexList[TileState.Sword].values())
+            .concat(
+              ...solveState.userStatesIndexList[TileState.Present].values()
+            )
+            .concat(...solveState.userStatesIndexList[TileState.Empty].values())
+            .concat(...solveState.userStatesIndexList[TileState.Fox].values())
         )
       );
       solveState.setCandidatePatterns([]);
@@ -300,6 +300,7 @@ function validateUserSelection({
   boundingBox,
   shortSide,
   longSide,
+  userSetIndexes,
 }: ShapeData): { isFatalError: boolean; issues: BoardIssue[] } {
   const issues: BoardIssue[] = [];
   if (boundingBox === null) {
@@ -322,23 +323,44 @@ function validateUserSelection({
 
   // Bounding box is too large, the user's input is invalid
   if (boundingBox.shortSide > shortSide || boundingBox.longSide > longSide) {
+    const topLeft = cordToIndex(boundingBox.x, boundingBox.y);
+    const topRight = cordToIndex(
+      boundingBox.x + boundingBox.width - 1,
+      boundingBox.y
+    );
+    const bottomLeft = cordToIndex(
+      boundingBox.x,
+      boundingBox.y + boundingBox.height - 1
+    );
+    const bottomRight = cordToIndex(
+      boundingBox.x + boundingBox.width - 1,
+      boundingBox.y + boundingBox.height - 1
+    );
+    const issueIndexes: number[] = [];
+    if (userSetIndexes.has(topLeft)) {
+      issueIndexes.push(topLeft);
+    }
+    if (userSetIndexes.has(topRight)) {
+      issueIndexes.push(topRight);
+    }
+    if (userSetIndexes.has(bottomLeft)) {
+      issueIndexes.push(bottomLeft);
+    }
+    if (userSetIndexes.has(bottomRight)) {
+      issueIndexes.push(bottomRight);
+    }
+
     issues.push(
       new BoardIssue(
         BoardIssueSeverity.Error,
-        `Based on entered tiles, the ${title} covers a minium of a ${
+        `Based on the entered tiles, the ${title} covers a minimum of a ${
           boundingBox.width
         }x${
           boundingBox.height
         } area, but should only be ${shortSide}x${longSide}${
           shortSide !== longSide ? ` or ${longSide}x${shortSide}` : ""
         }. Please ensure the tiles entered onto the board are correct.`,
-        [
-          cordToIndex(boundingBox.x, boundingBox.y),
-          cordToIndex(
-            boundingBox.x + boundingBox.width,
-            boundingBox.y + boundingBox.height
-          ),
-        ]
+        issueIndexes
       )
     );
     return { isFatalError: true, issues };

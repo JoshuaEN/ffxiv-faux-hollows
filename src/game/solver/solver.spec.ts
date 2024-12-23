@@ -219,6 +219,7 @@ describe("solve", () => {
         [TileState.Present]: new Set<number>(),
         [TileState.Sword]: new Set<number>(),
         [TileState.Fox]: new Set<number>(),
+        [TileState.Empty]: new Set<number>(),
       };
       for (const [j, cell] of eachIndex(this.#userSelected)) {
         if (cell in userStatesIndexList) {

@@ -59,7 +59,7 @@ export function calculateStatesCandidates(
     },
     {
       state: TileState.Present,
-      title: "Present / Box",
+      title: "Gift Box / Coffer",
       longSide: 2,
       shortSide: 2,
       boundingBox: getBoundingBox(
@@ -294,7 +294,7 @@ function validateUserSelection({
     issues.push(
       new BoardIssue(
         BoardIssueSeverity.Error,
-        `Based on entered tiles, the ${title} covers a minium of a ${
+        `Based on the entered tiles, the ${title} covers a minimum of a ${
           boundingBox.width
         }x${
           boundingBox.height
@@ -304,8 +304,8 @@ function validateUserSelection({
         [
           cordToIndex(boundingBox.x, boundingBox.y),
           cordToIndex(
-            boundingBox.x + boundingBox.width,
-            boundingBox.y + boundingBox.height
+            boundingBox.x + boundingBox.width - 1,
+            boundingBox.y + boundingBox.height - 1
           ),
         ]
       )

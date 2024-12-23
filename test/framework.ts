@@ -75,7 +75,11 @@ export abstract class BaseSequenceRunner {
 
       // Act
       for (const action of actions) {
-        await this.setUserSelection(action.index, action.tileState);
+        await this.setUserSelection(
+          action.index,
+          action.tileState,
+          action.expectInvalidMove
+        );
       }
 
       // Assert
@@ -182,7 +186,7 @@ export abstract class BaseSequenceRunner {
         );
       }
 
-      await this.setUserSelection(i, expectedData.userSelection);
+      await this.setUserSelection(i, expectedData.userSelection, false);
     }
   }
 
@@ -218,7 +222,8 @@ export abstract class BaseSequenceRunner {
 
   protected abstract setUserSelection(
     index: number,
-    tileState: TileState
+    tileState: TileState,
+    expectInvalidMove?: boolean
   ): Promise<void> | void;
 
   protected abstract getState():

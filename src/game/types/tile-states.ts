@@ -38,10 +38,11 @@ export type CombinedTileState =
  * List of indexes where each of these tracked states is
  */
 export interface TrackedStatesIndexList<
-  TSet extends Set<number> | ReadonlySet<number>
+  TSet extends Set<number> | ReadonlySet<number>,
 > {
   readonly [TileState.Blocked]: TSet;
   readonly [TileState.Present]: TSet;
   readonly [TileState.Sword]: TSet;
   readonly [TileState.Fox]: TSet;
+  readonly [TileState.Empty]: TSet;
 }

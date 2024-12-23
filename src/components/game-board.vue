@@ -254,7 +254,7 @@ const pickTile = (index: number, tileState: TileState) => {
     v-for="issue in data.board.issues"
     :key="issue.message"
     :kind="AlertMessageKind.Error"
-    data-testid="board-issue"
+    data-testid="solve-step-help-tldr"
     :data-test-issue-severity="issue.severity"
   >
     <span data-testid="message">{{ issue.message }}</span>

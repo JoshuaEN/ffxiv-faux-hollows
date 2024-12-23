@@ -39,11 +39,11 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │ P   │ P   │     │ S   │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │     │ B   │>S1  │     │     │     │
+      │     │ B   │>S1! │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 20, 21, 26, 27, 12, 13, 18, 19
+      [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 21, 26, 12, 13, 18, 19, 9, 10
     `
       );
       registerTest(
@@ -76,7 +76,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │ E   │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
-      │>S   │     │     │ E   │     │     │
+      │>S ! │     │     │ E   │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │ E   │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
@@ -204,11 +204,11 @@ export const data = (
   ├─────┼─────┼─────┼─────┼─────┼─────┤
   │ E   │     │     │     │     │     │
   ├─────┼─────┼─────┼─────┼─────┼─────┤
-  │     │ B   │>S   │     │     │     │
+  │     │ B   │>S ! │     │     │     │
   ├─────┼─────┼─────┼─────┼─────┼─────┤
   │     │     │     │ B   │     │     │
   └─────┴─────┴─────┴─────┴─────┴─────┘
-  [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 26
+  [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 26, 9, 10, 18
 `
       );
       registerTest(
