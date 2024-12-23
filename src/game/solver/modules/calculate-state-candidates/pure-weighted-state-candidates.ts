@@ -307,7 +307,7 @@ function validateUserSelection({
           boundingBox.height
         } area, but should only be ${shortSide}x${longSide}${
           shortSide !== longSide ? ` or ${longSide}x${shortSide}` : ""
-        }.`,
+        }. Please ensure the tiles entered onto the board are correct.`,
         [
           cordToIndex(boundingBox.x, boundingBox.y),
           cordToIndex(

@@ -58,7 +58,7 @@ import { SolveStep } from "../types/solve-state.js";
 describe("calculatedSolveState", () => {
   allTestData(
     (title, ...states) => {
-      test(title, async () => {
+      test(typeof title === "string" ? title : title.title, async () => {
         await new SolveStateSequenceRunner().testSequence(states);
       });
     },

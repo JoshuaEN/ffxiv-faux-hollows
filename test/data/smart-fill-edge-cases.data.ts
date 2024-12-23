@@ -1,5 +1,5 @@
 import { TestStructuralElements } from "../all-data-tests.js";
-import { RegisterTest } from "../framework.js";
+import { RegisterTest, TestTag } from "../framework.js";
 
 export const data = (
   registerTest: RegisterTest,
@@ -326,7 +326,10 @@ export const data = (
   );
 
   registerTest(
-    `Suggestions should constrain themselves to known patterns`,
+    {
+      title: `Suggestions should constrain themselves to known patterns`,
+      tags: [TestTag.InvalidUIState],
+    },
     `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │ B   │     │
@@ -397,7 +400,10 @@ export const data = (
   `
   );
   registerTest(
-    `Shapes with smart-fill information (sword/presents) should not be shown when in the fill-mode for the other shape (filling presents)`,
+    {
+      title: `Shapes with smart-fill information (sword/presents) should not be shown when in the fill-mode for the other shape (filling presents)`,
+      tags: [TestTag.InvalidUIState],
+    },
     `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │ B   │     │
@@ -432,7 +438,10 @@ export const data = (
   `
   );
   registerTest(
-    `Suggestions should be displayed correctly when two incomplete shapes are present due to user input (prioritizes Sword fill)`,
+    {
+      title: `Suggestions should be displayed correctly when two incomplete shapes are present due to user input (prioritizes Sword fill)`,
+      tags: [TestTag.InvalidUIState],
+    },
     `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │ B   │     │     │     │

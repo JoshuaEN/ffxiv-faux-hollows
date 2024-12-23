@@ -58,7 +58,7 @@ import { solve } from "./solver.js";
 describe("solve", () => {
   allTestData(
     (title, ...states) => {
-      test(title, async () => {
+      test(typeof title === "string" ? title : title.title, async () => {
         await new SolverSequenceRunner().testSequence(states);
       });
     },

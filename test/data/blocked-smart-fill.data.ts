@@ -1,5 +1,5 @@
 import { TestStructuralElements } from "../all-data-tests.js";
-import { RegisterTest } from "../framework.js";
+import { RegisterTest, TestTag } from "../framework.js";
 import { EMPTY } from "../shared.js";
 
 export const data = (
@@ -323,7 +323,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 1
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 1
     `,
       ],
       [
@@ -342,7 +342,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 2, 7
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 2, 7
     `,
       ],
       [
@@ -361,7 +361,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │>B3  │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 26, 31
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 8, 26, 31
     `,
       ],
       [
@@ -380,7 +380,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 19, 22, 26
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 8, 19, 22, 26
     `,
       ],
       [
@@ -399,7 +399,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 8, 19, 22, 26, 29
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 8, 19, 22, 26, 29
     `,
       ],
     ] as const) {
@@ -407,7 +407,11 @@ export const data = (
     }
 
     registerTest(
-      "reports issue when there are more than 5 blocked tiles entered by the user (6 tiles entered)",
+      {
+        title:
+          "reports issue when there are more than 5 blocked tiles entered by the user (6 tiles entered)",
+        tags: [TestTag.ImpossibleUIState],
+      },
       `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │     │     │
@@ -437,11 +441,15 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Board has 6 blocked tiles, but there should only be 5. # Issues: 0, 8, 16, 23, 25, 33
+      [Error] Board has 6 blocked tiles, but there should only be 5. Please ensure the tiles entered onto the board are correct. # Issues: 0, 8, 16, 23, 25, 33
     `
     );
     registerTest(
-      "reports issue when there are more than 5 blocked tiles entered by the user (7 tiles entered)",
+      {
+        title:
+          "reports issue when there are more than 5 blocked tiles entered by the user (7 tiles entered)",
+        tags: [TestTag.ImpossibleUIState],
+      },
       `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │     │     │
@@ -471,7 +479,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Board has 7 blocked tiles, but there should only be 5. # Issues: 0, 1, 8, 16, 23, 25, 33
+      [Error] Board has 7 blocked tiles, but there should only be 5. Please ensure the tiles entered onto the board are correct. # Issues: 0, 1, 8, 16, 23, 25, 33
     `
     );
   });

@@ -63,7 +63,7 @@ export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
         patternIdentifierCandidates: [],
         error: new BoardIssue(
           BoardIssueSeverity.Error,
-          `Board has ${blockedIndexes.size} blocked tiles, but there should only be ${MAX_BLOCKED}.`,
+          `Board has ${blockedIndexes.size} blocked tiles, but there should only be ${MAX_BLOCKED}. Please ensure the tiles entered onto the board are correct.`,
           blockedIndexes
         ),
       };
@@ -82,7 +82,7 @@ export function getIdentifierCandidates(blockedIndexes: ReadonlySet<number>): {
       patternIdentifierCandidates: ["??"],
       error: new BoardIssue(
         BoardIssueSeverity.Error,
-        `Blocked tile pattern does not match any known patterns.`,
+        `The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct.`,
         Array.from(blockedIndexes)
       ),
     };

@@ -227,7 +227,7 @@ export function createCommunityDataStateCandidatesFoxOmitsSolver(
       issues.push(
         new BoardIssue(
           BoardIssueSeverity.Error,
-          `Tile pattern does not match any known patterns; suggestions are not available.`,
+          `The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct.`,
           shapes.reduce<number[]>(
             (prev, shape) => [
               ...prev,
@@ -331,7 +331,7 @@ function validateUserSelection({
           boundingBox.height
         } area, but should only be ${shortSide}x${longSide}${
           shortSide !== longSide ? ` or ${longSide}x${shortSide}` : ""
-        }.`,
+        }. Please ensure the tiles entered onto the board are correct.`,
         [
           cordToIndex(boundingBox.x, boundingBox.y),
           cordToIndex(

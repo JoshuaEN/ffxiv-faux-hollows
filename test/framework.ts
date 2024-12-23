@@ -11,7 +11,21 @@ import {
   TestPatternData,
 } from "./helpers/ascii-grid.js";
 
-export type RegisterTest = (title: string, ...states: string[]) => void;
+export enum TestTag {
+  /**
+   * A test which it is not possible to enter this state in the UI.
+   */
+  ImpossibleUIState = "ImpossibleUIState",
+  /**
+   * A test which is technically possible to create in the UI, but involves choosing a grayed out option in the picker UI, or is trying to load suggestions during fills, which causes issues with the UI tests.
+   */
+  InvalidUIState = "InvalidUIState",
+}
+
+export type RegisterTest = (
+  title: string | { title: string; tags: TestTag[] },
+  ...states: string[]
+) => void;
 
 export enum FormatDataSource {
   Actual = "Actual",

@@ -1,5 +1,5 @@
 import { TestStructuralElements } from "../all-data-tests.js";
-import { RegisterTest } from "../framework.js";
+import { RegisterTest, TestTag } from "../framework.js";
 
 export const data = (
   registerTest: RegisterTest,
@@ -8,7 +8,10 @@ export const data = (
   describe("Fox suggestions", () => {
     describe("Fully Solved board", () => {
       registerTest(
-        `Does not suggest any foxes with no community data`,
+        {
+          title: `Does not suggest any foxes with no community data`,
+          tags: [TestTag.InvalidUIState],
+        },
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │ B   │     │
@@ -40,11 +43,14 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │     │     │     │ B   │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Tile pattern does not match any known patterns; suggestions are not available. # Issues: 20, 21, 26, 27, 12, 13, 18, 19
+      [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 20, 21, 26, 27, 12, 13, 18, 19
     `
       );
       registerTest(
-        `Does not suggest any foxes with an unknown block pattern and no community data`,
+        {
+          title: `Does not suggest any foxes with an unknown block pattern and no community data`,
+          tags: [TestTag.InvalidUIState],
+        },
         `
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │ B   │ B   │ B   │ B   │ B   │     │
@@ -74,7 +80,7 @@ export const data = (
       ├─────┼─────┼─────┼─────┼─────┼─────┤
       │ E   │     │     │     │     │     │
       └─────┴─────┴─────┴─────┴─────┴─────┘
-      [Error] Blocked tile pattern does not match any known patterns. # Issues: 0, 1, 2, 3, 4
+      [Error] The Blocked tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 0, 1, 2, 3, 4
     `
       );
       registerTest(
@@ -167,7 +173,10 @@ export const data = (
     });
     describe("Partially Solved board", () => {
       registerTest(
-        "Does not suggest any foxes with no community data",
+        {
+          title: "Does not suggest any foxes with no community data",
+          tags: [TestTag.InvalidUIState],
+        },
         `
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │ B   │     │
@@ -199,7 +208,7 @@ export const data = (
   ├─────┼─────┼─────┼─────┼─────┼─────┤
   │     │     │     │ B   │     │     │
   └─────┴─────┴─────┴─────┴─────┴─────┘
-  [Error] Tile pattern does not match any known patterns; suggestions are not available. # Issues: 26
+  [Error] The tiles entered do not match any patterns. Please ensure the tiles entered onto the board are correct. # Issues: 26
 `
       );
       registerTest(

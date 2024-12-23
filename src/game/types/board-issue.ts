@@ -1,5 +1,4 @@
 export enum BoardIssueSeverity {
-  Warning = "Warning",
   Error = "Error",
 }
 export class BoardIssue {
