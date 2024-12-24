@@ -1,11 +1,7 @@
-main {
+.gameBoard {
   display: grid;
   grid-template-columns: repeat(var(--board-tile-count), 1fr);
   gap: var(--board-tile-gap);
-}
-
-main.gameBoard {
-  aspect-ratio: 1;
 }
 
 .debug {
@@ -20,6 +16,14 @@ main.gameBoard {
   }
   gap: 1rem;
 }
+[data-popover-tp] {
+  display: flex;
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index: 9999;
+  width: 100%;
+}
 .overlay {
   z-index: 9999;
   padding: 0.5rem;
@@ -27,6 +31,9 @@ main.gameBoard {
   --tile-min-size: 5rem;
   --tile-max-size: 5rem;
   --board-tile-gap: 0.5rem;
+  &:focus {
+    outline: none;
+  }
 
   &,
   .message {
