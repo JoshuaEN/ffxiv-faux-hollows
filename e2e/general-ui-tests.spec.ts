@@ -544,6 +544,45 @@ test.describe("active help", () => {
     );
   });
 
+  test("it should handle when all of the fox locations are empty but the board is not solved", async ({
+    page,
+    request,
+    context,
+  }) => {
+    // Arrange
+    await page.goto(".");
+    const harness = new GameBoardHarness(page.locator("html"), {
+      page,
+      request,
+      context,
+    });
+
+    // Act
+    await harness.actionsFromAsciiGrid(`
+      ┌─────┬─────┬─────┬─────┬─────┬─────┐
+      │>E5  │     │     │     │>B1  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │     │     │>S3  │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │>P4  │     │     │     │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │>E8  │>S2  │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │     │     │>E7  │     │     │
+      ├─────┼─────┼─────┼─────┼─────┼─────┤
+      │     │>E6  │     │     │     │     │
+      └─────┴─────┴─────┴─────┴─────┴─────┘
+    `);
+
+    // Assert
+    await assertHelp(
+      harness,
+      "Uncover tiles in game based on your chosen strategy",
+      "Board Solved",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
+
   test("it should show error help when no patterns are valid (blocked tiles)", async ({
     page,
     request,
