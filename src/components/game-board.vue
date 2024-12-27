@@ -188,6 +188,9 @@ onUnmounted(() => {
         }
       "
       class="overlay"
+      role="dialog"
+      aria-label="Tile picker"
+      aria-description="Select the tile type to fill into the selected tile."
       data-testid="popover-picker"
       :class="[popoverPlacement]"
       :style="{
