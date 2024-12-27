@@ -25,6 +25,7 @@ const board = new Board();
         >Faux Hollows minigame</a
       >.
     </p>
+    <p>This solver does not guarantee any result.</p>
     <div class="items">
       <span class="item"
         >Powered by u/Ylandah's
@@ -54,23 +55,36 @@ footer {
   flex-direction: column;
   align-items: center;
   padding-top: 1rem;
-  opacity: 0.5;
+
+  @media (hover: hover) {
+    opacity: 0.9;
+  }
 
   &:hover {
     opacity: 1;
   }
-}
-.items {
-  display: flex;
-  flex-direction: row;
-  font-size: 0.8rem;
-  gap: 1ch;
-  box-sizing: border-box;
-}
-.item {
-  padding-right: 1ch;
-}
-.item:not(:last-child) {
-  border-right: 1px solid var(--font-color);
+
+  p {
+    text-align: center;
+  }
+
+  p:not(:first-child) {
+    margin-top: 0;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.8rem;
+    gap: 1ch;
+    box-sizing: border-box;
+    margin-top: 1rem;
+  }
+  .item {
+    padding-right: 1ch;
+  }
+  .item:not(:last-child) {
+    border-right: 1px solid var(--font-color);
+  }
 }
 </style>
