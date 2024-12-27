@@ -264,44 +264,44 @@ test.describe('Smart Fill "tile picker"', () => {
   // There appears to be a bug (?) with playwright where it is focusing a div inside the popover,
   // even though divs shouldn't be focusable and are not in normal operation.
   // Follow-up: Create a minimal reproduction and report to playwright at some point.
-  test.skip("it should close the Smart Fill tile picker by tabbing forward", async ({
-    page,
-    request,
-    context,
-  }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-    await harness.actionsFromAsciiGrid(`
-    ┌─────┬─────┬─────┬─────┬─────┬─────┐
-    │     │     │     │     │>B1  │     │
-    ├─────┼─────┼─────┼─────┼─────┼─────┤
-    │     │     │     │     │     │     │
-    ├─────┼─────┼─────┼─────┼─────┼─────┤
-    │     │     │     │     │     │     │
-    ├─────┼─────┼─────┼─────┼─────┼─────┤
-    │     │     │     │     │     │     │
-    ├─────┼─────┼─────┼─────┼─────┼─────┤
-    │     │     │     │     │     │     │
-    ├─────┼─────┼─────┼─────┼─────┼─────┤
-    │     │     │     │     │     │     │
-    └─────┴─────┴─────┴─────┴─────┴─────┘
-  `);
-    await harness.getTile(0).locator.focus();
+  // test.skip("it should close the Smart Fill tile picker by tabbing forward", async ({
+  //   page,
+  //   request,
+  //   context,
+  // }) => {
+  //   // Arrange
+  //   await page.goto(".");
+  //   const harness = new GameBoardHarness(page.locator("html"), {
+  //     page,
+  //     request,
+  //     context,
+  //   });
+  //   await harness.actionsFromAsciiGrid(`
+  //   ┌─────┬─────┬─────┬─────┬─────┬─────┐
+  //   │     │     │     │     │>B1  │     │
+  //   ├─────┼─────┼─────┼─────┼─────┼─────┤
+  //   │     │     │     │     │     │     │
+  //   ├─────┼─────┼─────┼─────┼─────┼─────┤
+  //   │     │     │     │     │     │     │
+  //   ├─────┼─────┼─────┼─────┼─────┼─────┤
+  //   │     │     │     │     │     │     │
+  //   ├─────┼─────┼─────┼─────┼─────┼─────┤
+  //   │     │     │     │     │     │     │
+  //   ├─────┼─────┼─────┼─────┼─────┼─────┤
+  //   │     │     │     │     │     │     │
+  //   └─────┴─────┴─────┴─────┴─────┴─────┘
+  // `);
+  //   await harness.getTile(0).locator.focus();
 
-    // Act
-    await repeatKey(page, "Tab", 7);
-    await page.keyboard.press("Space");
-    await expect(harness.getPopover()).toBeVisible();
-    await page.keyboard.press("Tab");
+  //   // Act
+  //   await repeatKey(page, "Tab", 7);
+  //   await page.keyboard.press("Space");
+  //   await expect(harness.getPopover()).toBeVisible();
+  //   await page.keyboard.press("Tab");
 
-    // Assert
-    await expect(harness.getPopover()).not.toBeVisible();
-  });
+  //   // Assert
+  //   await expect(harness.getPopover()).not.toBeVisible();
+  // });
   test("it should close the Smart Fill tile picker by tabbing backwards", async ({
     page,
     request,
