@@ -4,23 +4,23 @@ import SolveStepComp from "./solve-step.vue";
 import GameTile from "./game-tile.vue";
 import ActiveHelp from "./building-blocks/active-help.vue";
 
-import activeHelpFillBlockedEmptyBoard from "~/assets/active-help/FillBlocked/empty-board.jpg";
+import activeHelpFillBlockedEmptyBoard from "~/assets/active-help/FillBlocked/empty-board.webp";
 
-import activeHelpFillSwordBoardWithSword from "~/assets/active-help/FillSword/BoardWithSword.jpg";
-import activeHelpFillSwordToolBoardWithSword from "~/assets/active-help/FillSword/ToolBoardWithSword.jpg";
-import activeHelpFillSwordToolBoardWithSwordSeek from "~/assets/active-help/FillSword/ToolBoardWithSwordSeek.jpg";
+import activeHelpFillSwordBoardWithSword from "~/assets/active-help/FillSword/BoardWithSword.webp";
+import activeHelpFillSwordToolBoardWithSword from "~/assets/active-help/FillSword/ToolBoardWithSword.webp";
+import activeHelpFillSwordToolBoardWithSwordSeek from "~/assets/active-help/FillSword/ToolBoardWithSwordSeek.webp";
 
-import activeHelpFillPresentBoardWithPresent from "~/assets/active-help/FillPresent/BoardWithPresent.jpg";
-import activeHelpFillPresentToolBoardWithPresent from "~/assets/active-help/FillPresent/ToolBoardWithPresent.jpg";
-import activeHelpFillPresentToolBoardWithPresentSeek from "~/assets/active-help/FillPresent/ToolBoardWithPresentSeek.jpg";
+import activeHelpFillPresentBoardWithPresent from "~/assets/active-help/FillPresent/BoardWithPresent.webp";
+import activeHelpFillPresentToolBoardWithPresent from "~/assets/active-help/FillPresent/ToolBoardWithPresent.webp";
+import activeHelpFillPresentToolBoardWithPresentSeek from "~/assets/active-help/FillPresent/ToolBoardWithPresentSeek.webp";
 
-import activeHelpSuggestionsSuggestionsAndFoxes from "~/assets/active-help/Suggestions/SuggestionsAndFoxes.jpg";
+import activeHelpSuggestionsSuggestionsAndFoxes from "~/assets/active-help/Suggestions/SuggestionsAndFoxes.webp";
 
-import swordIcon from "~/assets/InGame/Swords.png";
-import swordIconVert from "~/assets/InGame/SwordsVert.png";
+import swordIcon from "~/assets/InGame/Swords.webp";
+import swordIconVert from "~/assets/InGame/SwordsVert.webp";
 
-import presentIcon from "~/assets/InGame/GiftBoxes.png";
-import cofferIcon from "~/assets/InGame/Coffers.png";
+import presentIcon from "~/assets/InGame/GiftBoxes.webp";
+import cofferIcon from "~/assets/InGame/Coffers.webp";
 
 import TileSideBySide from "./tile-side-by-side.vue";
 import { ref } from "vue";

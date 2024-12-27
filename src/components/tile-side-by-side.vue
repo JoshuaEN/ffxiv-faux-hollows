@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { TileState } from "../game/types";
 import BaseTile from "./base-tile.vue";
-import blockedIcon from "~/assets/InGame/Blocked.png";
-import unknownIcon from "~/assets/InGame/Unknown.png";
-import foxIcon from "~/assets/InGame/Fox.png";
-import swordIcon from "~/assets/InGame/Swords.png";
-import swordIconVert from "~/assets/InGame/SwordsVert.png";
-import coffersIcon from "~/assets/InGame/Coffers.png";
-import giftBoxesIcon from "~/assets/InGame/GiftBoxes.png";
-import emptyIcon from "~/assets/InGame/Empty.png";
+import blockedIcon from "~/assets/InGame/Blocked.webp";
+import unknownIcon from "~/assets/InGame/Unknown.webp";
+import foxIcon from "~/assets/InGame/Fox.webp";
+import swordIcon from "~/assets/InGame/Swords.webp";
+import swordIconVert from "~/assets/InGame/SwordsVert.webp";
+import coffersIcon from "~/assets/InGame/Coffers.webp";
+import giftBoxesIcon from "~/assets/InGame/GiftBoxes.webp";
+import emptyIcon from "~/assets/InGame/Empty.webp";
 import { computed } from "vue";
 
 const props = defineProps<{ tile: TileState }>();
