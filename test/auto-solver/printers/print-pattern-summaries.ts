@@ -13,11 +13,6 @@ export function printPatternSummaries(
   {
     type GroupValues = {
       /**
-       * The minimum and maximum overall to fully solve (all columns are from the same solve)
-       */
-      min: AutoSolveExpandedResultStepsTo;
-      max: AutoSolveExpandedResultStepsTo;
-      /**
        * The minimum and maximum steps for this specific slot (the column, e.g. Present, Present+Fox, Sword, Sword+Present, etc...)
        * Each column may be from a different solve.
        */
@@ -29,20 +24,18 @@ export function printPatternSummaries(
       const key = `${summary.identifier} ${patternToPictograph(summary.pattern)}`;
 
       const group: GroupValues = groups.get(key) ?? {
-        min: { ...summary.stepsTo },
-        max: { ...summary.stepsTo },
         minInSlot: { ...summary.stepsTo },
         maxInSlot: { ...summary.stepsTo },
       };
 
-      if (group.min.fullTotal > summary.stepsTo.fullTotal) {
-        group.min = { ...summary.stepsTo };
-      }
-      if (group.max.fullTotal < summary.stepsTo.fullTotal) {
-        group.max = { ...summary.stepsTo };
-      }
-      for (const key of Object.keys(
-        summary.stepsTo
+      for (const key of Object.keys(summary.stepsTo).filter(
+        (k) =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+          k !== TileState.Sword &&
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+          k !== TileState.Present &&
+          k !== "swordFullSteps" &&
+          k !== "presentFullSteps"
       ) as (keyof typeof summary.stepsTo)[]) {
         const newValue = summary.stepsTo[key];
         const currentMin = group.minInSlot[key];
@@ -56,49 +49,94 @@ export function printPatternSummaries(
         }
       }
 
+      stableSwordPresentSteps(
+        summary,
+        group.maxInSlot,
+        "Sword",
+        "sword",
+        (a, b) => a > b
+      );
+      stableSwordPresentSteps(
+        summary,
+        group.minInSlot,
+        "Sword",
+        "sword",
+        (a, b) => a < b
+      );
+      stableSwordPresentSteps(
+        summary,
+        group.maxInSlot,
+        "Present",
+        "present",
+        (a, b) => a > b
+      );
+      stableSwordPresentSteps(
+        summary,
+        group.minInSlot,
+        "Present",
+        "present",
+        (a, b) => a < b
+      );
+
       groups.set(key, group);
     }
 
     for (const [patternKey, values] of Array.from(groups.entries()).sort(
       ([a], [b]) => b.localeCompare(a)
     )) {
-      const overallPrintedCalculation = printCalculation(
-        values.min,
-        values.max
-      );
-      const perRowPrintedCalculation = printCalculation(
+      const slotPrintedCalculation = printCalculation(
         values.minInSlot,
         values.maxInSlot
       );
 
       lines.push(`${indent(1)}${patternKey}`);
-      const indexPadding: number[] = [];
-      let allMatch = true;
-      for (let i = 0; i < overallPrintedCalculation.length; i++) {
-        const totalValue = overallPrintedCalculation[i];
-        const perRowValue = perRowPrintedCalculation[i];
-        assertDefined(totalValue);
-        assertDefined(perRowValue);
-
-        if (allMatch && totalValue !== perRowValue) {
-          allMatch = false;
-        }
-        indexPadding.push(Math.max(totalValue.length, perRowValue.length));
-      }
-      if (allMatch) {
-        lines.push(overallPrintedCalculation.join(" "));
-      } else {
-        lines.push(
-          `${overallPrintedCalculation.map((value, index) => value.padEnd(indexPadding[index] ?? 0)).join(" ")}${indent(1)}(overall best/worse)`
-        );
-        lines.push(
-          `${perRowPrintedCalculation.map((value, index) => value.padEnd(indexPadding[index] ?? 0)).join(" ")}${indent(1)}(per-row best/worse; each column may be from a different solve)`
-        );
-      }
+      printPatternSummary(lines, slotPrintedCalculation);
     }
   }
 }
-function printCalculation(
+
+/**
+ * Because s2+5 === s1+6 (for example), the actual result may not be stable if we only compare shape + shapeFullSteps
+ * So we tiebreak so we always return the same result regardless of the other these are processed in, other things equal.
+ */
+function stableSwordPresentSteps(
+  summary: AutoSolveExpandedResult,
+  stepsTo: AutoSolveExpandedResultStepsTo,
+  shape: "Sword" | "Present",
+  shapeFullSteps: "sword" | "present",
+  cmp: (a: number, b: number) => boolean
+) {
+  const tiebreakNeeded =
+    summary.stepsTo[shape] + summary.stepsTo[`${shapeFullSteps}FullSteps`] ===
+    stepsTo[shape] + stepsTo[`${shapeFullSteps}FullSteps`];
+  const setBySimpleCompare = cmp(
+    summary.stepsTo[shape] + summary.stepsTo[`${shapeFullSteps}FullSteps`],
+    stepsTo[shape] + stepsTo[`${shapeFullSteps}FullSteps`]
+  );
+  const setByShapeTiebreak =
+    tiebreakNeeded && cmp(summary.stepsTo[shape], stepsTo[shape]);
+  const setByFullStepsTiebreak =
+    tiebreakNeeded &&
+    summary.stepsTo[shape] === stepsTo[shape] &&
+    cmp(
+      summary.stepsTo[`${shapeFullSteps}FullSteps`],
+      stepsTo[`${shapeFullSteps}FullSteps`]
+    );
+  if (setBySimpleCompare || setByShapeTiebreak || setByFullStepsTiebreak) {
+    stepsTo[shape] = summary.stepsTo[shape];
+    stepsTo[`${shapeFullSteps}FullSteps`] =
+      summary.stepsTo[`${shapeFullSteps}FullSteps`];
+  }
+}
+
+export function printPatternSummary(
+  lines: string[],
+  slotPrintedCalculation: string[]
+) {
+  lines.push(slotPrintedCalculation.join(" "));
+}
+
+export function printCalculation(
   min: AutoSolveExpandedResultStepsTo,
   max: AutoSolveExpandedResultStepsTo
 ) {

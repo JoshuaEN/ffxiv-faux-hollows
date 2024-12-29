@@ -39,6 +39,7 @@ export interface AutoSolveExpandedResultStepsTo {
   bestPresentFox: number;
   bestTotal: number;
 
+  // Number of additional steps to fully uncover the target after finding the tile
   swordFullSteps: number;
   presentFullSteps: number;
 
@@ -53,7 +54,7 @@ export interface AutoSolveExpandedResult {
   identifier: string;
   blocked: readonly number[];
   pattern: CommunityDataPattern;
-  foxIndex: number;
+  foxIndex: number | undefined;
   id: number;
   steps: AutoSolveExpandedResultStepTaken[];
   stepsTo: AutoSolveExpandedResultStepsTo;

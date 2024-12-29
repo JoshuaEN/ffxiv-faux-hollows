@@ -436,23 +436,19 @@ Per-pattern summaries
   D↓ ▭14 ◻6
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D↓ ▭14 ◻26
-     T[12,15] t[4,6] s1+5 p3+[3,4] SP[11,12] F[4,6] SF[9,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D↓ ▭14 ◻24
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D↓ ▭14 ◻0
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D→ ▯8 ◻28
-     T[12,15] t[3,6] s1+5 p3+4     SP12      F[3,6] SF[8,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D→ ▯8 ◻25
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D→ ▯8 ◻24
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D→ ▯8 ◻16
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D→ ▯22 ◻25
      T[12,16] t[4,7] s2+5 p3+[3,4] SP[11,12] F[3,6] SF[8,11] PF[7,11]
   D→ ▯22 ◻0
@@ -486,11 +482,9 @@ Per-pattern summaries
   D← ▯14 ◻3
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D← ▯14 ◻12
-     T[12,15] t[3,7] s1+5 p3+[4,3] SP[12,11] F[3,7] SF[8,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D← ▯14 ◻0
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D← ▯0 ◻3
      T[12,16] t[4,7] s2+5 p3+[3,4] SP[11,12] F[3,6] SF[8,11] PF[7,11]
   D← ▯0 ◻28
@@ -536,15 +530,13 @@ Per-pattern summaries
   D ▭2 ◻14
      T[11,14] t[2,5] s1+6 p1+3 SP10 F[2,5] SF[8,11] PF[5,8]
   D ▭13 ◻4
-     T[12,15] t[3,6] s1+5 p3+4     SP12      F[3,6] SF[8,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   D ▭13 ◻28
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D ▭13 ◻22
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   D ▭13 ◻2
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C↓ ▯6 ◻8
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C↓ ▯6 ◻16
@@ -556,8 +548,7 @@ Per-pattern summaries
   C↓ ▯0 ◻8
      T[11,15] t[3,7] s1+5 p[2,3]+3 SP[10,11] F[3,7] SF[8,12] PF[6,10]
   C↓ ▯0 ◻26
-     T[12,16] t[4,7] s1+5 p3+[3,4] SP[11,12] F[4,7] SF[9,12] PF[7,11]  (overall best/worse)
-     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]  (per-row best/worse; each column may be from a different solve)
+     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]
   C↓ ▯0 ◻16
      T[11,16] t[3,7] s1+5 p[2,3]+[3,4] SP[10,12] F[3,7] SF[8,12] PF[6,11]
   C↓ ▯0 ◻15
@@ -567,11 +558,9 @@ Per-pattern summaries
   C↓ ▭7 ◻18
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C↓ ▭6 ◻26
-     T[12,15] t[4,6] s1+5 p3+[3,4] SP[11,12] F[4,6] SF[9,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C↓ ▭6 ◻18
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C↓ ▭6 ◻16
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C↓ ▭6 ◻15
@@ -583,13 +572,11 @@ Per-pattern summaries
   C→ ▯19 ◻8
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C→ ▯19 ◻27
-     T[12,15] t[4,6] s1+5 p3+[3,4] SP[11,12] F[4,6] SF[9,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C→ ▯19 ◻2
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C→ ▯19 ◻16
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C→ ▯13 ◻27
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C→ ▯13 ◻16
@@ -607,8 +594,7 @@ Per-pattern summaries
   C→ ▭24 ◻2
      T[11,16] t[3,7] s1+5 p[2,3]+[3,4] SP[10,12] F[3,7] SF[8,12] PF[6,11]
   C→ ▭24 ◻16
-     T[12,16] t[4,7] s1+5 p3+[3,4] SP[11,12] F[4,7] SF[9,12] PF[7,11]  (overall best/worse)
-     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]  (per-row best/worse; each column may be from a different solve)
+     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]
   C→ ▭24 ◻13
      T[11,15] t[3,7] s1+5 p[2,3]+3 SP[10,11] F[3,7] SF[8,12] PF[6,10]
   C← ▯9 ◻12
@@ -620,11 +606,9 @@ Per-pattern summaries
   C← ▯3 ◻20
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C← ▯3 ◻12
-     T[12,15] t[3,6] s1+5 p3+4     SP12      F[3,6] SF[8,11] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C← ▯3 ◻1
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C← ▯20 ◻12
      T[12,15] t[2,5] s1+6 p1+4 SP11 F[2,5] SF[8,11] PF[6,9]
   C← ▭3 ◻26
@@ -634,8 +618,7 @@ Per-pattern summaries
   C← ▭3 ◻15
      T[11,15] t[3,7] s1+5 p[2,3]+3 SP[10,11] F[3,7] SF[8,12] PF[6,10]
   C← ▭3 ◻12
-     T[12,16] t[4,7] s1+5 p3+[3,4] SP[11,12] F[4,7] SF[9,12] PF[7,11]  (overall best/worse)
-     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]  (per-row best/worse; each column may be from a different solve)
+     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]
   C← ▭2 ◻26
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C← ▭2 ◻15
@@ -647,8 +630,7 @@ Per-pattern summaries
   C ▯22 ◻20
      T[11,15] t[3,7] s1+5 p[2,3]+3 SP[10,11] F[3,7] SF[8,12] PF[6,10]
   C ▯22 ◻2
-     T[12,16] t[4,7] s1+5 p3+[3,4] SP[11,12] F[4,7] SF[9,12] PF[7,11]  (overall best/worse)
-     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]  (per-row best/worse; each column may be from a different solve)
+     T[12,16] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,11]
   C ▯22 ◻13
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C ▯22 ◻12
@@ -662,15 +644,13 @@ Per-pattern summaries
   C ▯10 ◻12
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C ▭21 ◻2
-     T[12,15] t[4,7] s1+5 p3+3     SP11      F[4,7] SF[9,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C ▭21 ◻13
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C ▭21 ◻12
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   C ▭21 ◻10
-     T[12,15] t[3,7] s1+5 p3+[4,3] SP[12,11] F[3,7] SF[8,12] PF[7,10]  (overall best/worse)
-     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]  (per-row best/worse; each column may be from a different solve)
+     T[12,15] t[3,7] s1+5 p3+[3,4] SP[11,12] F[3,7] SF[8,12] PF[7,10]
   C ▭20 ◻2
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   C ▭20 ◻10
@@ -696,15 +676,13 @@ Per-pattern summaries
   B↓ ▭9 ◻28
      T[12,15] t[3,6] s2+5 p2+4 SP11 F[3,6] SF[8,11] PF[7,10]
   B↓ ▭9 ◻1
-     T[11,14] t[3,6] s2+5     p1+3 SP10      F[3,6] SF[8,11] PF[6,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B↓ ▭27 ◻4
      T[12,15] t[3,6] s2+6 p2+3 SP11 F[3,6] SF[9,12] PF[6,9]
   B↓ ▭27 ◻24
      T[13,16] t[3,6] s2+6 p2+4 SP12 F[3,6] SF[9,12] PF[7,10]
   B↓ ▭27 ◻1
-     T[11,14] t[3,5] s2+[5,6] p1+3 SP[10,11] F[3,5] SF[8,11] PF[6,8]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B↓ ▭27 ◻0
      T[11,14] t[2,5] s2+6 p1+3 SP11 F[2,5] SF[8,11] PF[5,8]
   B↓ ▭0 ◻4
@@ -716,8 +694,7 @@ Per-pattern summaries
   B→ ▯4 ◻24
      T[11,14] t[2,5] s2+6 p1+3 SP11 F[2,5] SF[8,11] PF[5,8]
   B→ ▯4 ◻18
-     T[11,14] t[2,6] s2+[6,5] p1+3 SP[11,10] F[2,6] SF[8,11] PF[5,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B→ ▯4 ◻0
      T[12,15] t[3,6] s2+6 p2+3 SP11 F[3,6] SF[9,12] PF[6,9]
   B→ ▯18 ◻28
@@ -727,8 +704,7 @@ Per-pattern summaries
   B→ ▯1 ◻4
      T[12,15] t[3,6] s2+5 p2+4 SP11 F[3,6] SF[8,11] PF[7,10]
   B→ ▯1 ◻18
-     T[11,14] t[3,6] s2+5     p1+3 SP10      F[3,6] SF[8,11] PF[6,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B→ ▭24 ◻7
      T[11,14] t[3,6] s1+5 p2+3 SP10 F[3,6] SF[8,11] PF[6,9]
   B→ ▭24 ◻28
@@ -752,15 +728,13 @@ Per-pattern summaries
   B← ▯21 ◻24
      T[12,15] t[3,6] s2+5 p2+4 SP11 F[3,6] SF[8,11] PF[7,10]
   B← ▯21 ◻10
-     T[11,14] t[3,5] s2+[5,6] p1+3 SP[10,11] F[3,5] SF[8,11] PF[6,8]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B← ▯18 ◻4
      T[11,14] t[2,5] s2+6 p1+3 SP11 F[2,5] SF[8,11] PF[5,8]
   B← ▯18 ◻28
      T[12,15] t[3,6] s2+6 p2+3 SP11 F[3,6] SF[9,12] PF[6,9]
   B← ▯18 ◻10
-     T[11,14] t[3,6] s2+5     p1+3 SP10      F[3,6] SF[8,11] PF[6,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B← ▯18 ◻0
      T[13,16] t[3,6] s2+6 p2+4 SP12 F[3,6] SF[9,12] PF[7,10]
   B← ▭3 ◻28
@@ -800,8 +774,7 @@ Per-pattern summaries
   B ▭27 ◻24
      T[11,15] t[3,6] s1+5 p2+[3,4] SP[10,11] F[2,5] SF[7,10] PF[6,10]
   B ▭18 ◻27
-     T[11,14] t[2,6] s2+[6,5] p1+3 SP[11,10] F[2,6] SF[8,11] PF[5,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B ▭18 ◻0
      T[12,15] t[3,6] s2+5 p2+4 SP11 F[3,6] SF[8,11] PF[7,10]
   B ▭0 ◻4
@@ -809,8 +782,7 @@ Per-pattern summaries
   B ▭0 ◻28
      T[11,14] t[2,5] s2+6 p1+3 SP11 F[2,5] SF[8,11] PF[5,8]
   B ▭0 ◻27
-     T[11,14] t[3,6] s2+5     p1+3 SP10      F[3,6] SF[8,11] PF[6,9]  (overall best/worse)
-     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]  (per-row best/worse; each column may be from a different solve)
+     T[11,14] t[2,6] s2+[5,6] p1+3 SP[10,11] F[2,6] SF[8,11] PF[5,9]
   B ▭0 ◻24
      T[12,15] t[3,6] s2+6 p2+3 SP11 F[3,6] SF[9,12] PF[6,9]
   A↓ ▯7 ◻28
