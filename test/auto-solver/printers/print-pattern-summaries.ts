@@ -45,7 +45,7 @@ export function printPatternSummaries(
     }
 
     for (const [patternKey, values] of Array.from(groups.entries()).sort(
-      ([a], [b]) => b.localeCompare(a)
+      ([a], [b]) => a.localeCompare(b)
     )) {
       const slotPrintedCalculation = printCalculation(
         values.minInSlot,
