@@ -1,6 +1,10 @@
-import { TileState } from "~/src/game/types/tile-states.js";
-import { AutoSolveExpandedResult } from "../generate-summaries.js";
-import { formatter, formatter1Place } from "./helpers.js";
+import { AutoSolveExpandedResultStepsTo } from "../generate-summaries.js";
+import {
+  formatter,
+  formatter1Place,
+  getMedian,
+  getStandardDeviation,
+} from "./helpers.js";
 import { assert } from "~/src/helpers.js";
 import EasyTable from "easy-table";
 
@@ -14,7 +18,7 @@ export interface AutoSolveResultSummaryData {
   total: number;
 }
 export type AutoSolveResultSummary = Record<
-  keyof AutoSolveExpandedResult["stepsTo"],
+  keyof AutoSolveExpandedResultStepsTo,
   AutoSolveResultSummaryData
 >;
 
@@ -23,14 +27,14 @@ const blankLeftPadder = EasyTable.leftPadder(" ");
 export function printExpandedResultSummary(
   lines: string[],
   headerPrefix: string,
-  results: AutoSolveExpandedResult[]
+  results: AutoSolveExpandedResultStepsTo[]
 ) {
   const summaries = calculateSummary(results);
   const valueColumnWidth = 10;
   const table = new EasyTable();
   function printSummary(
     title: string,
-    lookup: keyof AutoSolveExpandedResult["stepsTo"]
+    lookup: keyof AutoSolveExpandedResultStepsTo
   ) {
     table.cell("", title, blankLeftPadder);
     table.cell(
@@ -71,12 +75,12 @@ export function printExpandedResultSummary(
   table.cell("", headerPrefix + "Steps to Find");
   table.newRow();
 
-  printSummary("Sword", TileState.Sword);
-  printSummary("Present", TileState.Present);
-  printSummary("Sword & Present", "SwordPresent");
+  printSummary("Sword", "FoundSword");
+  printSummary("Present", "FoundPresent");
+  printSummary("Sword & Present", "FoundSwordPresent");
 
-  printSummary("Fox last", "Fox");
-  printSummary("Fox first", "bestFox");
+  printSummary("Fox last", "FoundFox");
+  printSummary("Fox first", "UncoverFox");
   printSummary("Four or less Fox Spots", "possibleFoxIndexes4");
   printSummary("Three or less Fox Spots", "possibleFoxIndexes3");
   printSummary("Two or less Fox Spots", "possibleFoxIndexes2");
@@ -89,30 +93,30 @@ export function printExpandedResultSummary(
   table.cell("", headerPrefix + "Steps to Uncover");
   table.newRow();
 
-  printSummary("Sword", "fullSword");
-  printSummary("Present", "fullPresent");
+  printSummary("Sword", "UncoverSword");
+  printSummary("Present", "UncoverPresent");
 
-  printSummary("Sword & Present", "fullSwordPresent");
+  printSummary("Sword & Present", "UncoverSwordPresent");
 
-  printSummary("Sword & Fox", "bestSwordFox");
-  printSummary("Present & Fox", "bestPresentFox");
+  printSummary("Sword & Fox", "UncoverSwordFox");
+  printSummary("Present & Fox", "UncoverPresentFox");
 
-  printSummary("All", "fullTotal");
+  printSummary("All", "UncoverAll");
 
   lines.push(table.toString());
 }
 
 function calculateSummary(
-  results: AutoSolveExpandedResult[]
+  results: AutoSolveExpandedResultStepsTo[]
 ): AutoSolveResultSummary {
   const intermediateResults = new Map<
-    keyof AutoSolveExpandedResult["stepsTo"],
+    keyof AutoSolveExpandedResultStepsTo,
     { min: number; max: number; values: number[]; total: number; count: number }
   >();
 
   for (const result of results) {
-    for (const [key, value] of Object.entries(result.stepsTo) as [
-      keyof AutoSolveExpandedResult["stepsTo"],
+    for (const [key, value] of Object.entries(result) as [
+      keyof AutoSolveExpandedResultStepsTo,
       number,
     ][]) {
       const intermediateResult = intermediateResults.get(key) ?? {
@@ -134,23 +138,11 @@ function calculateSummary(
   const finalResults: Partial<AutoSolveResultSummary> = {};
 
   for (const [key, data] of intermediateResults) {
-    data.values.sort();
-    let median = -1;
-    const halfWayIndex = Math.floor(data.values.length / 2);
-    const halfWayValue = data.values[halfWayIndex];
-    assert(halfWayValue !== undefined);
-    if (data.values.length % 2 === 0) {
-      const halfWayMinus1Value = data.values[halfWayIndex - 1];
-      assert(halfWayMinus1Value !== undefined);
-      median = (halfWayMinus1Value + halfWayValue) / 2;
-    } else {
-      median = halfWayValue;
-    }
     finalResults[key] = {
       avg: data.total / data.count,
       min: data.min,
       max: data.max,
-      median,
+      median: getMedian(data.values),
       stdev: getStandardDeviation(data.values),
       count: data.count,
       total: data.total,
@@ -165,18 +157,18 @@ function calculateSummary(
 function assertAllAutoSolveResultsFilled(
   results: Partial<AutoSolveResultSummary>
 ): asserts results is AutoSolveResultSummary {
-  assert(results.Fox !== undefined);
-  assert(results.Present !== undefined);
-  assert(results.Sword !== undefined);
-  assert(results.SwordPresent !== undefined);
-  assert(results.bestFox !== undefined);
-  assert(results.bestPresentFox !== undefined);
-  assert(results.bestSwordFox !== undefined);
-  assert(results.bestTotal !== undefined);
-  assert(results.fullPresent !== undefined);
-  assert(results.fullSword !== undefined);
-  assert(results.fullSwordPresent !== undefined);
-  assert(results.fullTotal !== undefined);
+  assert(results.FoundFox !== undefined);
+  assert(results.FoundPresent !== undefined);
+  assert(results.FoundSword !== undefined);
+  assert(results.FoundSwordPresent !== undefined);
+  assert(results.UncoverFox !== undefined);
+  assert(results.UncoverPresentFox !== undefined);
+  assert(results.UncoverSwordFox !== undefined);
+  assert(results.UncoverAll !== undefined);
+  assert(results.UncoverPresent !== undefined);
+  assert(results.UncoverSword !== undefined);
+  assert(results.UncoverSwordPresent !== undefined);
+  assert(results.UncoverBestAll !== undefined);
   assert(results.possibleFoxIndexes0 !== undefined);
   assert(results.possibleFoxIndexes1 !== undefined);
   assert(results.possibleFoxIndexes2 !== undefined);
@@ -185,12 +177,4 @@ function assertAllAutoSolveResultsFilled(
   assert(results.presentFullSteps !== undefined);
   assert(results.swordFullSteps !== undefined);
   assert(results.totalSteps !== undefined);
-}
-
-function getStandardDeviation(array: number[]) {
-  const n = array.length;
-  const mean = array.reduce((a, b) => a + b) / n;
-  return Math.sqrt(
-    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-  );
 }

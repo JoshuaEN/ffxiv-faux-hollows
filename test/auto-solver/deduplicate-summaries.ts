@@ -1,4 +1,3 @@
-import { TileState } from "~/src/game/types/tile-states.js";
 import { AutoSolveExpandedResult } from "./generate-summaries.js";
 import { assert } from "~/src/helpers.js";
 
@@ -16,32 +15,26 @@ export function deduplicateSummaries(summaries: AutoSolveExpandedResult[]) {
       ${summary.foxIndex}
       |
       ${summary.stepsTo.totalSteps}
-      ${summary.stepsTo[TileState.Sword]}
-      ${summary.stepsTo[TileState.Present]}
-      ${summary.stepsTo.fullSword}
-      ${summary.stepsTo.fullPresent}
-      ${summary.stepsTo[TileState.Fox]}
-      ${summary.stepsTo.bestFox}
-      ${summary.stepsTo.bestSwordFox}
-      ${summary.stepsTo.bestPresentFox}`;
+      ${summary.stepsTo.FoundSword}
+      ${summary.stepsTo.FoundPresent}
+      ${summary.stepsTo.UncoverSword}
+      ${summary.stepsTo.UncoverPresent}
+      ${summary.stepsTo.FoundFox}
+      ${summary.stepsTo.UncoverFox}
+      ${summary.stepsTo.UncoverSwordFox}
+      ${summary.stepsTo.UncoverPresentFox}`;
 
       const existing = deduplicatedSummariesMap.get(key);
       if (existing !== undefined) {
-        assert(
-          existing.stepsTo[TileState.Sword] === summary.stepsTo[TileState.Sword]
-        );
-        assert(
-          existing.stepsTo[TileState.Present] ===
-            summary.stepsTo[TileState.Present]
-        );
-        assert(
-          existing.stepsTo[TileState.Fox] === summary.stepsTo[TileState.Fox]
-        );
+        assert(existing.stepsTo.FoundSword === summary.stepsTo.FoundSword);
+        assert(existing.stepsTo.FoundPresent === summary.stepsTo.FoundPresent);
+        assert(existing.stepsTo.FoundFox === summary.stepsTo.FoundFox);
         assert(existing.stepsTo.totalSteps === summary.stepsTo.totalSteps);
         assert(
-          existing.stepsTo.fullSwordPresent === summary.stepsTo.fullSwordPresent
+          existing.stepsTo.UncoverSwordPresent ===
+            summary.stepsTo.UncoverSwordPresent
         );
-        assert(existing.stepsTo.fullTotal === summary.stepsTo.fullTotal);
+        assert(existing.stepsTo.UncoverAll === summary.stepsTo.UncoverAll);
       } else {
         deduplicatedSummariesMap.set(key, summary);
         deduplicatedSummaries.push(summary);

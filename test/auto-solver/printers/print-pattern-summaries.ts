@@ -1,10 +1,8 @@
-import { TileState } from "~/src/game/types/index.js";
 import {
   AutoSolveExpandedResult,
   AutoSolveExpandedResultStepsTo,
 } from "../generate-summaries.js";
 import { indent, patternToPictograph, stringifyMinMax } from "./helpers.js";
-import { assertDefined } from "~/src/helpers.js";
 
 export function printPatternSummaries(
   lines: string[],
@@ -28,15 +26,9 @@ export function printPatternSummaries(
         maxInSlot: { ...summary.stepsTo },
       };
 
-      for (const key of Object.keys(summary.stepsTo).filter(
-        (k) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-          k !== TileState.Sword &&
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-          k !== TileState.Present &&
-          k !== "swordFullSteps" &&
-          k !== "presentFullSteps"
-      ) as (keyof typeof summary.stepsTo)[]) {
+      for (const key of Object.keys(
+        summary.stepsTo
+      ) as (keyof AutoSolveExpandedResultStepsTo)[]) {
         const newValue = summary.stepsTo[key];
         const currentMin = group.minInSlot[key];
         const currentMax = group.maxInSlot[key];
@@ -48,35 +40,6 @@ export function printPatternSummaries(
           group.maxInSlot[key] = newValue;
         }
       }
-
-      stableSwordPresentSteps(
-        summary,
-        group.maxInSlot,
-        "Sword",
-        "sword",
-        (a, b) => a > b
-      );
-      stableSwordPresentSteps(
-        summary,
-        group.minInSlot,
-        "Sword",
-        "sword",
-        (a, b) => a < b
-      );
-      stableSwordPresentSteps(
-        summary,
-        group.maxInSlot,
-        "Present",
-        "present",
-        (a, b) => a > b
-      );
-      stableSwordPresentSteps(
-        summary,
-        group.minInSlot,
-        "Present",
-        "present",
-        (a, b) => a < b
-      );
 
       groups.set(key, group);
     }
@@ -95,40 +58,6 @@ export function printPatternSummaries(
   }
 }
 
-/**
- * Because s2+5 === s1+6 (for example), the actual result may not be stable if we only compare shape + shapeFullSteps
- * So we tiebreak so we always return the same result regardless of the other these are processed in, other things equal.
- */
-function stableSwordPresentSteps(
-  summary: AutoSolveExpandedResult,
-  stepsTo: AutoSolveExpandedResultStepsTo,
-  shape: "Sword" | "Present",
-  shapeFullSteps: "sword" | "present",
-  cmp: (a: number, b: number) => boolean
-) {
-  const tiebreakNeeded =
-    summary.stepsTo[shape] + summary.stepsTo[`${shapeFullSteps}FullSteps`] ===
-    stepsTo[shape] + stepsTo[`${shapeFullSteps}FullSteps`];
-  const setBySimpleCompare = cmp(
-    summary.stepsTo[shape] + summary.stepsTo[`${shapeFullSteps}FullSteps`],
-    stepsTo[shape] + stepsTo[`${shapeFullSteps}FullSteps`]
-  );
-  const setByShapeTiebreak =
-    tiebreakNeeded && cmp(summary.stepsTo[shape], stepsTo[shape]);
-  const setByFullStepsTiebreak =
-    tiebreakNeeded &&
-    summary.stepsTo[shape] === stepsTo[shape] &&
-    cmp(
-      summary.stepsTo[`${shapeFullSteps}FullSteps`],
-      stepsTo[`${shapeFullSteps}FullSteps`]
-    );
-  if (setBySimpleCompare || setByShapeTiebreak || setByFullStepsTiebreak) {
-    stepsTo[shape] = summary.stepsTo[shape];
-    stepsTo[`${shapeFullSteps}FullSteps`] =
-      summary.stepsTo[`${shapeFullSteps}FullSteps`];
-  }
-}
-
 export function printPatternSummary(
   lines: string[],
   slotPrintedCalculation: string[]
@@ -142,39 +71,39 @@ export function printCalculation(
 ) {
   return [
     indent(2),
-    stringifyMinMax("T", { min: min.fullTotal, max: max.fullTotal }),
+    stringifyMinMax("T", { min: min.UncoverAll, max: max.UncoverAll }),
     stringifyMinMax("t", {
       min: min.totalSteps,
       max: max.totalSteps,
     }),
     stringifyMinMax("s", {
-      min: min[TileState.Sword],
-      max: max[TileState.Sword],
-    }) +
-      stringifyMinMax("+", {
-        min: min.swordFullSteps,
-        max: max.swordFullSteps,
-      }),
-    stringifyMinMax("p", {
-      min: min[TileState.Present],
-      max: max[TileState.Present],
-    }) +
-      stringifyMinMax("+", {
-        min: min.presentFullSteps,
-        max: max.presentFullSteps,
-      }),
-    stringifyMinMax("SP", {
-      min: min.fullSwordPresent,
-      max: max.fullSwordPresent,
+      min: min.FoundSword,
+      max: max.FoundSword,
     }),
-    stringifyMinMax("F", { min: min.bestFox, max: max.bestFox }),
+    stringifyMinMax("p", {
+      min: min.FoundPresent,
+      max: max.FoundPresent,
+    }),
+    stringifyMinMax("S", {
+      min: min.UncoverSword,
+      max: max.UncoverSword,
+    }),
+    stringifyMinMax("P", {
+      min: min.UncoverPresent,
+      max: max.UncoverPresent,
+    }),
+    stringifyMinMax("SP", {
+      min: min.UncoverSwordPresent,
+      max: max.UncoverSwordPresent,
+    }),
+    stringifyMinMax("F", { min: min.UncoverFox, max: max.UncoverFox }),
     stringifyMinMax("SF", {
-      min: min.bestSwordFox,
-      max: max.bestSwordFox,
+      min: min.UncoverSwordFox,
+      max: max.UncoverSwordFox,
     }),
     stringifyMinMax("PF", {
-      min: min.bestPresentFox,
-      max: max.bestPresentFox,
+      min: min.UncoverPresentFox,
+      max: max.UncoverPresentFox,
     }),
   ];
 }

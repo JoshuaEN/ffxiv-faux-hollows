@@ -19,7 +19,11 @@ export function printFullExpandedResultSummary(
         identifier === null
           ? summaries
           : summaries.filter((p) => p.identifier === identifier);
-      printExpandedResultSummary(lines, formattedTitle, filteredSummaries);
+      printExpandedResultSummary(
+        lines,
+        formattedTitle,
+        filteredSummaries.map((r) => r.stepsTo)
+      );
     }
   }
 }

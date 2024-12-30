@@ -15,16 +15,17 @@ export interface AutoSolveExpandedResultStepTaken
 export interface AutoSolveExpandedResultStepsTo {
   // Un-prefixed means the exact location of the shape has been found.
   // Note: The shape may not have any tiles revealed, if the shape can be found by process of elimination.
-  [TileState.Sword]: number;
-  [TileState.Present]: number;
-  SwordPresent: number;
-  Fox: number;
+  FoundSword: number;
+  FoundPresent: number;
+  FoundSwordPresent: number;
+  FoundFox: number;
+
   totalSteps: number;
-  // "full" means fully revealing the shape
-  fullSword: number;
-  fullPresent: number;
-  fullSwordPresent: number;
-  fullTotal: number;
+
+  UncoverSword: number;
+  UncoverPresent: number;
+  UncoverSwordPresent: number;
+  UncoverAll: number;
   // "best" means fully revealing the shape, skipping steps which are not important.
   // For Sword/Present there's no difference because we're already trying to find these two shapes as a priority.
   // For Fox though, we sometimes narrow down the possible foxes to a single set of four before we locate all of the shapes.
@@ -34,10 +35,10 @@ export interface AutoSolveExpandedResultStepsTo {
   //
   // Accounting for this gives a more accurate representation of the odds for users who are looking to
   // specifically target foxes.
-  bestFox: number;
-  bestSwordFox: number;
-  bestPresentFox: number;
-  bestTotal: number;
+  UncoverFox: number;
+  UncoverSwordFox: number;
+  UncoverPresentFox: number;
+  UncoverBestAll: number;
 
   // Number of additional steps to fully uncover the target after finding the tile
   swordFullSteps: number;
@@ -299,25 +300,26 @@ export function generateSummaries(
             foxIndex: result.foxIndex,
             steps: updatedSteps,
             stepsTo: {
-              [TileState.Sword]: result.stepsTo[TileState.Sword],
-              [TileState.Present]: result.stepsTo[TileState.Present],
-              SwordPresent: Math.max(
+              FoundSword: result.stepsTo[TileState.Sword],
+              FoundPresent: result.stepsTo[TileState.Present],
+              FoundSwordPresent: Math.max(
                 result.stepsTo[TileState.Sword],
                 result.stepsTo[TileState.Present]
               ),
-              Fox: foxStep,
+              FoundFox: foxStep,
               totalSteps: maxStep,
 
-              fullSword: result.stepsTo[TileState.Sword] + swordFullSteps,
-              fullPresent: result.stepsTo[TileState.Present] + presentFullSteps,
-              fullSwordPresent:
+              UncoverSword: result.stepsTo[TileState.Sword] + swordFullSteps,
+              UncoverPresent:
+                result.stepsTo[TileState.Present] + presentFullSteps,
+              UncoverSwordPresent:
                 Math.max(
                   result.stepsTo[TileState.Sword],
                   result.stepsTo[TileState.Present]
                 ) +
                 swordFullSteps +
                 presentFullSteps,
-              fullTotal:
+              UncoverAll:
                 Math.max(
                   result.stepsTo[TileState.Sword],
                   result.stepsTo[TileState.Present],
@@ -326,10 +328,10 @@ export function generateSummaries(
                 swordFullSteps +
                 presentFullSteps,
 
-              bestFox: bestFoxSteps.min,
-              bestSwordFox: bestSwordFoxSteps.min,
-              bestPresentFox: bestPresentFoxSteps.min,
-              bestTotal: bestTotalSteps.min,
+              UncoverFox: bestFoxSteps.min,
+              UncoverSwordFox: bestSwordFoxSteps.min,
+              UncoverPresentFox: bestPresentFoxSteps.min,
+              UncoverBestAll: bestTotalSteps.min,
 
               swordFullSteps,
               presentFullSteps,
@@ -342,7 +344,7 @@ export function generateSummaries(
             },
             id,
           };
-          assert(summary.stepsTo.bestTotal === summary.stepsTo.fullTotal);
+          assert(summary.stepsTo.UncoverBestAll === summary.stepsTo.UncoverAll);
           summaries.push(summary);
         }
       }

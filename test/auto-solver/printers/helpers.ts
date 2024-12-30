@@ -1,4 +1,5 @@
 import { CommunityDataPattern } from "~/src/game/types/community-data.js";
+import { assert, assertDefined } from "~/src/helpers.js";
 
 export function stringifyMinMax(
   prefix: string,
@@ -30,4 +31,26 @@ export const DELIMINATOR = ";";
 
 export function patternToPictograph(pattern: CommunityDataPattern) {
   return `${pattern.Sword3x2 ? "▭" : "▯"}${pattern.Sword} ◻${pattern.Present}`;
+}
+
+export function getStandardDeviation(array: number[]) {
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
+}
+
+export function getMedian(array: number[]) {
+  array = [...array].sort();
+  const halfWayIndex = Math.floor(array.length / 2);
+  const halfWayValue = array[halfWayIndex];
+  assertDefined(halfWayValue);
+  if (array.length % 2 === 0) {
+    const halfWayMinus1Value = array[halfWayIndex - 1];
+    assert(halfWayMinus1Value !== undefined);
+    return (halfWayMinus1Value + halfWayValue) / 2;
+  } else {
+    return halfWayValue;
+  }
 }

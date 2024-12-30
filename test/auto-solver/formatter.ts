@@ -75,10 +75,10 @@ export function stringifyAutoSolveResults(
           // it means discovering the Fox also discovered the
           summary.steps.find((step) => step.state === TileState.Fox) !==
           undefined
-            ? (summary.stepsTo.Fox <= summary.stepsTo[TileState.Sword]
+            ? (summary.stepsTo.FoundFox <= summary.stepsTo.FoundSword
                 ? "Sword"
                 : "") +
-              (summary.stepsTo.Fox <= summary.stepsTo[TileState.Present]
+              (summary.stepsTo.FoundFox <= summary.stepsTo.FoundPresent
                 ? "Present"
                 : "")
             : ""
@@ -93,7 +93,7 @@ export function stringifyAutoSolveResults(
       (summary) =>
         summary.steps.filter(
           (step) =>
-            step.stepNumber <= summary.stepsTo.SwordPresent &&
+            step.stepNumber <= summary.stepsTo.FoundSwordPresent &&
             step.state === TileState.Empty
         ).length,
       (summary) => summary.identifier
@@ -109,7 +109,7 @@ export function stringifyAutoSolveResults(
         summary.steps
           .filter(
             (step) =>
-              step.stepNumber <= summary.stepsTo.SwordPresent &&
+              step.stepNumber <= summary.stepsTo.FoundSwordPresent &&
               step.state === TileState.Empty
           )
           .length.toString()
@@ -133,9 +133,9 @@ export function stringifyAutoSolveResults(
       summaries,
       () => 1,
       (summary) =>
-        summary.stepsTo.bestPresentFox > 11
+        summary.stepsTo.UncoverPresentFox > 11
           ? ">11"
-          : summary.stepsTo.bestPresentFox
+          : summary.stepsTo.UncoverPresentFox
     );
     printRollup(lines, bestPresentFoxDistribution, "count", 3);
 
@@ -145,7 +145,9 @@ export function stringifyAutoSolveResults(
       summaries,
       () => 1,
       (summary) =>
-        summary.stepsTo.bestSwordFox > 11 ? ">11" : summary.stepsTo.bestSwordFox
+        summary.stepsTo.UncoverSwordFox > 11
+          ? ">11"
+          : summary.stepsTo.UncoverSwordFox
     );
     printRollup(lines, bestSwordFoxDistribution, "count", 3);
 
@@ -155,9 +157,9 @@ export function stringifyAutoSolveResults(
       summaries,
       () => 1,
       (summary) =>
-        summary.stepsTo.fullSwordPresent > 11
+        summary.stepsTo.UncoverSwordPresent > 11
           ? ">11"
-          : summary.stepsTo.fullSwordPresent
+          : summary.stepsTo.UncoverSwordPresent
     );
     printRollup(lines, fullSwordPresentDistribution, "count", 3);
 
@@ -167,7 +169,7 @@ export function stringifyAutoSolveResults(
       summaries,
       () => 1,
       (summary) =>
-        summary.stepsTo.fullTotal > 11 ? ">11" : summary.stepsTo.fullTotal
+        summary.stepsTo.UncoverAll > 11 ? ">11" : summary.stepsTo.UncoverAll
     );
     printRollup(lines, fullTotalDistribution, "count", 3);
 
@@ -177,7 +179,7 @@ export function stringifyAutoSolveResults(
     const foxFoundDistribution = calculateRollupSummary(
       summaries,
       () => 1,
-      (summary) => `${summary.stepsTo.Fox}`
+      (summary) => `${summary.stepsTo.FoundFox}`
     );
     printRollup(lines, foxFoundDistribution, "count", 3);
 
@@ -448,10 +450,10 @@ export function stringifyAutoSolveResults(
               summary.blocked[3],
               summary.blocked[4],
               summary.foxIndex,
-              summary.stepsTo[TileState.Sword],
-              summary.stepsTo[TileState.Present],
-              summary.stepsTo.SwordPresent,
-              summary.stepsTo.Fox,
+              summary.stepsTo.FoundSword,
+              summary.stepsTo.FoundPresent,
+              summary.stepsTo.FoundSwordPresent,
+              summary.stepsTo.FoundFox,
               summary.stepsTo.totalSteps,
               ...summary.steps.map(
                 (step) =>
