@@ -73,8 +73,8 @@ export function printCalculation(
     indent(2),
     stringifyMinMax("T", { min: min.UncoverAll, max: max.UncoverAll }),
     stringifyMinMax("t", {
-      min: min.totalSteps,
-      max: max.totalSteps,
+      min: min.FoundAll,
+      max: max.FoundAll,
     }),
     stringifyMinMax("s", {
       min: min.FoundSword,

@@ -20,7 +20,7 @@ export interface AutoSolveExpandedResultStepsTo {
   FoundSwordPresent: number;
   FoundFox: number;
 
-  totalSteps: number;
+  FoundAll: number;
 
   UncoverSword: number;
   UncoverPresent: number;
@@ -307,7 +307,7 @@ export function generateSummaries(
                 result.stepsTo[TileState.Present]
               ),
               FoundFox: foxStep,
-              totalSteps: maxStep,
+              FoundAll: maxStep,
 
               UncoverSword: result.stepsTo[TileState.Sword] + swordFullSteps,
               UncoverPresent:

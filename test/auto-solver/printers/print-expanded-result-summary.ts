@@ -87,7 +87,7 @@ export function printExpandedResultSummary(
   printSummary("One or less Fox Spots", "possibleFoxIndexes1");
   printSummary("Zero Fox Spots", "possibleFoxIndexes0");
 
-  printSummary("All", "totalSteps");
+  printSummary("All", "FoundAll");
 
   table.newRow();
   table.cell("", headerPrefix + "Steps to Uncover");
@@ -176,5 +176,5 @@ function assertAllAutoSolveResultsFilled(
   assert(results.possibleFoxIndexes4 !== undefined);
   assert(results.presentFullSteps !== undefined);
   assert(results.swordFullSteps !== undefined);
-  assert(results.totalSteps !== undefined);
+  assert(results.FoundAll !== undefined);
 }

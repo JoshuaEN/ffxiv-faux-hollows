@@ -14,7 +14,7 @@ export function deduplicateSummaries(summaries: AutoSolveExpandedResult[]) {
       ${summary.pattern.Present}
       ${summary.foxIndex}
       |
-      ${summary.stepsTo.totalSteps}
+      ${summary.stepsTo.FoundAll}
       ${summary.stepsTo.FoundSword}
       ${summary.stepsTo.FoundPresent}
       ${summary.stepsTo.UncoverSword}
@@ -29,7 +29,7 @@ export function deduplicateSummaries(summaries: AutoSolveExpandedResult[]) {
         assert(existing.stepsTo.FoundSword === summary.stepsTo.FoundSword);
         assert(existing.stepsTo.FoundPresent === summary.stepsTo.FoundPresent);
         assert(existing.stepsTo.FoundFox === summary.stepsTo.FoundFox);
-        assert(existing.stepsTo.totalSteps === summary.stepsTo.totalSteps);
+        assert(existing.stepsTo.FoundAll === summary.stepsTo.FoundAll);
         assert(
           existing.stepsTo.UncoverSwordPresent ===
             summary.stepsTo.UncoverSwordPresent

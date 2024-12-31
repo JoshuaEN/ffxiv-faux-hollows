@@ -121,7 +121,7 @@ export function stringifyAutoSolveResults(
     const totalFoundDistribution = calculateRollupSummary(
       summaries,
       () => 1,
-      (summary) => `${summary.stepsTo.totalSteps}`
+      (summary) => `${summary.stepsTo.FoundAll}`
     );
     printRollup(lines, totalFoundDistribution, "count");
 
@@ -454,7 +454,7 @@ export function stringifyAutoSolveResults(
               summary.stepsTo.FoundPresent,
               summary.stepsTo.FoundSwordPresent,
               summary.stepsTo.FoundFox,
-              summary.stepsTo.totalSteps,
+              summary.stepsTo.FoundAll,
               ...summary.steps.map(
                 (step) =>
                   `${step.index.toString().padStart(2, " ")}->${step.state[0]}`
