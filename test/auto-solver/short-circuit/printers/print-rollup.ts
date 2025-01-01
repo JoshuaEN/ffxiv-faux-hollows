@@ -6,7 +6,7 @@ import {
   formatter,
   formatterPercent,
   indent,
-} from "../../helpers/print-helpers.js";
+} from "~/test/helpers/print-helpers.js";
 
 export function printRollup(
   lines: string[],

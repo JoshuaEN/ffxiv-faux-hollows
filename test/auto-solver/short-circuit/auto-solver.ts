@@ -9,7 +9,7 @@ import {
 import { Board } from "~/src/game/board.js";
 import { CommunityDataPattern } from "~/src/game/types/community-data.js";
 import { SolveStep } from "~/src/game/types/solve-state.js";
-import { getActualTileStates, normalizeState } from "../helpers/helpers.js";
+import { getActualTileStates, normalizeState } from "~/test/helpers/helpers.js";
 
 interface IntermediateStepsTo {
   [TileState.Sword]: number | undefined;

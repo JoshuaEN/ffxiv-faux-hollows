@@ -4,7 +4,7 @@ import {
   indent,
   patternToPictograph,
   stringifyMinMax,
-} from "../../helpers/print-helpers.js";
+} from "~/test/helpers/print-helpers.js";
 import {
   ShortCircuitAutoSolveIdentifierSet,
   ShortCircuitAutoSolveResult,

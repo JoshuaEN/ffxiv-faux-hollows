@@ -4,7 +4,7 @@ import {
   formatter1Place,
   getMedian,
   getStandardDeviation,
-} from "../../helpers/print-helpers.js";
+} from "~/test/helpers/print-helpers.js";
 import { assert } from "~/src/helpers.js";
 import EasyTable from "easy-table";
 

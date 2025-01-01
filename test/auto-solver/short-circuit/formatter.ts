@@ -2,7 +2,7 @@ import { TileState } from "~/src/game/types/tile-states.js";
 import { ShortCircuitAutoSolveIdentifierSet } from "./auto-solver.js";
 import { generateSummaries } from "./generate-summaries.js";
 import { printAutoSolveSets } from "./printers/print-auto-solve-sets.js";
-import { DELIMINATOR, indent } from "../helpers/print-helpers.js";
+import { DELIMINATOR, indent } from "~/test/helpers/print-helpers.js";
 import { deduplicateSummaries } from "./deduplicate-summaries.js";
 import { printFullExpandedResultSummary } from "./printers/print-expanded-result-summary-full.js";
 import { printRollup } from "./printers/print-rollup.js";
