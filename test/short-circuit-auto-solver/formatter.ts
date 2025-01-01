@@ -1,8 +1,8 @@
 import { TileState } from "~/src/game/types/tile-states.js";
-import { AutoSolveIdentifierSet } from "./auto-solver.js";
+import { ShortCircuitAutoSolveIdentifierSet } from "./auto-solver.js";
 import { generateSummaries } from "./generate-summaries.js";
 import { printAutoSolveSets } from "./printers/print-auto-solve-sets.js";
-import { DELIMINATOR, indent } from "./printers/helpers.js";
+import { DELIMINATOR, indent } from "../helpers/print-helpers.js";
 import { deduplicateSummaries } from "./deduplicate-summaries.js";
 import { printFullExpandedResultSummary } from "./printers/print-expanded-result-summary-full.js";
 import { printRollup } from "./printers/print-rollup.js";
@@ -10,7 +10,7 @@ import { calculateRollupSummary } from "./calculators/rollup-summary.js";
 import { printPatternSummaries } from "./printers/print-pattern-summaries.js";
 
 export function stringifyAutoSolveResults(
-  results: Record<string, AutoSolveIdentifierSet>,
+  results: Record<string, ShortCircuitAutoSolveIdentifierSet>,
   { enableText, enableCsv }: { enableText: boolean; enableCsv: boolean } = {
     enableText: true,
     enableCsv: false,

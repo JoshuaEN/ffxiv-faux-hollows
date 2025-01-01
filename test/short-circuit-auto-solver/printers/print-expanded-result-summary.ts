@@ -1,14 +1,14 @@
-import { AutoSolveExpandedResultStepsTo } from "../generate-summaries.js";
+import { ShortCircuitAutoSolveExpandedResultStepsTo } from "../generate-summaries.js";
 import {
   formatter,
   formatter1Place,
   getMedian,
   getStandardDeviation,
-} from "./helpers.js";
+} from "../../helpers/print-helpers.js";
 import { assert } from "~/src/helpers.js";
 import EasyTable from "easy-table";
 
-export interface AutoSolveResultSummaryData {
+export interface ShortCircuitAutoSolveResultSummaryData {
   min: number;
   max: number;
   avg: number;
@@ -17,9 +17,9 @@ export interface AutoSolveResultSummaryData {
   count: number;
   total: number;
 }
-export type AutoSolveResultSummary = Record<
-  keyof AutoSolveExpandedResultStepsTo,
-  AutoSolveResultSummaryData
+export type ShortCircuitAutoSolveResultSummary = Record<
+  keyof ShortCircuitAutoSolveExpandedResultStepsTo,
+  ShortCircuitAutoSolveResultSummaryData
 >;
 
 const blankLeftPadder = EasyTable.leftPadder(" ");
@@ -27,14 +27,14 @@ const blankLeftPadder = EasyTable.leftPadder(" ");
 export function printExpandedResultSummary(
   lines: string[],
   headerPrefix: string,
-  results: AutoSolveExpandedResultStepsTo[]
+  results: ShortCircuitAutoSolveExpandedResultStepsTo[]
 ) {
   const summaries = calculateSummary(results);
   const valueColumnWidth = 10;
   const table = new EasyTable();
   function printSummary(
     title: string,
-    lookup: keyof AutoSolveExpandedResultStepsTo
+    lookup: keyof ShortCircuitAutoSolveExpandedResultStepsTo
   ) {
     table.cell("", title, blankLeftPadder);
     table.cell(
@@ -107,16 +107,16 @@ export function printExpandedResultSummary(
 }
 
 function calculateSummary(
-  results: AutoSolveExpandedResultStepsTo[]
-): AutoSolveResultSummary {
+  results: ShortCircuitAutoSolveExpandedResultStepsTo[]
+): ShortCircuitAutoSolveResultSummary {
   const intermediateResults = new Map<
-    keyof AutoSolveExpandedResultStepsTo,
+    keyof ShortCircuitAutoSolveExpandedResultStepsTo,
     { min: number; max: number; values: number[]; total: number; count: number }
   >();
 
   for (const result of results) {
     for (const [key, value] of Object.entries(result) as [
-      keyof AutoSolveExpandedResultStepsTo,
+      keyof ShortCircuitAutoSolveExpandedResultStepsTo,
       number,
     ][]) {
       const intermediateResult = intermediateResults.get(key) ?? {
@@ -135,7 +135,7 @@ function calculateSummary(
     }
   }
 
-  const finalResults: Partial<AutoSolveResultSummary> = {};
+  const finalResults: Partial<ShortCircuitAutoSolveResultSummary> = {};
 
   for (const [key, data] of intermediateResults) {
     finalResults[key] = {
@@ -155,8 +155,8 @@ function calculateSummary(
 }
 
 function assertAllAutoSolveResultsFilled(
-  results: Partial<AutoSolveResultSummary>
-): asserts results is AutoSolveResultSummary {
+  results: Partial<ShortCircuitAutoSolveResultSummary>
+): asserts results is ShortCircuitAutoSolveResultSummary {
   assert(results.FoundFox !== undefined);
   assert(results.FoundPresent !== undefined);
   assert(results.FoundSword !== undefined);

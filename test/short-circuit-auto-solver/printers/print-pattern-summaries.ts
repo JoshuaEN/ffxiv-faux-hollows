@@ -1,12 +1,16 @@
 import {
-  AutoSolveExpandedResult,
-  AutoSolveExpandedResultStepsTo,
+  ShortCircuitAutoSolveExpandedResult,
+  ShortCircuitAutoSolveExpandedResultStepsTo,
 } from "../generate-summaries.js";
-import { indent, patternToPictograph, stringifyMinMax } from "./helpers.js";
+import {
+  indent,
+  patternToPictograph,
+  stringifyMinMax,
+} from "../../helpers/print-helpers.js";
 
 export function printPatternSummaries(
   lines: string[],
-  summaries: AutoSolveExpandedResult[]
+  summaries: ShortCircuitAutoSolveExpandedResult[]
 ) {
   {
     type GroupValues = {
@@ -14,8 +18,8 @@ export function printPatternSummaries(
        * The minimum and maximum steps for this specific slot (the column, e.g. Present, Present+Fox, Sword, Sword+Present, etc...)
        * Each column may be from a different solve.
        */
-      minInSlot: AutoSolveExpandedResultStepsTo;
-      maxInSlot: AutoSolveExpandedResultStepsTo;
+      minInSlot: ShortCircuitAutoSolveExpandedResultStepsTo;
+      maxInSlot: ShortCircuitAutoSolveExpandedResultStepsTo;
     };
     const groups = new Map<string, GroupValues>();
     for (const summary of summaries) {
@@ -28,7 +32,7 @@ export function printPatternSummaries(
 
       for (const key of Object.keys(
         summary.stepsTo
-      ) as (keyof AutoSolveExpandedResultStepsTo)[]) {
+      ) as (keyof ShortCircuitAutoSolveExpandedResultStepsTo)[]) {
         const newValue = summary.stepsTo[key];
         const currentMin = group.minInSlot[key];
         const currentMax = group.maxInSlot[key];
@@ -66,8 +70,8 @@ export function printPatternSummary(
 }
 
 export function printCalculation(
-  min: AutoSolveExpandedResultStepsTo,
-  max: AutoSolveExpandedResultStepsTo
+  min: ShortCircuitAutoSolveExpandedResultStepsTo,
+  max: ShortCircuitAutoSolveExpandedResultStepsTo
 ) {
   return [
     indent(2),

@@ -16,13 +16,13 @@ interface IntermediateStepsTo {
   [TileState.Present]: number | undefined;
   [TileState.Fox]: { min: number; max: number } | undefined;
 }
-export interface AutoSolveResultStepsTo {
+export interface ShortCircuitAutoSolveResultStepsTo {
   [TileState.Sword]: number;
   [TileState.Present]: number;
   [TileState.Fox]: { min: number; max: number };
   totalSteps: { min: number; max: number };
 }
-export interface AutoSolveResultStepTaken {
+export interface ShortCircuitAutoSolveResultStepTaken {
   index: number;
   state: TileState;
   stepNumber: number;
@@ -32,23 +32,23 @@ export interface AutoSolveResultStepTaken {
   solvedPresent: boolean;
 }
 interface IntermediateSolveResult {
-  steps: AutoSolveResultStepTaken[];
+  steps: ShortCircuitAutoSolveResultStepTaken[];
   stepsTo: IntermediateStepsTo;
   foxCandidates: number[];
 }
-export interface AutoSolveResult {
-  stepsTo: AutoSolveResultStepsTo;
-  steps: AutoSolveResultStepTaken[];
+export interface ShortCircuitAutoSolveResult {
+  stepsTo: ShortCircuitAutoSolveResultStepsTo;
+  steps: ShortCircuitAutoSolveResultStepTaken[];
   foxIndex: number;
   foxCandidates: number[];
 }
-export interface AutoSolvePatternSet {
+export interface ShortCircuitAutoSolvePatternSet {
   pattern: CommunityDataPattern;
-  solveResults: AutoSolveResult[];
+  solveResults: ShortCircuitAutoSolveResult[];
 }
-export interface AutoSolveIdentifierSet {
+export interface ShortCircuitAutoSolveIdentifierSet {
   readonly blocked: readonly number[];
-  patternResults: AutoSolvePatternSet[];
+  patternResults: ShortCircuitAutoSolvePatternSet[];
 }
 
 export enum AutoSolveMode {
@@ -57,11 +57,11 @@ export enum AutoSolveMode {
 }
 
 export function solveAllPatterns(mode: AutoSolveMode = AutoSolveMode.Fast) {
-  const allResults: Record<string, AutoSolveIdentifierSet> = {};
+  const allResults: Record<string, ShortCircuitAutoSolveIdentifierSet> = {};
   for (const [identifier, data] of Object.entries(communityDataByIdentifier)) {
-    const patternResults: AutoSolvePatternSet[] = [];
+    const patternResults: ShortCircuitAutoSolvePatternSet[] = [];
     for (const pattern of data.Patterns) {
-      const solveResults: AutoSolveResult[] = [];
+      const solveResults: ShortCircuitAutoSolveResult[] = [];
       for (const foxIndex of pattern.ConfirmedFoxes) {
         const { actualTileMap, actualPatternIndexes } = getActualTileStates(
           pattern,
@@ -104,7 +104,7 @@ function calculateSolveResult(
     stepsTo: intermediateStepsTo,
     foxCandidates,
   }: IntermediateSolveResult
-): AutoSolveResult {
+): ShortCircuitAutoSolveResult {
   const calculatedStepsToMap = new Map<TileState, number>();
   let totalSteps = -1;
   let stepCount = 0;
@@ -144,7 +144,7 @@ function calculateSolveResult(
     assert(recordedStepsToFox.max === calculatedStepsToFox);
   }
 
-  const stepsTo: AutoSolveResultStepsTo = {
+  const stepsTo: ShortCircuitAutoSolveResultStepsTo = {
     [TileState.Sword]: recordedStepsToSword,
     [TileState.Present]: recordedStepsToPresent,
     [TileState.Fox]: recordedStepsToFox,
@@ -187,7 +187,7 @@ function autoSolver(
     stepsToSoFar,
   }: {
     totalStepsToUncover: number;
-    stepsSoFar: AutoSolveResultStepTaken[];
+    stepsSoFar: ShortCircuitAutoSolveResultStepTaken[];
     stepsToSoFar: IntermediateStepsTo;
   } = {
     totalStepsToUncover: 0,
@@ -206,7 +206,7 @@ function autoSolver(
     }
   }
 
-  const steps: AutoSolveResultStepTaken[] = [...stepsSoFar];
+  const steps: ShortCircuitAutoSolveResultStepTaken[] = [...stepsSoFar];
   let foxCandidates: number[] = [];
   while (board.solveState.solveStep !== SolveStep.Done) {
     switch (board.solveState.solveStep) {

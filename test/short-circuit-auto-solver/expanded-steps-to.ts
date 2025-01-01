@@ -1,8 +1,8 @@
 import { TileState } from "~/src/game/types/tile-states.js";
 import { assert } from "~/src/helpers.js";
 import {
-  AutoSolveResultStepTaken,
-  AutoSolveResultStepsTo,
+  ShortCircuitAutoSolveResultStepTaken,
+  ShortCircuitAutoSolveResultStepsTo,
 } from "./auto-solver.js";
 
 /**
@@ -116,8 +116,8 @@ import {
  *
  */
 export function expandedStepsTo(
-  stepsTo: AutoSolveResultStepsTo,
-  steps: AutoSolveResultStepTaken[]
+  stepsTo: ShortCircuitAutoSolveResultStepsTo,
+  steps: ShortCircuitAutoSolveResultStepTaken[]
 ) {
   const swordFullSteps = steps.some((step) => step.state === TileState.Sword)
     ? 5
@@ -131,7 +131,7 @@ export function expandedStepsTo(
   let stepToStartFoxSolve = steps[0];
   let stepToStartPresentSolve = steps[0];
   let stepToStartSwordSolve = steps[0];
-  let foxStep: AutoSolveResultStepTaken | undefined;
+  let foxStep: ShortCircuitAutoSolveResultStepTaken | undefined;
   assert(stepToStartFoxSolve !== undefined);
   assert(stepToStartPresentSolve !== undefined);
   assert(stepToStartSwordSolve !== undefined);
@@ -187,7 +187,7 @@ export function expandedStepsTo(
   assert(stepToStartSwordSolve.stepNumber === stepsTo[TileState.Sword]);
 
   const foxStepMinMaxFromStart = (
-    stepToStart: AutoSolveResultStepTaken,
+    stepToStart: ShortCircuitAutoSolveResultStepTaken,
     fixedStepCount = 0
   ) => {
     const minIfFoxNotFound =

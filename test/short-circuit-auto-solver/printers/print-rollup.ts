@@ -1,8 +1,12 @@
 import {
-  RollupSummary,
+  ShortCircuitAutoSolverRollupSummary,
   calculateRollupSummary,
 } from "../calculators/rollup-summary.js";
-import { formatter, formatterPercent, indent } from "./helpers.js";
+import {
+  formatter,
+  formatterPercent,
+  indent,
+} from "../../helpers/print-helpers.js";
 
 export function printRollup(
   lines: string[],
@@ -44,7 +48,7 @@ function calculateRollupTotalTotalCount(
 function stringifyRollupSummary(
   mode: "value" | "count",
   totalTotalCount: number,
-  summary: RollupSummary
+  summary: ShortCircuitAutoSolverRollupSummary
 ) {
   const valueData = `Min ${summary.min} | Max ${summary.max} | Avg ${formatter.format(summary.totalCount / summary.total)}`;
   return (

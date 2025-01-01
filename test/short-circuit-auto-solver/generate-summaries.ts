@@ -1,18 +1,18 @@
 import { TileState } from "~/src/game/types/tile-states.js";
 import { assert } from "~/src/helpers.js";
 import {
-  AutoSolveIdentifierSet,
-  AutoSolveResultStepTaken,
+  ShortCircuitAutoSolveIdentifierSet,
+  ShortCircuitAutoSolveResultStepTaken,
 } from "./auto-solver.js";
 import { CommunityDataPattern } from "~/src/game/types/community-data.js";
 import { expandedStepsTo } from "./expanded-steps-to.js";
 
-export interface AutoSolveExpandedResultStepTaken
-  extends AutoSolveResultStepTaken {
+export interface ShortCircuitAutoSolveExpandedResultStepTaken
+  extends ShortCircuitAutoSolveResultStepTaken {
   worstFox?: boolean;
 }
 
-export interface AutoSolveExpandedResultStepsTo {
+export interface ShortCircuitAutoSolveExpandedResultStepsTo {
   // Un-prefixed means the exact location of the shape has been found.
   // Note: The shape may not have any tiles revealed, if the shape can be found by process of elimination.
   FoundSword: number;
@@ -51,14 +51,14 @@ export interface AutoSolveExpandedResultStepsTo {
   possibleFoxIndexes0: number;
 }
 
-export interface AutoSolveExpandedResult {
+export interface ShortCircuitAutoSolveExpandedResult {
   identifier: string;
   blocked: readonly number[];
   pattern: CommunityDataPattern;
   foxIndex: number | undefined;
   id: number;
-  steps: AutoSolveExpandedResultStepTaken[];
-  stepsTo: AutoSolveExpandedResultStepsTo;
+  steps: ShortCircuitAutoSolveExpandedResultStepTaken[];
+  stepsTo: ShortCircuitAutoSolveExpandedResultStepsTo;
 }
 
 const foxDiffLookupTable: Record<number, (TileState.Fox | number)[][]> =
@@ -124,10 +124,10 @@ const foxDiffLookupTable: Record<number, (TileState.Fox | number)[][]> =
   })();
 
 export function generateSummaries(
-  results: Record<string, AutoSolveIdentifierSet>
+  results: Record<string, ShortCircuitAutoSolveIdentifierSet>
 ) {
   let shortCircuitTotal = 0;
-  const summaries: AutoSolveExpandedResult[] = [];
+  const summaries: ShortCircuitAutoSolveExpandedResult[] = [];
   let id = 0;
   for (const [identifier, set] of Object.entries(results).sort((a, b) =>
     a[0].localeCompare(b[0])
@@ -147,7 +147,7 @@ export function generateSummaries(
         for (const stepsToAdd of foxVariants) {
           id++;
 
-          const updatedSteps: AutoSolveExpandedResultStepTaken[] = [
+          const updatedSteps: ShortCircuitAutoSolveExpandedResultStepTaken[] = [
             ...result.steps,
           ];
           if (result.foxCandidates.length > 0) {
@@ -293,7 +293,7 @@ export function generateSummaries(
           assert(bestPresentFoxSteps.min === bestPresentFoxSteps.max);
           assert(bestSwordFoxSteps.min === bestSwordFoxSteps.max);
           assert(bestTotalSteps.min === bestTotalSteps.max);
-          const summary: AutoSolveExpandedResult = {
+          const summary: ShortCircuitAutoSolveExpandedResult = {
             identifier,
             blocked: set.blocked,
             pattern: item.pattern,

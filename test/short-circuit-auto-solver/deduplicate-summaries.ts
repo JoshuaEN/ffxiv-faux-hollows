@@ -1,11 +1,16 @@
-import { AutoSolveExpandedResult } from "./generate-summaries.js";
+import { ShortCircuitAutoSolveExpandedResult } from "./generate-summaries.js";
 import { assert } from "~/src/helpers.js";
 
-export function deduplicateSummaries(summaries: AutoSolveExpandedResult[]) {
-  const deduplicatedSummaries: AutoSolveExpandedResult[] = [];
+export function deduplicateSummaries(
+  summaries: ShortCircuitAutoSolveExpandedResult[]
+) {
+  const deduplicatedSummaries: ShortCircuitAutoSolveExpandedResult[] = [];
 
   {
-    const deduplicatedSummariesMap = new Map<string, AutoSolveExpandedResult>();
+    const deduplicatedSummariesMap = new Map<
+      string,
+      ShortCircuitAutoSolveExpandedResult
+    >();
 
     for (const summary of summaries) {
       const key = `

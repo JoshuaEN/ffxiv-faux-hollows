@@ -1,16 +1,20 @@
 import { assert } from "~/src/helpers.js";
 import { expandedStepsTo } from "../expanded-steps-to.js";
-import { indent, patternToPictograph, stringifyMinMax } from "./helpers.js";
 import {
-  AutoSolveIdentifierSet,
-  AutoSolveResult,
-  AutoSolveResultStepTaken,
+  indent,
+  patternToPictograph,
+  stringifyMinMax,
+} from "../../helpers/print-helpers.js";
+import {
+  ShortCircuitAutoSolveIdentifierSet,
+  ShortCircuitAutoSolveResult,
+  ShortCircuitAutoSolveResultStepTaken,
 } from "../auto-solver.js";
 import { TileState } from "~/src/game/types/tile-states.js";
 
 export function printAutoSolveSets(
   lines: string[],
-  results: Record<string, AutoSolveIdentifierSet>
+  results: Record<string, ShortCircuitAutoSolveIdentifierSet>
 ) {
   for (const [identifier, set] of Object.entries(results).sort((a, b) =>
     a[0].localeCompare(b[0])
@@ -22,7 +26,7 @@ export function printAutoSolveSets(
     for (const item of set.patternResults) {
       lines.push(`${indent(2)}${patternToPictograph(item.pattern)}`);
       let foxIndex = -1;
-      let initialSet: AutoSolveResult | null = null;
+      let initialSet: ShortCircuitAutoSolveResult | null = null;
       for (const result of item.solveResults.sort(
         (a, b) => a.foxIndex - b.foxIndex
       )) {
@@ -103,6 +107,6 @@ export function printAutoSolveSets(
   }
 }
 
-export function printSteps(steps: AutoSolveResultStepTaken[]) {
+export function printSteps(steps: ShortCircuitAutoSolveResultStepTaken[]) {
   return steps.map((step) => `${step.index}->${step.state[0]}`).join(", ");
 }

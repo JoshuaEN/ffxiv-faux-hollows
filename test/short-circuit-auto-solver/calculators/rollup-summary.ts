@@ -1,6 +1,6 @@
-import { AutoSolveExpandedResult } from "../generate-summaries.js";
+import { ShortCircuitAutoSolveExpandedResult } from "../generate-summaries.js";
 
-export interface RollupSummary {
+export interface ShortCircuitAutoSolverRollupSummary {
   total: number;
   totalCount: number;
   min: number;
@@ -8,18 +8,22 @@ export interface RollupSummary {
 }
 
 export function calculateRollupSummary(
-  summaries: AutoSolveExpandedResult[],
+  summaries: ShortCircuitAutoSolveExpandedResult[],
   lookup:
-    | keyof AutoSolveExpandedResult["stepsTo"]
-    | ((summary: AutoSolveExpandedResult) => number),
-  groupByFn: (summary: AutoSolveExpandedResult) => string | number
+    | keyof ShortCircuitAutoSolveExpandedResult["stepsTo"]
+    | ((summary: ShortCircuitAutoSolveExpandedResult) => number),
+  groupByFn: (summary: ShortCircuitAutoSolveExpandedResult) => string | number
 ) {
   const lookupFn =
     typeof lookup === "string"
-      ? (summary: AutoSolveExpandedResult) => summary.stepsTo[lookup]
+      ? (summary: ShortCircuitAutoSolveExpandedResult) =>
+          summary.stepsTo[lookup]
       : lookup;
 
-  const byGroup = new Map<string | number, RollupSummary>();
+  const byGroup = new Map<
+    string | number,
+    ShortCircuitAutoSolverRollupSummary
+  >();
 
   for (const summary of summaries) {
     const value = lookupFn(summary);

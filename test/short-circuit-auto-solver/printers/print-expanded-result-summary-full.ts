@@ -1,9 +1,9 @@
-import { AutoSolveExpandedResult } from "../generate-summaries.js";
+import { ShortCircuitAutoSolveExpandedResult } from "../generate-summaries.js";
 import { printExpandedResultSummary } from "./print-expanded-result-summary.js";
 
 export function printFullExpandedResultSummary(
   lines: string[],
-  groups: { title: string; summaries: AutoSolveExpandedResult[] }[]
+  groups: { title: string; summaries: ShortCircuitAutoSolveExpandedResult[] }[]
 ) {
   for (const identifier of [null, "A", "B", "C", "D"] as const) {
     for (const { title, summaries } of groups) {
