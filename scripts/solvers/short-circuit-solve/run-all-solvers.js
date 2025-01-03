@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { map } from "./consts.js";
+import { map } from "../consts.js";
 
 for (const [solver, weighters] of map) {
   for (const weighter of weighters) {

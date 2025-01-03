@@ -2,7 +2,7 @@ import { TileState } from "~/src/game/types/tile-states.js";
 import { ShortCircuitAutoSolveIdentifierSet } from "./auto-solver.js";
 import { generateSummaries } from "./generate-summaries.js";
 import { printAutoSolveSets } from "./printers/print-auto-solve-sets.js";
-import { DELIMINATOR, indent } from "~/test/helpers/print-helpers.js";
+import { indent } from "~/test/helpers/print-helpers.js";
 import { deduplicateSummaries } from "./deduplicate-summaries.js";
 import { printFullExpandedResultSummary } from "./printers/print-expanded-result-summary-full.js";
 import { printRollup } from "./printers/print-rollup.js";
@@ -11,11 +11,10 @@ import { printPatternSummaries } from "./printers/print-pattern-summaries.js";
 
 export function stringifyAutoSolveResults(
   results: Record<string, ShortCircuitAutoSolveIdentifierSet>,
-  { enableText, enableCsv }: { enableText: boolean; enableCsv: boolean } = {
+  { enableText }: { enableText: boolean } = {
     enableText: true,
-    enableCsv: false,
   }
-): { text: string; csv: string } {
+): { text: string } {
   const { summaries: fullSummaries, shortCircuitTotal } =
     generateSummaries(results);
 
@@ -405,63 +404,5 @@ export function stringifyAutoSolveResults(
 
   return {
     text: enableText ? lines.join("\n") : "",
-    csv: enableCsv
-      ? [
-          "identifier",
-          "pattern.Sword",
-          "pattern.Sword3x2",
-          "pattern.Present",
-          "pattern.ConfirmedFoxes",
-          "blocked[0]",
-          "blocked[1]",
-          "blocked[2]",
-          "blocked[3]",
-          "blocked[4]",
-          "foxIndex",
-          "stepsTo[TileState.Sword]",
-          "stepsTo[TileState.Present]",
-          "stepsTo.SwordPresent",
-          "stepsTo.Fox",
-          "stepsTo.totalSteps",
-          "steps[0]",
-          "steps[1]",
-          "steps[2]",
-          "steps[3]",
-          "steps[4]",
-          "steps[5]",
-          "steps[6]",
-          "steps[7]",
-          "steps[8]",
-          "steps[9]",
-          "steps[10]",
-        ].join(DELIMINATOR) +
-        "\n" +
-        summaries
-          .map((summary) =>
-            [
-              summary.identifier,
-              summary.pattern.Sword,
-              summary.pattern.Sword3x2,
-              summary.pattern.Present,
-              summary.pattern.ConfirmedFoxes.join(","),
-              summary.blocked[0],
-              summary.blocked[1],
-              summary.blocked[2],
-              summary.blocked[3],
-              summary.blocked[4],
-              summary.foxIndex,
-              summary.stepsTo.FoundSword,
-              summary.stepsTo.FoundPresent,
-              summary.stepsTo.FoundSwordPresent,
-              summary.stepsTo.FoundFox,
-              summary.stepsTo.FoundAll,
-              ...summary.steps.map(
-                (step) =>
-                  `${step.index.toString().padStart(2, " ")}->${step.state[0]}`
-              ),
-            ].join(DELIMINATOR)
-          )
-          .join("\n")
-      : "",
   };
 }

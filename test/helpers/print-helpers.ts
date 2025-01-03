@@ -5,6 +5,14 @@ export function stringifyMinMax(
   prefix: string,
   { min, max }: { min: number; max: number }
 ) {
+  if (min === Number.MIN_SAFE_INTEGER || max === Number.MAX_SAFE_INTEGER) {
+    if (min === Number.MIN_SAFE_INTEGER && max === Number.MAX_SAFE_INTEGER) {
+      return `${prefix}∅`;
+    }
+    throw new Error(
+      `Attempted to stringify min/max with values ${min}, ${max} ; either both of these should be MIN/MAX_SAFE_INTEGER or neither`
+    );
+  }
   return min === max ? `${prefix}${min}` : `${prefix}[${min},${max}]`;
 }
 
@@ -27,7 +35,6 @@ export const formatterPercent = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   minimumFractionDigits: 2,
 });
-export const DELIMINATOR = ";";
 
 export function patternToPictograph(pattern: CommunityDataPattern) {
   return `${pattern.Sword3x2 ? "▭" : "▯"}${pattern.Sword} ◻${pattern.Present}`;

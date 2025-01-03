@@ -448,7 +448,7 @@ function fillFilterRecurse(
     if (
       !found[TileState.Fox] &&
       otherPattern.pattern.ConfirmedFoxes.every(
-        (i) => tiles[i] !== TileState.Unknown
+        (i) => tiles[i] !== TileState.Unknown && tiles[i] !== TileState.Empty
       )
     ) {
       continue;
@@ -461,7 +461,9 @@ function fillFilterRecurse(
     found[TileState.Sword] &&
     found[TileState.Present] &&
     newFilteredPatterns.every((p) =>
-      p.pattern.ConfirmedFoxes.every((f) => tiles[f] !== TileState.Unknown)
+      p.pattern.ConfirmedFoxes.every(
+        (f) => tiles[f] !== TileState.Unknown && tiles[f] !== TileState.Empty
+      )
     )
   ) {
     return 0;

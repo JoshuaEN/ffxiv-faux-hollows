@@ -58,6 +58,20 @@ export function assert(value: boolean, message?: string): asserts value {
   );
 }
 
+export function assertEqual<T>(
+  valueA: unknown,
+  valueB: T,
+  message?: string | (() => string)
+): asserts valueA is T {
+  if (valueA === valueB) {
+    return;
+  }
+  throw new Error(
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    `Assertion failed, given values are not equal (received ${valueA} and ${valueB})${message !== undefined ? (typeof message === "function" ? message() : message) : ""}`
+  );
+}
+
 export function assertDefined<T>(
   value: T,
   message?: string
