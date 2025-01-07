@@ -243,11 +243,12 @@ const strategyHelpOpen = ref<boolean>(false);
         </span>
         <figcaption>(in this tool)</figcaption>
       </figure>
-      <p>
-        Strategy: When to uncover fox locations in game instead of suggestions?
+      <p class="clear-float">
+        Question: When to switch to uncovering fox locations instead of
+        following this tool's suggestions?
       </p>
       <p>
-        It depends on your chosen strategy. Please see the "Faux Hollows
+        Answer: It depends on your chosen strategy. Please see the "Faux Hollows
         Strategy" help article (below) for more information.
       </p>
     </template>
@@ -320,7 +321,7 @@ const strategyHelpOpen = ref<boolean>(false);
       <h4>Retelling</h4>
       <p>
         Because the Swords have a very low value for the 5 to 6 additional moves
-        they cost to fully uncover, a common strategy is to look to uncover the
+        they cost to fully uncover, a common strategy is to aim to uncover the
         the Gift Box/Coffer and all of the fox candidates on the retelling
         (which is always possible when following this solver's suggestions).
       </p>
