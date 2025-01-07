@@ -19,14 +19,13 @@ const options = yargs(hideBin(process.argv))
   })
   .option("skip-existing-solves", {
     type: "boolean",
-    demandOption: false,
-    default: false,
+    demandOption: true,
     description: "Skip solving patterns if the output file already exists",
   })
   .strict()
   .version(false)
   .parseSync();
-// pnpx esbuild ./e2e-full-solve/full-solve-test2.ts --bundle --outfile=out.js --sourcemap=inline --platform=node --format=esm --define:"import.meta.env.SOLVER='community-data-recursive-fast'" --define:"import.meta.env.WEIGHTER='s6p4-f1'" --define:"import.meta.env.DEV=true" && node --enable-source-maps ./out.js --identifier=Bu --groupName=2024-12-31
+
 const repoRoot = path.resolve(path.join(import.meta.dirname, "..", "..", ".."));
 
 await esbuild.build({

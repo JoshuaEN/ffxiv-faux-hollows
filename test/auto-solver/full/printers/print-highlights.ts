@@ -1,8 +1,4 @@
-import {
-  formatter,
-  formatter1Place,
-  indent,
-} from "~/test/helpers/print-helpers.js";
+import { formatter1Place, indent } from "~/test/helpers/print-helpers.js";
 import { ExtendedAutoSolveRollups } from "../helpers/generate-rollups.js";
 import { DISPLAY_NAME, FoxNoFoxFlag } from "../const.js";
 import EasyTable from "easy-table";

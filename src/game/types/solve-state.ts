@@ -78,8 +78,12 @@ export class SolveState {
     readonly maxTileWeight: number,
     readonly solveStep: SolveStep,
     readonly foxOdds: ReadonlyMap<number, FoxOdds>,
-    readonly totalCandidatePatterns: number | null
+    private readonly candidatePatterns: readonly CommunityDataPattern[] | null
   ) {}
+
+  get totalCandidatePatterns() {
+    return this.candidatePatterns?.length ?? null;
+  }
 
   getSmartFill(index: number) {
     return this.solveState.getSmartFill(index);
@@ -122,6 +126,10 @@ export class SolveState {
 
   getPatternIdentifier() {
     return this.solveState.getPatternIdentifier();
+  }
+
+  getCandidatePatterns() {
+    return this.candidatePatterns?.slice() ?? null;
   }
 }
 
@@ -410,7 +418,7 @@ export class IndeterminateSolveState {
       maxWeight,
       solveStep,
       this.#foxOdds,
-      this.#candidatePatterns?.length ?? null
+      this.#candidatePatterns ?? null
     );
   }
 

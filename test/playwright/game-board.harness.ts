@@ -22,11 +22,19 @@ import {
 } from "../helpers/ascii-grid.js";
 import { assertUnreachable } from "~/src/helpers.js";
 import { includeClass } from "./expect.js";
+import { AutoSolverHarness } from "../auto-solver/full/types/auto-solver.harness.js";
 
-export class GameBoardHarness extends BaseSequenceRunner {
+export class GameBoardHarness
+  extends BaseSequenceRunner
+  implements AutoSolverHarness
+{
   readonly #rootLocator: Locator;
   readonly #page: Page;
-  constructor(rootLocator: Locator, args: PlaywrightTestArgs) {
+  constructor(
+    rootLocator: Locator,
+    args: PlaywrightTestArgs,
+    readonly testStep = test.step.bind(test)
+  ) {
     super(
       (message: string) => {
         throw new Error(message);
@@ -41,11 +49,19 @@ export class GameBoardHarness extends BaseSequenceRunner {
     this.#page = args.page;
   }
 
-  async getPatternData(): Promise<TestPatternData> {
-    const patternCountText =
+  getHarnessName(): string {
+    return "Playwright";
+  }
+
+  async getPatternData(): Promise<
+    TestPatternData & { remainingPatternsIds: string[] | null }
+  > {
+    const patternCountElm =
       (await this.getRemainingPatterns().count()) > 0
-        ? await this.getRemainingPatterns().textContent()
+        ? this.getRemainingPatterns()
         : null;
+    const patternCountText =
+      patternCountElm !== null ? await patternCountElm.textContent() : null;
     const remainingPatterns =
       patternCountText === null ? null : parseInt(patternCountText, 10);
     return {
@@ -54,6 +70,10 @@ export class GameBoardHarness extends BaseSequenceRunner {
           ? await this.getPattern().textContent()
           : null,
       remainingPatterns,
+      remainingPatternsIds:
+        remainingPatterns !== null
+          ? new Array<string>(remainingPatterns).fill("")
+          : null,
     };
   }
 
@@ -92,9 +112,9 @@ export class GameBoardHarness extends BaseSequenceRunner {
         const combined = await tileData.combinedTileState();
         if (
           (Array.isArray(combined) === false &&
-            this.#stringIsTileState(TileState, combined)) ||
-          this.#stringIsTileState(SmartFillTileState, combined) ||
-          this.#stringIsTileState(SuggestTileState, combined)
+            this.stringIsTileState(TileState, combined)) ||
+          this.stringIsTileState(SmartFillTileState, combined) ||
+          this.stringIsTileState(SuggestTileState, combined)
         ) {
           return combined;
         } else {
@@ -133,75 +153,97 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.#rootLocator.getByTestId("solve-step-help-tldr");
   }
 
+  getRecommendedTiles() {
+    return this.getBoard()
+      .locator(".nextTarget")
+      .evaluateAll((els) =>
+        els.map((el) =>
+          parseInt(
+            el.getAttribute("data-testid")?.slice("game-tile-index-".length) ??
+              "-1"
+          )
+        )
+      );
+  }
+
   override async setUserSelection(
     index: number,
     tileState: TileState,
     expectInvalidMove: boolean = false
   ) {
-    await test.step(`setUserSelection(${index}, TileState.${tileState}, ${expectInvalidMove})`, async () => {
-      const tile = this.getTile(index);
-      const existingTileState = await tile.tileState();
-      const alreadyCorrectState = existingTileState === tileState;
-      const isSmartFilled = this.#stringIsTileState(
-        SmartFillTileState,
-        existingTileState
-      );
-
-      await tile.locator.click();
-
-      const popover = this.getPopover();
-      await expect(popover).toBeVisible();
-      const buttons = this.getAllPopoverButtons();
-
-      const button = popover.getByTestId(`popover-picker-button-${tileState}`);
-
-      if (isSmartFilled) {
-        const existingNonSmartFilledTileState =
-          this.#smartFillToTile(existingTileState);
-        expect(
-          existingNonSmartFilledTileState,
-          `Wanted to set tile ${index} to ${tileState}, but it was already smart filled as ${existingTileState}`
-        ).toEqual(tileState);
-        await expect(button).not.toBeVisible();
-        await expect(buttons.nth(0)).not.toBeVisible();
-        await expect(popover).toContainText(
-          `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
+    await this.testStep(
+      `setUserSelection(${index}, TileState.${tileState}, ${expectInvalidMove})`,
+      async () => {
+        const tile = this.getTile(index);
+        const existingTileState = await tile.tileState();
+        const alreadyCorrectState = existingTileState === tileState;
+        const isSmartFilled = this.stringIsTileState(
+          SmartFillTileState,
+          existingTileState
         );
+
         await tile.locator.click();
-        await expect(popover).not.toBeVisible();
-        expect(await tile.tileState()).toEqual(existingTileState);
-      } else {
-        await expect(buttons.nth(0)).toBeVisible();
-        await expect(button).toBeVisible();
-        if (alreadyCorrectState) {
-          await expect(button).toHaveClass(includeClass("faded"));
+
+        const popover = this.getPopover();
+        await expect(popover).toBeVisible();
+        const buttons = this.getAllPopoverButtons();
+
+        const button = popover.getByTestId(
+          `popover-picker-button-${tileState}`
+        );
+
+        if (isSmartFilled) {
+          const existingNonSmartFilledTileState =
+            this.#smartFillToTile(existingTileState);
+          expect(
+            existingNonSmartFilledTileState,
+            `Wanted to set tile ${index} to ${tileState}, but it was already smart filled as ${existingTileState}`
+          ).toEqual(tileState);
+          await expect(button).not.toBeVisible();
+          await expect(buttons.nth(0)).not.toBeVisible();
+          await expect(popover).toContainText(
+            `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
+          );
           await tile.locator.click();
-          await this.#rootLocator
-            .getByTestId(`game-tile-index-${index}`)
-            .focus();
-          await this.#page.focus("body");
-        } else if (
-          (existingTileState === SuggestTileState.SuggestSword ||
-            existingTileState === SuggestTileState.SuggestPresent) &&
-          tileState === TileState.Empty
-        ) {
-          await expect(button).toHaveClass(includeClass("faded"));
-          await button.click();
-        } else if (expectInvalidMove) {
-          await expect(button).toHaveClass(includeClass("faded"));
-          await button.click();
+          await expect(popover).not.toBeVisible();
+          expect(await tile.tileState()).toEqual(existingTileState);
         } else {
-          await expect(button).not.toHaveClass(includeClass("faded"));
-          await button.click();
+          await expect(buttons.nth(0)).toBeVisible();
+          await expect(button).toBeVisible();
+          if (alreadyCorrectState) {
+            await expect(button).toHaveClass(includeClass("faded"));
+            await tile.locator.click();
+            await this.#rootLocator
+              .getByTestId(`game-tile-index-${index}`)
+              .focus();
+            await this.#page.focus("body");
+          } else if (
+            (existingTileState === SuggestTileState.SuggestSword ||
+              existingTileState === SuggestTileState.SuggestPresent) &&
+            tileState === TileState.Empty
+          ) {
+            await expect(button).toHaveClass(includeClass("faded"));
+            await button.click();
+          } else if (expectInvalidMove) {
+            await expect(button).toHaveClass(includeClass("faded"));
+            await button.click();
+          } else {
+            await expect(button).not.toHaveClass(includeClass("faded"));
+            await button.click();
+          }
+          await expect(popover).not.toBeVisible();
+          expect(await tile.tileState()).toEqual(tileState);
         }
-        await expect(popover).not.toBeVisible();
-        expect(await tile.tileState()).toEqual(tileState);
       }
-    });
+    );
   }
 
   syncToAsciiGrid(grid: string) {
     return this.applyInitialState(grid);
+  }
+
+  async reset(): Promise<void> {
+    await this.#page.reload();
   }
 
   async actionsFromAsciiGrid(grid: string) {
@@ -332,16 +374,16 @@ export class GameBoardHarness extends BaseSequenceRunner {
   }
 
   protected getState(): Promise<TestGameStateSnapshot> {
-    return test.step("get state", async () => {
+    return this.testStep("get state", async () => {
       const cells: CellTestData[] = [];
-      const board = this.#rootLocator.getByTestId("game-board");
+      const board = this.getBoard();
       const boardTiles = await board
         .locator('[data-testid^="game-tile-index-"]')
         .all();
       let tileIndex = -1;
       for (const boardTile of boardTiles) {
         tileIndex++;
-        await test.step(`index ${tileIndex}`, async () => {
+        await this.testStep(`index ${tileIndex}`, async () => {
           const tileDebugTile = `[Tile: ${tileIndex}]`;
           // const tile = await boardTile.getAttribute("data-test-tile");
           const classList = await boardTile.evaluate((e) =>
@@ -359,19 +401,19 @@ export class GameBoardHarness extends BaseSequenceRunner {
               continue;
             }
 
-            if (this.#stringIsTileState(TileState, className)) {
+            if (this.stringIsTileState(TileState, className)) {
               expect(
                 cell.userSelection,
                 `${tileDebugTile} had two (or more) user selection states: ${cell.userSelection}, ${className}`
               ).toBeUndefined();
               cell.userSelection = className;
-            } else if (this.#stringIsTileState(SmartFillTileState, className)) {
+            } else if (this.stringIsTileState(SmartFillTileState, className)) {
               expect(
                 cell.smartFill,
                 `${tileDebugTile} had two (or more) smart fill selection states: ${cell.smartFill}, ${className}`
               ).toBeUndefined();
               cell.smartFill = className;
-            } else if (this.#stringIsTileState(SuggestTileState, className)) {
+            } else if (this.stringIsTileState(SuggestTileState, className)) {
               expect(
                 cell.prompt,
                 `${tileDebugTile} had two (or more) smart fill selection states: ${cell.prompt}, ${className}`
@@ -446,22 +488,25 @@ export class GameBoardHarness extends BaseSequenceRunner {
             );
           }
           cells[tileIndex] = cell;
-          await test.step(`Result ${JSON.stringify(cell)}`, () => {});
+          await this.testStep(`Result ${JSON.stringify(cell)}`, () => {});
         });
       }
 
-      const issues = await test.step("get board issues", async () =>
-        await Promise.all(
-          (await this.#page.locator("[data-test-issue-severity]").all()).map(
-            async (l): Promise<BoardIssue> => ({
-              severity: (await l.getAttribute(
-                "data-test-issue-severity"
-              )) as unknown as BoardIssue["severity"],
-              message: await l.getByTestId("message").innerText(),
-              issueTiles: [],
-            })
+      const issues = await this.testStep(
+        "get board issues",
+        async () =>
+          await Promise.all(
+            (await this.#page.locator("[data-test-issue-severity]").all()).map(
+              async (l): Promise<BoardIssue> => ({
+                severity: (await l.getAttribute(
+                  "data-test-issue-severity"
+                )) as unknown as BoardIssue["severity"],
+                message: await l.getByTestId("message").innerText(),
+                issueTiles: [],
+              })
+            )
           )
-        ));
+      );
 
       return {
         cells,
@@ -475,11 +520,12 @@ export class GameBoardHarness extends BaseSequenceRunner {
     const tileStates: string[] = Array.from(Object.values(TileState));
     const popover = this.getPopover();
     const tiles: TileState[] = [];
+    await popover.waitFor({ state: "visible" });
     for (const item of await popover.getByTestId(rootSelector).all()) {
       const tileState = await item
         .locator("button")
         .getAttribute("data-test-tile-state");
-      if (this.#stringIsTileState(TileState, tileState)) {
+      if (this.stringIsTileState(TileState, tileState)) {
         tiles.push(tileState);
       } else {
         expect(
@@ -491,14 +537,20 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return tiles;
   }
 
+  getBoard() {
+    return this.#rootLocator.getByTestId("game-board");
+  }
+
   getPopoverPrimaryOptions() {
-    return test.step("getPopoverPrimaryOptions", () =>
-      this.#getPopoverOptionSet("popover-picker-primary-option"));
+    return this.testStep("getPopoverPrimaryOptions", () =>
+      this.#getPopoverOptionSet("popover-picker-primary-option")
+    );
   }
 
   getPopoverSecondaryOptions() {
-    return test.step("getPopoverSecondaryOptions", () =>
-      this.#getPopoverOptionSet("popover-picker-secondary-option"));
+    return this.testStep("getPopoverSecondaryOptions", () =>
+      this.#getPopoverOptionSet("popover-picker-secondary-option")
+    );
   }
 
   getPattern() {
@@ -509,7 +561,7 @@ export class GameBoardHarness extends BaseSequenceRunner {
     return this.#rootLocator.getByTestId("remaining-patterns");
   }
 
-  #stringIsTileState<T extends object>(
+  stringIsTileState<T extends object>(
     tileStateEnum: T,
     value: unknown
   ): value is T[keyof T] {

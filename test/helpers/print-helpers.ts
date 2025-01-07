@@ -40,7 +40,8 @@ export function patternToPictograph(pattern: CommunityDataPattern) {
   return `${pattern.Sword3x2 ? "▭" : "▯"}${pattern.Sword} ◻${pattern.Present}`;
 }
 
-export function getStandardDeviation(array: number[]) {
+export function getStandardDeviation(inputArray: Iterable<number>) {
+  const array = Array.from(inputArray);
   const n = array.length;
   const mean = array.reduce((a, b) => a + b) / n;
   return Math.sqrt(
@@ -48,8 +49,8 @@ export function getStandardDeviation(array: number[]) {
   );
 }
 
-export function getMedian(array: number[]) {
-  array = [...array].sort();
+export function getMedian(inputArray: Iterable<number>) {
+  const array = [...inputArray].sort();
   const halfWayIndex = Math.floor(array.length / 2);
   const halfWayValue = array[halfWayIndex];
   assertDefined(halfWayValue);

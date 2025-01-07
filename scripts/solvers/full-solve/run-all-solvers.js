@@ -6,8 +6,7 @@ import { hideBin } from "yargs/helpers";
 const options = yargs(hideBin(process.argv))
   .option("skip-existing-solves", {
     type: "boolean",
-    demandOption: false,
-    default: false,
+    demandOption: true,
     description: "Skip solving patterns if the output file already exists",
   })
   .strict()

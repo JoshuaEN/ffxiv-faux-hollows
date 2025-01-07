@@ -201,7 +201,6 @@ onUnmounted(() => {
       tabindex="-1"
       @focusout="
         ($event) =>
-          $event.relatedTarget !== null &&
           !($event.currentTarget as HTMLElement)?.contains(
             $event.relatedTarget as Node
           )

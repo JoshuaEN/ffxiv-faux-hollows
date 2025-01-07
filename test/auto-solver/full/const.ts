@@ -12,6 +12,7 @@ export const DISPLAY_NAME = {
   UncoverAll: "Uncover All",
 } as const;
 
+// These values are used to uniquely name table headers which are otherwise labeled fox/no fox and thus don't need a label here, thus the whitespace.
 export enum FoxNoFoxFlag {
   NoFox = "",
   Fox = " ",
