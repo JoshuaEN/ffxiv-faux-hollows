@@ -19,7 +19,7 @@ export interface AutoSolverHarness {
 
   setUserSelection(index: number, tileState: TileState): MaybePromise<void>;
 
-  getPatternData(): MaybePromise<{ remainingPatterns: number | null }>;
+  getPatternData(): MaybePromise<{ remainingPatternsIds: string[] | null }>;
 
   /**
    * Resets the board

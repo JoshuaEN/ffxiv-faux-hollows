@@ -7,7 +7,7 @@ export interface AutoSolveStep {
   index: number;
   state: TileState;
   stepNumber: number;
-  patternsRemaining: number;
+  patternsRemaining: string[] | null;
   foxCandidates: number;
   solvedSword: boolean;
   solvedPresent: boolean;
@@ -25,7 +25,7 @@ export interface AutoSolveStrategyResult {
 
   FoundSword: number;
   FoundPresent: number;
-  FoundFox: number;
+  FoundFoxCandidates: number;
 
   UncoverSword: number;
   UncoverPresent: number;

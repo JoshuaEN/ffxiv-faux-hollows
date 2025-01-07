@@ -1,15 +1,22 @@
 import fs from "node:fs";
 import { communityDataByIdentifier } from "~/src/game/generated-community-data.js";
-import { assertDefined, assertUnreachable } from "~/src/helpers.js";
+import {
+  assertDefined,
+  assertEqual,
+  assertUnreachable,
+} from "~/src/helpers.js";
 import { indent, patternToPictograph } from "~/test/helpers/print-helpers.js";
 import { CommunityDataPattern } from "~/src/game/types/community-data.js";
 import path from "node:path";
 import { crossCheckRotations } from "./result-validators/cross-check-rotations.js";
-import { ODDS_OF_NO_FOX } from "./const.js";
 import { AutoSolverCollapsedPossibilityItem } from "./types/collapsed-possibilities.js";
 import { printShortCircuitSolveResults } from "./printers/print-short-circuit-solve-results.js";
-import { rollupFoxNoFox } from "./helpers/generate-rollups.js";
-import { printStrategyPercents } from "./printers/print-summaries.js";
+import {
+  ExtendedAutoSolveRollups,
+  generateRollups,
+  rollupFoxNoFox,
+} from "./helpers/generate-rollups.js";
+import { printStrategyPercents } from "./printers/print-strategy-percents.js";
 import {
   printCalculation,
   printPatternSummary,
@@ -25,25 +32,49 @@ import {
   STRATEGY_Fox,
   STRATEGY_All,
 } from "./types/strategies.js";
+import { printHighlights } from "./printers/print-highlights.js";
+import { printHighlightsNormalized } from "./printers/print-highlights-normalized.js";
+import { printStrategyPercentsNormalized } from "./printers/print-strategy-percents-normalized.js";
+import { OnlyFoxNoFox } from "./types/fox-no-fox.js";
 
 export function printAutoSolverResults(intermediaryResultsDir: string) {
   const files = fs
     .readdirSync(intermediaryResultsDir)
     .map((fileName) => path.join(intermediaryResultsDir, fileName));
 
+  const deduplicator = new Map<string, ExtendedAutoSolveStrategyResult>();
+
   /**
    * Exact patterns, e.g. B← ▭27 ◻24
    */
   const patternGroups = new Map<string, ExtendedAutoSolveStrategyResult[]>();
+  const dedupPatternGroups = new Map<
+    string,
+    ExtendedAutoSolveStrategyResult[]
+  >();
   /**
    * Identifiers, e.g. B←
    */
   const identifierGroups = new Map<string, ExtendedAutoSolveStrategyResult[]>();
 
   /**
+   * Identifiers (equivalent chains deduplicated)
+   */
+  const dedupIdentifierGroups = new Map<
+    string,
+    ExtendedAutoSolveStrategyResult[]
+  >();
+
+  /**
    * Everything
    */
   const allResults: ExtendedAutoSolveStrategyResult[] = [];
+
+  /**
+   * Everything (equivalent chains deduplicated)
+   */
+  const dedupAllResults: ExtendedAutoSolveStrategyResult[] = [];
+
   const allIds = new Set<string>();
 
   const collapsedPossibilities = new Map<
@@ -105,6 +136,28 @@ export function printAutoSolverResults(intermediaryResultsDir: string) {
 
       allResults.push(processedItem);
 
+      const deduplicationKey = `${item.identifier}${item.pattern},${item.foxIndex}
+|${item.steps.map((step) => `${step.state[0]}${step.foxCandidates},${step.patternsRemaining?.sort().join("")}`).join("")}
+|s${item.FoundSword}p${item.FoundPresent}S${item.UncoverSword}P${item.UncoverPresent}F${item.UncoverFox}
+|${item.strategy.map((s) => s[0]).join("")}`;
+
+      const duplicate = deduplicator.has(deduplicationKey);
+
+      if (!duplicate) {
+        deduplicator.set(deduplicationKey, processedItem);
+
+        const dedupPatternExisting = dedupPatternGroups.get(patternKey) ?? [];
+        dedupPatternExisting.push(processedItem);
+        dedupPatternGroups.set(patternKey, dedupPatternExisting);
+
+        const dedupIdentifierExisting =
+          dedupIdentifierGroups.get(identifierKey) ?? [];
+        dedupIdentifierExisting.push(processedItem);
+        dedupIdentifierGroups.set(identifierKey, dedupIdentifierExisting);
+
+        dedupAllResults.push(processedItem);
+      }
+
       const collapsedPossibilityItem = collapsedPossibilities.get(pattern) ?? {
         Everything: [],
         All: [],
@@ -146,52 +199,107 @@ export function printAutoSolverResults(intermediaryResultsDir: string) {
 
   crossCheckRotations(identifierGroups);
 
-  const lines: string[] = [];
-  const overallLines: string[] = [];
+  const dedupPatternPartitions = {
+    noFox: new Map(
+      Array.from(dedupPatternGroups.entries()).map(([pattern, items]) => {
+        const result = generateRollups(
+          items.filter((item) => item.foxIndex === undefined)
+        );
+        assertDefined(result);
+        return [pattern, result];
+      })
+    ),
+    onlyFox: new Map(
+      Array.from(dedupPatternGroups.entries()).map(([pattern, items]) => {
+        const result = generateRollups(
+          items.filter((item) => item.foxIndex !== undefined)
+        );
+        assertDefined(result);
+        return [pattern, result];
+      })
+    ),
+  };
 
-  overallLines.push("");
-  overallLines.push(
-    `The following identifiers were evaluated:\n${indent(1)}${Array.from(allIds.keys()).join(", ")}`
+  assertEqual(
+    dedupPatternPartitions.noFox.size,
+    dedupPatternPartitions.onlyFox.size
   );
-  overallLines.push(`${indent(1)}"All" refers to just these`);
-  overallLines.push("");
-  overallLines.push(
-    `This simulation assumes the odds of a fox being present is:`
-  );
-  overallLines.push(`${indent(1)}1 in ${1 + ODDS_OF_NO_FOX}`);
-  overallLines.push(
-    `${indent(1)}(the actual odds of a fox being present is not known)`
-  );
-  overallLines.push("");
+
+  const introLines = [
+    "",
+
+    `The following identifiers were evaluated:\n${indent(1)}${Array.from(allIds.keys()).join(", ")}`,
+    `${indent(1)}"All" refers to just these`,
+    "",
+
+    `Total
+........solves checked: ${allResults.length}
+...after deduplication: ${dedupAllResults.length}
+....after partitioning: ${dedupPatternPartitions.onlyFox.size}
+
+`,
+  ];
+
+  const highlightNormalizedLines: string[] = [];
+  const highlightLines: string[] = [];
+  const highLevelSummariesNormalizedLines: string[] = [];
+  const highLevelSummariesLines: string[] = [];
+  const detailedLines: string[] = [];
+  const verboseLines: string[] = [];
 
   // All
-  printPatternSummaryFoxNoFox(lines, overallLines, `All`, allResults, true);
-  lines.push("");
+
+  printPatternSummaryFoxNoFox({
+    highlightNormalizedLines,
+    highlightLines,
+    highLevelSummariesNormalizedLines,
+    highLevelSummariesLines,
+    detailedLines,
+    key: `All`,
+    patternGroup: dedupAllResults,
+    patternPartitions: dedupPatternPartitions,
+  });
+  detailedLines.push("");
 
   // Identifiers
-  for (const [key, patternGroup] of Array.from(identifierGroups).sort(
+  for (const [key, patternGroup] of Array.from(dedupIdentifierGroups).sort(
     ([a], [b]) => a.localeCompare(b)
   )) {
-    printPatternSummaryFoxNoFox(
-      lines,
-      overallLines,
-      `Rollup of ${key}`,
+    printPatternSummaryFoxNoFox({
+      highlightLines: key[1] === "↑" ? highlightLines : undefined,
+      highlightNormalizedLines:
+        key[1] === "↑" ? highlightNormalizedLines : undefined,
+      highLevelSummariesLines,
+      highLevelSummariesNormalizedLines,
+      detailedLines,
+      key: `Rollup of ${key}`,
       patternGroup,
-      true
-    );
+      patternPartitions: {
+        onlyFox: new Map(
+          Array.from(dedupPatternPartitions.onlyFox.entries()).filter(
+            ([partitionKey]) => partitionKey.startsWith(key)
+          )
+        ),
+        noFox: new Map(
+          Array.from(dedupPatternPartitions.noFox.entries()).filter(
+            ([partitionKey]) => partitionKey.startsWith(key)
+          )
+        ),
+      },
+    });
   }
-  lines.push("");
-  lines.push(
+  verboseLines.push("");
+  verboseLines.push(
     "Below this point is more detailed breakdowns of the solve calculations performed on each identifier."
   );
-  lines.push(
+  verboseLines.push(
     "This is very verbose, and mostly intended for understanding how a specific result was reached for development purposes,"
   );
-  lines.push("as well as regression testing.");
-  lines.push("");
-  lines.push("Legend");
+  verboseLines.push("as well as regression testing.");
+  verboseLines.push("");
+  verboseLines.push("Legend");
   {
-    lines.push(`
+    verboseLines.push(`
 Each possible pattern is uniquely identified by the identifier (from the community data spreadsheet, e.g. D→)
   and the location of the Sword and Present (e.g. ▭14 ◻24 or ▯22 ◻25).
   The locations are the index (zero-based, row-major order[1]) of the top-left most corner of the shape, Sword then Present.
@@ -246,19 +354,23 @@ PF[6,10]  - The total number of steps to fully uncover the Present and Fox
   }
 
   // Per-pattern summaries (details only)
-  lines.push("Per-pattern summaries");
+  verboseLines.push("Per-pattern summaries");
   for (const [key, patternGroup] of Array.from(patternGroups).sort(([a], [b]) =>
     a.localeCompare(b)
   )) {
-    printPatternSummaryFoxNoFox(lines, overallLines, key, patternGroup);
+    printPatternSummaryFoxNoFox({
+      key,
+      patternGroup,
+      detailedLines: verboseLines,
+    });
   }
 
-  lines.push("");
-  lines.push(
+  verboseLines.push("");
+  verboseLines.push(
     `Below this point is even more detailed breakdowns of the every possible combinations of steps to find the Sword+Present and the step statistics for them.`
   );
-  lines.push("");
-  lines.push(`The syntax is similar to the prior section, notable additions:
+  verboseLines.push("");
+  verboseLines.push(`The syntax is similar to the prior section, notable additions:
 The steps themselves are shown as the "header" for a group followed by the results for various strategies:
 22->S, 0->P
 ├ T[11,14] t[3,6] s1+5 p2+3
@@ -279,32 +391,113 @@ and the second number is the additional steps to uncover. This is not done in th
 of values (e.g. s[1,2]+[5,6]) which can result in misleading information (e.g. per that example, it might be s1+6 s2+5).
 That is not a problem here because we are looking at exactly one set of moves to find the Sword and Present at a time.
     `);
-  lines.push("");
-  lines.push("Full solve results");
-  printShortCircuitSolveResults(lines, collapsedPossibilities);
+  verboseLines.push("");
+  verboseLines.push("Full solve results");
+  printShortCircuitSolveResults(verboseLines, collapsedPossibilities);
 
-  return overallLines.join("\n") + "\n" + lines.join("\n");
+  return (
+    introLines.join("\n") +
+    "Overview (unique outcomes, pattern normalized)\n" +
+    formatLines(highlightNormalizedLines) +
+    "High-level summaries (unique outcomes, pattern normalized)\n\n" +
+    formatLines(highLevelSummariesNormalizedLines) +
+    "Overview (unique outcomes)\n" +
+    formatLines(highlightLines) +
+    "High-level summaries (unique outcomes)\n\n" +
+    formatLines(highLevelSummariesLines) +
+    "Detailed results\n\n" +
+    detailedLines.join("\n") +
+    "\n\n\n" +
+    verboseLines.join("\n")
+  );
 }
 
-function printPatternSummaryFoxNoFox(
-  lines: string[],
-  overallLines: string[],
-  key: string,
-  patternGroup: ExtendedAutoSolveStrategyResult[],
-  printOveralls = false
-) {
-  const { all, noFox } = rollupFoxNoFox(patternGroup);
+function formatLines(lines: string[]) {
+  const indentStr = indent(1);
+  const newLines: string[] = [];
+  for (const line of lines) {
+    newLines.push(
+      ...line
+        .split("\n")
+        .map((newLine) =>
+          newLine.trim().length === 0 ? "" : indentStr + newLine
+        )
+    );
+  }
+  return newLines.join("\n") + "\n";
+}
 
-  lines.push(`${indent(1)}${key}`);
-  printPatternSummary(lines, printCalculation(all.minInSlot, all.maxInSlot));
-  lines.push(`${indent(1)}${key} - No Fox`);
-  printPatternSummary(
-    lines,
-    printCalculation(noFox.minInSlot, noFox.maxInSlot)
-  );
-  if (printOveralls) {
-    printStrategyPercents(overallLines, key, all);
-    printStrategyPercents(overallLines, `${key} - No Fox`, noFox);
+function printPatternSummaryFoxNoFox({
+  highlightNormalizedLines,
+  highlightLines,
+  highLevelSummariesNormalizedLines,
+  highLevelSummariesLines,
+  detailedLines,
+  key,
+  patternGroup,
+  patternPartitions,
+}: {
+  key: string;
+  patternGroup: ExtendedAutoSolveStrategyResult[];
+  patternPartitions?: OnlyFoxNoFox<Map<string, ExtendedAutoSolveRollups>>;
+
+  highlightNormalizedLines?: string[];
+  highlightLines?: string[];
+  highLevelSummariesNormalizedLines?: string[];
+  highLevelSummariesLines?: string[];
+  detailedLines?: string[];
+}) {
+  const { onlyFox, noFox } = rollupFoxNoFox(patternGroup);
+
+  if (
+    highlightNormalizedLines !== undefined &&
+    patternPartitions !== undefined
+  ) {
+    printHighlightsNormalized(highlightNormalizedLines, key, patternPartitions);
+  }
+
+  if (highlightLines !== undefined) {
+    printHighlights(highlightLines, key, onlyFox, noFox);
+  }
+
+  if (
+    highLevelSummariesNormalizedLines !== undefined &&
+    patternPartitions !== undefined
+  ) {
+    printStrategyPercentsNormalized(
+      highLevelSummariesNormalizedLines,
+      `Rollup of ${key} - Fox present`,
+      onlyFox,
+      patternPartitions.onlyFox
+    );
+    printStrategyPercentsNormalized(
+      highLevelSummariesNormalizedLines,
+      `Rollup of ${key} - No Fox`,
+      noFox,
+      patternPartitions.noFox
+    );
+  }
+
+  if (highLevelSummariesLines !== undefined) {
+    printStrategyPercents(
+      highLevelSummariesLines,
+      `${key} - Fox present`,
+      onlyFox
+    );
+    printStrategyPercents(highLevelSummariesLines, `${key} - No Fox`, noFox);
+  }
+
+  if (detailedLines !== undefined) {
+    detailedLines.push(`${indent(1)}${key} - Fox present`);
+    printPatternSummary(
+      detailedLines,
+      printCalculation(onlyFox.minInSlot, onlyFox.maxInSlot)
+    );
+    detailedLines.push(`${indent(1)}${key} - No Fox`);
+    printPatternSummary(
+      detailedLines,
+      printCalculation(noFox.minInSlot, noFox.maxInSlot)
+    );
   }
 }
 

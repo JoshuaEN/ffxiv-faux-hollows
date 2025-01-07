@@ -55,46 +55,57 @@ export function printShortCircuitSolveResults(
     }
 
     lines.push(indent(2) + patternToPictograph(pattern));
+    const everythingRollups = generateRollups(items.Everything);
+    assertDefined(everythingRollups);
+    printPatternSummary(
+      lines,
+      printCalculation(
+        everythingRollups.minInSlot,
+        everythingRollups.maxInSlot
+      ),
+      3
+    );
+
+    const contentGroups = new Map<string, ExtendedAutoSolveStrategyResult[]>();
+    for (const item of items.Everything) {
+      const steps: AutoSolveStep[] = [];
+      for (const step of item.steps) {
+        steps.push(step);
+        const strategy = item.strategy as unknown as TileState[];
+        if (
+          (!strategy.includes(TileState.Sword) || step.solvedSword) &&
+          (!strategy.includes(TileState.Present) || step.solvedPresent) &&
+          (!strategy.includes(TileState.Fox) ||
+            isFoxCandidatesShownOrFoxFound(step))
+        ) {
+          break;
+        }
+      }
+
+      const stepsStr = steps
+        .map((step) => `${step.index}->${step.state[0]}`)
+        .join(", ");
+      const group = contentGroups.get(stepsStr) ?? [];
+      group.push(item);
+      contentGroups.set(stepsStr, group);
+    }
+
     for (const foxIndex of [...pattern.ConfirmedFoxes, undefined]) {
       lines.push(`${indent(3)}Fox at ${foxIndex ?? "(No Fox)"}`);
-      const everythingRollups = generateRollups(items.Everything);
-      assertDefined(everythingRollups);
+      const everythingThisFox = items.Everything.filter(
+        (item) => item.foxIndex === foxIndex
+      );
+      const everythingThisFoxRollups = generateRollups(everythingThisFox);
+      assertDefined(everythingThisFoxRollups);
       printPatternSummary(
         lines,
         printCalculation(
-          everythingRollups.minInSlot,
-          everythingRollups.maxInSlot
+          everythingThisFoxRollups.minInSlot,
+          everythingThisFoxRollups.maxInSlot
         ),
         4
       );
       lines.push("");
-
-      const contentGroups = new Map<
-        string,
-        ExtendedAutoSolveStrategyResult[]
-      >();
-      for (const item of items.Everything) {
-        const steps: AutoSolveStep[] = [];
-        for (const step of item.steps) {
-          steps.push(step);
-          const strategy = item.strategy as unknown as TileState[];
-          if (
-            (!strategy.includes(TileState.Sword) || step.solvedSword) &&
-            (!strategy.includes(TileState.Present) || step.solvedPresent) &&
-            (!strategy.includes(TileState.Fox) ||
-              isFoxCandidatesShownOrFoxFound(step))
-          ) {
-            break;
-          }
-        }
-
-        const stepsStr = steps
-          .map((step) => `${step.index}->${step.state[0]}`)
-          .join(", ");
-        const group = contentGroups.get(stepsStr) ?? [];
-        group.push(item);
-        contentGroups.set(stepsStr, group);
-      }
 
       for (const [stepStr, group] of contentGroups) {
         const groupsForFoxIndex = group.filter(

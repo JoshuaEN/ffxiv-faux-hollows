@@ -65,8 +65,8 @@ function compareResultSteps(
   if (a.strategy.join(",") !== b.strategy.join(",")) {
     return a.strategy.join(",").localeCompare(b.strategy.join(","));
   }
-  if (a.FoundFox !== b.FoundFox) {
-    return a.FoundFox - b.FoundFox;
+  if (a.FoundFoxCandidates !== b.FoundFoxCandidates) {
+    return a.FoundFoxCandidates - b.FoundFoxCandidates;
   }
   if (a.FoundPresent !== b.FoundPresent) {
     return a.FoundPresent - b.FoundPresent;
@@ -108,7 +108,15 @@ function compareResultSteps(
       return aStep.foxCandidates - bStep.foxCandidates;
     }
     if (aStep.patternsRemaining !== bStep.patternsRemaining) {
-      return aStep.patternsRemaining - bStep.patternsRemaining;
+      if (aStep.patternsRemaining === null) {
+        return -1;
+      }
+      if (bStep.patternsRemaining === null) {
+        return 1;
+      }
+      if (aStep.patternsRemaining.length !== bStep.patternsRemaining.length) {
+        return aStep.patternsRemaining.length - bStep.patternsRemaining.length;
+      }
     }
     if (aStep.stepNumber !== bStep.stepNumber) {
       assertUnreachable();

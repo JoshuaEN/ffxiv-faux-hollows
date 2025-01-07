@@ -71,7 +71,7 @@ export async function autoSolve(
     }
   }
 
-  fs.writeFileSync(fileName, "[\n");
+  fs.writeFileSync(fileName, "");
 
   for (const [identifier, data] of Object.entries(communityDataByIdentifier)) {
     if (identifier !== options.identifier) {
@@ -217,7 +217,7 @@ async function solveSingleStep(
             (foundAllStrategyStates ? STRATEGY_All : strategy).every(
               (tileState) =>
                 tileState === TileState.Fox
-                  ? stepsTo.FoundFox === undefined &&
+                  ? stepsTo.UncoverFox === undefined &&
                     lastCountByState.SuggestFox > 0
                   : stepsTo[`Found${tileState}`] !== undefined
             )
@@ -304,7 +304,9 @@ async function solveSingleStep(
         await step(`Finalize result`, async () => {
           const stepRecommendations = await harness.getRecommendedTiles();
           assert(stepRecommendations.length === 0);
-          assert((await harness.getPatternData()).remainingPatterns === 1);
+          assert(
+            (await harness.getPatternData()).remainingPatternsIds?.length === 1
+          );
 
           stepsTo.steps = steps;
           assertAutoSolveStrategyResult(stepsTo);
@@ -379,8 +381,10 @@ async function solveSingleStep(
             lastCountByState.Sword > 0 ? stepsTaken : undefined;
           stepsTo.FoundPresent ??=
             lastCountByState.Present > 0 ? stepsTaken : undefined;
-          stepsTo.FoundFox ??=
-            lastCountByState.Fox > 0 ? stepsTaken : undefined;
+          stepsTo.FoundFoxCandidates ??=
+            lastCountByState.Fox > 0 || lastCountByState.SuggestFox > 0
+              ? stepsTaken
+              : undefined;
           stepsTo.UncoverFox ??=
             lastCountByState.Fox > 0 ? stepsTaken : undefined;
 
@@ -399,7 +403,7 @@ async function solveSingleStep(
             foxSuggestionStatus === "previouslyShown" &&
             stepsTo.UncoverFox === undefined
           ) {
-            stepsTo.FoundFox = stepsTaken;
+            stepsTo.FoundFoxCandidates ??= stepsTaken;
             stepsTo.UncoverFox = stepsTaken;
           }
 
@@ -415,9 +419,9 @@ async function solveSingleStep(
             index,
             state: tileState,
             foxCandidates: lastCountByState.SuggestFox,
-            patternsRemaining:
-              (await harness.getPatternData()).remainingPatterns ?? -1,
-            solvedFox: stepsTo.FoundFox !== undefined,
+            patternsRemaining: (await harness.getPatternData())
+              .remainingPatternsIds,
+            solvedFox: stepsTo.UncoverFox !== undefined,
             solvedPresent: stepsTo.FoundPresent !== undefined,
             solvedSword: stepsTo.FoundSword !== undefined,
             stepNumber,
@@ -429,8 +433,10 @@ async function solveSingleStep(
             strategy: readonly (typeof STRATEGY_All)[number][]
           ) {
             if (
-              !strategy.every(
-                (tileState) => stepsTo[`Found${tileState}`] !== undefined
+              !strategy.every((tileState) =>
+                tileState === TileState.Fox
+                  ? stepsTo.UncoverFox
+                  : stepsTo[`Found${tileState}`] !== undefined
               )
             ) {
               return false;
@@ -482,7 +488,7 @@ async function solveSingleStep(
 function assertAutoSolveStrategyResult(
   stepsTo: Partial<AutoSolveStrategyResult>
 ): asserts stepsTo is AutoSolveStrategyResult {
-  assertDefined(stepsTo.FoundFox);
+  assertDefined(stepsTo.FoundFoxCandidates);
   assertDefined(stepsTo.FoundPresent);
   assertDefined(stepsTo.FoundSword);
   assertDefined(stepsTo.strategy);
@@ -490,4 +496,6 @@ function assertAutoSolveStrategyResult(
   assertDefined(stepsTo.UncoverPresent);
   assertDefined(stepsTo.UncoverSword);
   assertDefined(stepsTo.steps);
+  assertDefined(stepsTo.identifier);
+  assertDefined(stepsTo.pattern);
 }

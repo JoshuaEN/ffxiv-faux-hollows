@@ -1,6 +1,3 @@
-export const FOXES_PER_PATTERN = 4;
-export const ODDS_OF_NO_FOX = 9;
-export const NO_FOX_MULTIPLIER = ODDS_OF_NO_FOX * FOXES_PER_PATTERN;
 export const DISPLAY_NAME = {
   FoundSword: "Found Sword",
   FoundPresent: "Found Present",
@@ -14,3 +11,8 @@ export const DISPLAY_NAME = {
   UncoverPresentFox: "Uncover Present & Fox",
   UncoverAll: "Uncover All",
 } as const;
+
+export enum FoxNoFoxFlag {
+  NoFox = "",
+  Fox = " ",
+}

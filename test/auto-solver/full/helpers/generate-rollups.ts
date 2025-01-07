@@ -13,7 +13,7 @@ import {
   isFoxCandidatesShown,
   isFoxCandidatesShownOrFoxFound,
 } from "./fox-status.js";
-import { NO_FOX_MULTIPLIER } from "../const.js";
+import { OnlyFoxNoFox } from "../types/fox-no-fox.js";
 
 export type ExtendedAutoSolveRollups = NonNullable<
   ReturnType<typeof generateRollups>
@@ -38,16 +38,13 @@ export function generateRollups(
       if (value > maxInSlot[key]) {
         maxInSlot[key] = value;
       }
-      let times = pattern.foxIndex === undefined ? NO_FOX_MULTIPLIER : 1;
-      while (times > 0) {
-        totalsInSlot[key] += value;
-        itemsInSlot[key].push(value);
-        countPerStepsInSlot[key].set(
-          value,
-          (countPerStepsInSlot[key].get(value) ?? 0) + 1
-        );
-        times--;
-      }
+
+      totalsInSlot[key] += value;
+      itemsInSlot[key].push(value);
+      countPerStepsInSlot[key].set(
+        value,
+        (countPerStepsInSlot[key].get(value) ?? 0) + 1
+      );
     }
 
     const swordFullSteps =
@@ -175,12 +172,14 @@ function fillEmptyStepsTo<T>(
 
 export function rollupFoxNoFox(
   patternGroup: ExtendedAutoSolveStrategyResult[]
-) {
-  const all = generateRollups(patternGroup);
-  assertDefined(all);
+): OnlyFoxNoFox<ExtendedAutoSolveRollups> {
+  const onlyFox = generateRollups(
+    patternGroup.filter((r) => r.foxIndex !== undefined)
+  );
+  assertDefined(onlyFox);
   const noFox = generateRollups(
     patternGroup.filter((p) => p.foxIndex === undefined)
   );
   assertDefined(noFox);
-  return { all, noFox };
+  return { onlyFox, noFox };
 }
