@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { TileState } from "~/src/game/types/tile-states.js";
 import { GameBoardHarness } from "~/test/playwright/game-board.harness.js";
 
 test.describe("patterns", () => {

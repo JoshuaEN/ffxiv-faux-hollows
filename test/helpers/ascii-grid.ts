@@ -240,7 +240,7 @@ export function loadAsciiGrid(str: string) {
             );
           }
 
-          let expectInvalidMove =
+          const expectInvalidMove =
             column3 === "!" ? true : column3 === " " ? false : null;
 
           if (expectInvalidMove === null) {

@@ -18,7 +18,10 @@ export default defineConfig({
     vue(),
     checker({
       vueTsc: true,
-      // eslint: { lintCommand: "eslint --ext .js,.ts,.vue ./" },
+      eslint: {
+        useFlatConfig: true,
+        lintCommand: "eslint --ext .js,.ts,.vue ./",
+      },
     }),
   ],
   css: {

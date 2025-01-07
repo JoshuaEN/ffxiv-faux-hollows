@@ -7,7 +7,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "test/**/*.ts",
-    "e2e/**/*.ts"
+    "e2e/**/*.ts",
+    "deploy/**/*.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -15,19 +15,25 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:ui:debug": "playwright test --ui --debug",
+    "script:full-solve-e2e": "pnpx tsx ./scripts/solvers/full-solve-e2e/full-solve.ts",
     "lint": "eslint .",
     "script:load-community-data": "node --max-old-space-size=8192 --loader ts-node/esm --es-module-specifier-resolution=node ./scripts/load-community-data.ts --path",
     "script:sim": "pnpx esbuild --define:import.meta.env.DEV=true --platform=node ./scripts/sim/sim.ts --sourcemap --source-root=./ --bundle --format=esm --outfile=./dist/sim/sim.js && node ./dist/sim/sim.js",
-    "script:full-solve": "node ./scripts/full-solve/build-full-solve.js",
-    "postscript:full-solve": "node --max-old-space-size=8152 ./dist/full-solve/full-solve.js",
-    "script:full-solve:all:debug-last-attempt": "node ./dist/full-solve/full-solve.js",
-    "script:full-solve:all": "node ./scripts/full-solve/run-all-solvers.js"
+    "script:full-solve": "node ./scripts/solvers/full-solve/build-full-solve.js",
+    "postscript:full-solve": "node --max-old-space-size=8152 ./dist/solvers/full-solve/full-solve.js",
+    "script:full-solve:all:debug-last-attempt": "node ./dist/solvers/full-solve/full-solve.js",
+    "script:full-solve:all": "node ./scripts/solvers/full-solve/run-all-solvers.js",
+    "script:short-circuit:full-solve": "node ./scripts/solvers/short-circuit-solve/build-full-solve.js",
+    "postscript:short-circuit:full-solve": "node --max-old-space-size=8152 ./dist/solvers/short-circuit-solve/full-solve.js",
+    "script:short-circuit:full-solve:all:debug-last-attempt": "node ./dist/solvers/short-circuit-solve/full-solve.js",
+    "script:short-circuit:full-solve:all": "node ./scripts/solvers/short-circuit-solve/run-all-solvers.js"
   },
   "dependencies": {
     "@floating-ui/vue": "^1.1.5",
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.4",
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.49.1",
     "@types/glob": "^8.1.0",
@@ -38,6 +44,7 @@
     "@typescript-eslint/parser": "^8.18.1",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitest/coverage-v8": "^2.1.8",
+    "@vue/eslint-config-typescript": "^14.2.0",
     "decimal.js": "^10.4.3",
     "easy-table": "^1.2.0",
     "esbuild": "^0.24.0",
