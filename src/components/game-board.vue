@@ -74,8 +74,16 @@ const data = props;
 
 const hideTilePicker = () => {
   popoverData.value = null;
+  cancelPopoverRefAnimationFrame();
 };
 
+let popoverRefAnimationFrame: number | null = null;
+const cancelPopoverRefAnimationFrame = () => {
+  if (popoverRefAnimationFrame !== null) {
+    window.cancelAnimationFrame(popoverRefAnimationFrame);
+    popoverRefAnimationFrame = null;
+  }
+};
 const showTilePicker = (tileState: CombinedTileState, index: number) => {
   popoverAnchorRef.value = popoverAnchorRefs.value[index] as null;
   popoverData.value = {
@@ -84,6 +92,19 @@ const showTilePicker = (tileState: CombinedTileState, index: number) => {
   };
 };
 
+// Code to allow clicking on the tile with the currently open popover to close the popover.
+//
+// This is needed because the event order is:
+// 1. mousedown
+// 2. focusout (on the popover)
+// 3. click
+// There is a race condition where by the time the click event runs, the popover has already been closed by the focus out,
+// so we have to check in mousedown and then pass that state over to click.
+const skipNextClick = ref(false);
+const tileMouseDown = (ev: MouseEvent, index: number) => {
+  ev.stopImmediatePropagation();
+  skipNextClick.value = popoverOpen.value && index === popoverData.value?.index;
+};
 const tileClicked = (
   ev: MouseEvent | KeyboardEvent,
   tile: CombinedTileState,
@@ -91,11 +112,12 @@ const tileClicked = (
 ) => {
   ev.preventDefault();
   ev.stopImmediatePropagation();
-  if (popoverOpen.value && index === popoverData.value?.index) {
-    hideTilePicker();
-  } else {
-    showTilePicker(tile, index);
+  if (skipNextClick.value) {
+    skipNextClick.value = false;
+    return;
   }
+
+  showTilePicker(tile, index);
 };
 
 const pickTile = (index: number, tileState: TileState) => {
@@ -103,27 +125,22 @@ const pickTile = (index: number, tileState: TileState) => {
   props.board.setUserState(index, tileState);
 };
 
-let popoverRefAnimationFrame: number | null = null;
 watch(popoverRef, () => {
   if (popoverRef.value !== null) {
     popoverRef.value.focus();
-    if (popoverRefAnimationFrame !== null) {
-      window.cancelAnimationFrame(popoverRefAnimationFrame);
-    }
+    cancelPopoverRefAnimationFrame();
     popoverRefAnimationFrame = window.requestAnimationFrame(() => {
       popoverRefAnimationFrame = null;
-      (
-        popoverRef.value?.querySelector(
-          "button:not(:disabled)"
-        ) as HTMLElement | null
-      )?.focus();
+      const elm = popoverRef.value?.querySelector(
+        "button:not(:disabled)"
+      ) as HTMLElement | null;
+      elm?.focus();
     });
   }
 });
+
 onUnmounted(() => {
-  if (popoverRefAnimationFrame !== null) {
-    window.cancelAnimationFrame(popoverRefAnimationFrame);
-  }
+  cancelPopoverRefAnimationFrame();
 });
 </script>
 
@@ -167,9 +184,8 @@ onUnmounted(() => {
         :data-testid="`game-tile-index-${index}`"
         :data-test-tile="tile"
         :data-test-tile-is-array="Array.isArray(tile)"
-        @mousedown.left="(ev: MouseEvent) => tileClicked(ev, tile, index)"
-        @keydown.enter="(ev: KeyboardEvent) => tileClicked(ev, tile, index)"
-        @keydown.space="(ev: KeyboardEvent) => tileClicked(ev, tile, index)"
+        @mousedown.left="(ev: MouseEvent) => tileMouseDown(ev, index)"
+        @click="(ev: MouseEvent) => tileClicked(ev, tile, index)"
       />
       <div v-if="popoverData?.index === index" :data-popover-tp="index"></div>
     </template>
@@ -184,6 +200,9 @@ onUnmounted(() => {
       v-if="popoverOpen && popoverData"
       :ref="
         (el) => {
+          if (el !== popoverRef) {
+            popoverRef = null;
+          }
           popoverRef = el as HTMLDivElement | null;
         }
       "
@@ -204,7 +223,7 @@ onUnmounted(() => {
           !($event.currentTarget as HTMLElement)?.contains(
             $event.relatedTarget as Node
           )
-            ? (popoverData = null)
+            ? hideTilePicker()
             : false
       "
     >

@@ -175,6 +175,7 @@ test.describe("Primary tile picker", () => {
 
     // Act
     await page.keyboard.press("Enter");
+    await expect(harness.getPopover()).toBeVisible();
     await repeatKey(page, "Tab", 5);
 
     // Assert
@@ -213,6 +214,7 @@ test.describe("Primary tile picker", () => {
 
     // Act
     await page.keyboard.press("Enter");
+    await expect(harness.getPopover()).toBeVisible();
     await page.keyboard.press("Shift+Tab");
 
     // Assert
@@ -252,6 +254,7 @@ test.describe("Primary tile picker", () => {
     // Act
     await repeatKey(page, "Tab", 3);
     await page.keyboard.press("Enter");
+    await expect(harness.getPopover()).toBeVisible();
     await page.keyboard.press("Shift+Tab");
     await page.keyboard.press("Shift+Tab");
 
