@@ -30,14 +30,6 @@ export const calculateStatesCandidates: CalculateStatesCandidatesFunction =
                 : assertUnreachable();
 
 import * as s6p4_f1 from "./calculate-suggestion-weight/s6p4-f1-weighter.js";
-import * as s6p4f1 from "./calculate-suggestion-weight/s6p4f1-weighter.js";
-import * as s1 from "./calculate-suggestion-weight/s1-weighter.js";
 
 export const calculateSuggestionWeight: CalculateSuggestionWeight =
-  import.meta.env["WEIGHTER"] === "s6p4-f1"
-    ? s6p4_f1.calculateSuggestionWeight
-    : import.meta.env["WEIGHTER"] === "s6p4f1"
-      ? s6p4f1.calculateSuggestionWeight
-      : import.meta.env["WEIGHTER"] === "s1" || import.meta.env.MODE === "test"
-        ? s1.calculateSuggestionWeight
-        : assertUnreachable();
+  s6p4_f1.calculateSuggestionWeight;

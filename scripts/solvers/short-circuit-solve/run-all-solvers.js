@@ -1,10 +1,8 @@
 import { execSync } from "child_process";
-import { map } from "../consts.js";
+import { solvers } from "../consts.js";
 
-for (const [solver, weighters] of map) {
-  for (const weighter of weighters) {
-    const command = `npm run script:short-circuit:full-solve --- --solver=${solver} --weighter=${weighter}`;
-    console.log(`> ${command}`);
-    execSync(command, { stdio: "inherit" });
-  }
+for (const solver of solvers) {
+  const command = `npm run script:short-circuit:full-solve --- --solver=${solver}`;
+  console.log(`> ${command}`);
+  execSync(command, { stdio: "inherit" });
 }

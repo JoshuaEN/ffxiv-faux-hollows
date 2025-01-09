@@ -108,19 +108,26 @@ export function generateRollups(
       );
       assertDefined(stepWhereAllSolved);
       const foxCandidatesShown = isFoxCandidatesShown(stepWhereAllSolved);
-      const foundAllMax = foxCandidatesShown
-        ? stepWhereAllSolved.stepNumber + stepWhereAllSolved.foxCandidates
-        : stepWhereAllSolved.stepNumber;
-      const foundAllMin = foxCandidatesShown
-        ? stepWhereAllSolved.stepNumber + 1
-        : stepWhereAllSolved.stepNumber;
-      if (foxCandidatesShown) {
-        // Represent the range
-        update(foundAllMax, "FoundAll");
-        update(foundAllMin, "FoundAll");
+      if (pattern.foxIndex === undefined) {
+        assert(foxCandidatesShown === true);
+        const foundAllMinMax =
+          stepWhereAllSolved.stepNumber + stepWhereAllSolved.foxCandidates;
+        update(foundAllMinMax, "FoundAll");
       } else {
-        assert(foundAllMax === foundAllMin);
-        update(foundAllMax, "FoundAll");
+        const foundAllMax = foxCandidatesShown
+          ? stepWhereAllSolved.stepNumber + stepWhereAllSolved.foxCandidates
+          : stepWhereAllSolved.stepNumber;
+        const foundAllMin = foxCandidatesShown
+          ? stepWhereAllSolved.stepNumber + 1
+          : stepWhereAllSolved.stepNumber;
+        if (foxCandidatesShown) {
+          // Represent the range
+          update(foundAllMax, "FoundAll");
+          update(foundAllMin, "FoundAll");
+        } else {
+          assert(foundAllMax === foundAllMin);
+          update(foundAllMax, "FoundAll");
+        }
       }
     }
 

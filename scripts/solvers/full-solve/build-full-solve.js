@@ -4,17 +4,12 @@ import path from "path";
 import process from "process";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { solvers, weighters } from "../consts.js";
+import { solvers } from "../consts.js";
 
 const options = yargs(hideBin(process.argv))
   .option("solver", {
     alias: "s",
     choices: solvers,
-    demandOption: true,
-  })
-  .option("weighter", {
-    alias: "w",
-    choices: weighters,
     demandOption: true,
   })
   .option("skip-existing-solves", {
@@ -35,7 +30,6 @@ await esbuild.build({
   define: {
     "import.meta.env.DEV": `true`,
     "import.meta.env.SOLVER": `${JSON.stringify(options.solver)}`,
-    "import.meta.env.WEIGHTER": `${JSON.stringify(options.weighter)}`,
     "import.meta.env.LOGGING": "false",
     "import.meta.env.SKIP_EXISTING_SOLVES": `${options.skipExistingSolves ?? false}`,
   },

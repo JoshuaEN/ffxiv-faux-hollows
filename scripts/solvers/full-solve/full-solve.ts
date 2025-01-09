@@ -11,7 +11,7 @@ import { BoardHarness } from "~/test/board/board.harness.js";
 
 const repoRoot = getProjectRoot();
 
-const solveFileName = `${import.meta.env["SOLVER"]}.${import.meta.env["WEIGHTER"]}`;
+const solveFileName = `${import.meta.env["SOLVER"]}`;
 const existingFileMode =
   import.meta.env["SKIP_EXISTING_SOLVES"] === true
     ? "keep"
@@ -44,7 +44,7 @@ console.log(`Generate results for all solves`);
 const result = printAutoSolverResults(intermediaryResultsDir);
 fs.writeFileSync(
   outputTextFile,
-  `Solver: ${import.meta.env["SOLVER"]} | Weighter: ${import.meta.env["WEIGHTER"]}\n${result}`
+  `Solver: ${import.meta.env["SOLVER"]}\n${result}`
 );
 
 console.log("Done");

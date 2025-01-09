@@ -4,17 +4,13 @@ import path from "path";
 import process from "process";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { solvers, weighters } from "../consts.js";
+import { solvers } from "../consts.js";
+import { getProjectRoot } from "../../helpers.js";
 
 const options = yargs(hideBin(process.argv))
   .option("solver", {
     alias: "s",
     choices: solvers,
-    demandOption: true,
-  })
-  .option("weighter", {
-    alias: "w",
-    choices: weighters,
     demandOption: true,
   })
   .option("csv", {
@@ -25,7 +21,7 @@ const options = yargs(hideBin(process.argv))
   .strict()
   .version(false)
   .parseSync();
-const repoRoot = path.resolve(path.join(import.meta.dirname, "..", "..", ".."));
+const repoRoot = getProjectRoot();
 
 await esbuild.build({
   entryPoints: [
@@ -40,7 +36,6 @@ await esbuild.build({
   define: {
     "import.meta.env.DEV": `true`,
     "import.meta.env.SOLVER": `${JSON.stringify(options.solver)}`,
-    "import.meta.env.WEIGHTER": `${JSON.stringify(options.weighter)}`,
   },
   platform: "node",
   sourcemap: true,

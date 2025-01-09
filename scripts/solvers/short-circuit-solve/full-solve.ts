@@ -15,7 +15,7 @@ const docsRoot = join(
 );
 fs.mkdirSync(docsRoot, { recursive: true });
 
-const solveFileName = `${import.meta.env["SOLVER"]}.${import.meta.env["WEIGHTER"]}`;
+const solveFileName = `${import.meta.env["SOLVER"]}`;
 
 const actual = solveAllPatterns();
 const outputTextFile = join(docsRoot, `${solveFileName}.txt`);
@@ -25,7 +25,6 @@ const { text } = stringifyAutoSolveResults(actual, {
 });
 fs.writeFileSync(
   outputTextFile,
-  `Solver: ${import.meta.env["SOLVER"]} | Weighter: ${import.meta.env["WEIGHTER"]}\n` +
-    text
+  `Solver: ${import.meta.env["SOLVER"]}\n` + text
 );
 console.log("Done");
