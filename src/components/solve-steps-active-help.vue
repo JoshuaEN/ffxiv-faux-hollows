@@ -5,22 +5,34 @@ import GameTile from "./game-tile.vue";
 import ActiveHelp from "./building-blocks/active-help.vue";
 
 import activeHelpFillBlockedEmptyBoard from "~/assets/active-help/FillBlocked/empty-board.webp";
+import activeHelpFillBlockedEmptyBoardMetadata from "~/assets/active-help/FillBlocked/empty-board.webp?metadata";
 
 import activeHelpFillSwordBoardWithSword from "~/assets/active-help/FillSword/BoardWithSword.webp";
+import activeHelpFillSwordBoardWithSwordMetadata from "~/assets/active-help/FillSword/BoardWithSword.webp?metadata";
 import activeHelpFillSwordToolBoardWithSword from "~/assets/active-help/FillSword/ToolBoardWithSword.webp";
+import activeHelpFillSwordToolBoardWithSwordMetadata from "~/assets/active-help/FillSword/ToolBoardWithSword.webp?metadata";
 import activeHelpFillSwordToolBoardWithSwordSeek from "~/assets/active-help/FillSword/ToolBoardWithSwordSeek.webp";
+import activeHelpFillSwordToolBoardWithSwordSeekMetadata from "~/assets/active-help/FillSword/ToolBoardWithSwordSeek.webp?metadata";
 
 import activeHelpFillPresentBoardWithPresent from "~/assets/active-help/FillPresent/BoardWithPresent.webp";
+import activeHelpFillPresentBoardWithPresentMetadata from "~/assets/active-help/FillPresent/BoardWithPresent.webp?metadata";
 import activeHelpFillPresentToolBoardWithPresent from "~/assets/active-help/FillPresent/ToolBoardWithPresent.webp";
+import activeHelpFillPresentToolBoardWithPresentMetadata from "~/assets/active-help/FillPresent/ToolBoardWithPresent.webp?metadata";
 import activeHelpFillPresentToolBoardWithPresentSeek from "~/assets/active-help/FillPresent/ToolBoardWithPresentSeek.webp";
+import activeHelpFillPresentToolBoardWithPresentSeekMetadata from "~/assets/active-help/FillPresent/ToolBoardWithPresentSeek.webp?metadata";
 
 import activeHelpSuggestionsSuggestionsAndFoxes from "~/assets/active-help/Suggestions/SuggestionsAndFoxes.webp";
+import activeHelpSuggestionsSuggestionsAndFoxesMetadata from "~/assets/active-help/Suggestions/SuggestionsAndFoxes.webp?metadata";
 
 import swordIcon from "~/assets/InGame/Swords.webp";
+import swordIconMetadata from "~/assets/InGame/Swords.webp?metadata";
 import swordIconVert from "~/assets/InGame/SwordsVert.webp";
+import swordIconVertMetadata from "~/assets/InGame/SwordsVert.webp?metadata";
 
 import presentIcon from "~/assets/InGame/GiftBoxes.webp";
+import presentIconMetadata from "~/assets/InGame/GiftBoxes.webp?metadata";
 import cofferIcon from "~/assets/InGame/Coffers.webp";
+import cofferIconMetadata from "~/assets/InGame/Coffers.webp?metadata";
 
 import TileSideBySide from "./tile-side-by-side.vue";
 import { ref } from "vue";
@@ -44,6 +56,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillBlockedEmptyBoard"
+          :height="activeHelpFillBlockedEmptyBoardMetadata.height"
+          :width="activeHelpFillBlockedEmptyBoardMetadata.width"
           alt="Example of the initial state of the in-game board showing both unknown and blocked tiles."
           class="float-right in-game-tile-example"
         />
@@ -81,6 +95,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillSwordBoardWithSword"
+          :height="activeHelpFillSwordBoardWithSwordMetadata.height"
+          :width="activeHelpFillSwordBoardWithSwordMetadata.width"
           alt="Example of a single in-game Sword tile surrounded by unknown tiles."
           class="float-right in-game-tile-example"
         />
@@ -92,6 +108,8 @@ const strategyHelpOpen = ref<boolean>(false);
         <figure>
           <img
             :src="swordIconVert"
+            :height="swordIconVertMetadata.height"
+            :width="swordIconVertMetadata.width"
             alt="Example of in-game Sword tiles in the vertical configuration (2 wide by 3 high)"
             class="in-game-tile-example"
           />
@@ -100,6 +118,8 @@ const strategyHelpOpen = ref<boolean>(false);
         <figure>
           <img
             :src="swordIcon"
+            :height="swordIconMetadata.height"
+            :width="swordIconMetadata.width"
             alt="Example of in-game Sword tiles in the horizontal configuration (3 wide by 2 high)"
             class="in-game-tile-example"
           />
@@ -113,6 +133,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillSwordToolBoardWithSword"
+          :height="activeHelpFillSwordToolBoardWithSwordMetadata.height"
+          :width="activeHelpFillSwordToolBoardWithSwordMetadata.width"
           alt="Example of this tool with the information from the previous in-game example entered."
           class="float-right in-this-tool-tile-example"
         />
@@ -129,6 +151,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillSwordToolBoardWithSwordSeek"
+          :height="activeHelpFillSwordToolBoardWithSwordSeekMetadata.height"
+          :width="activeHelpFillSwordToolBoardWithSwordSeekMetadata.width"
           class="float-right in-this-tool-tile-example"
           alt="Example of this tool with only a single Sword tile filled in, showing the other tiles which could be a Sword with a question mark over the Sword."
         />
@@ -147,6 +171,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillPresentBoardWithPresent"
+          :height="activeHelpFillPresentBoardWithPresentMetadata.height"
+          :width="activeHelpFillPresentBoardWithPresentMetadata.width"
           alt="Example of a single in-game Gift Box tile surrounded by unknown tiles."
           class="float-right in-game-tile-example"
         />
@@ -157,6 +183,8 @@ const strategyHelpOpen = ref<boolean>(false);
         <figure>
           <img
             :src="presentIcon"
+            :height="presentIconMetadata.height"
+            :width="presentIconMetadata.width"
             alt="Example of in-game Present tiles"
             class="in-game-tile-example"
           />
@@ -165,6 +193,8 @@ const strategyHelpOpen = ref<boolean>(false);
         <figure>
           <img
             :src="cofferIcon"
+            :height="cofferIconMetadata.height"
+            :width="cofferIconMetadata.width"
             alt="Example of in-game Coffer tiles"
             class="in-game-tile-example"
           />
@@ -178,6 +208,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillPresentToolBoardWithPresent"
+          :height="activeHelpFillPresentToolBoardWithPresentMetadata.height"
+          :width="activeHelpFillPresentToolBoardWithPresentMetadata.width"
           alt="Example of this tool with the information from the previous in-game example entered."
           class="float-right in-this-tool-tile-example"
         />
@@ -194,6 +226,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpFillPresentToolBoardWithPresentSeek"
+          :height="activeHelpFillPresentToolBoardWithPresentSeekMetadata.height"
+          :width="activeHelpFillPresentToolBoardWithPresentSeekMetadata.width"
           class="float-right in-this-tool-tile-example"
           alt="Example of this tool with only a single Gift Box tile filled in, showing the other tiles which could be a Sword with a question mark over the Sword."
         />
@@ -231,6 +265,8 @@ const strategyHelpOpen = ref<boolean>(false);
       <p>
         <img
           :src="activeHelpSuggestionsSuggestionsAndFoxes"
+          :height="activeHelpSuggestionsSuggestionsAndFoxesMetadata.height"
+          :width="activeHelpSuggestionsSuggestionsAndFoxesMetadata.width"
           alt="Example of fox spots being shown along with suggestions in this tool."
           class="float-right in-this-tool-tile-example"
         />
@@ -336,8 +372,8 @@ img {
 }
 img.float-right {
   float: right;
-  max-width: 50%;
-  aspect-ratio: auto;
+  width: 50%;
+  height: auto;
   margin-left: 1rem;
   margin-bottom: 1rem;
 }

@@ -2,49 +2,46 @@
 import { TileState } from "../game/types";
 import BaseTile from "./base-tile.vue";
 import blockedIcon from "~/assets/InGame/Blocked.webp";
+import blockedIconMetadata from "~/assets/InGame/Blocked.webp?metadata";
 import unknownIcon from "~/assets/InGame/Unknown.webp";
+import unknownIconMetadata from "~/assets/InGame/Unknown.webp?metadata";
 import foxIcon from "~/assets/InGame/Fox.webp";
-import swordIcon from "~/assets/InGame/Swords.webp";
-import swordIconVert from "~/assets/InGame/SwordsVert.webp";
-import coffersIcon from "~/assets/InGame/Coffers.webp";
-import giftBoxesIcon from "~/assets/InGame/GiftBoxes.webp";
+import foxIconMetadata from "~/assets/InGame/Fox.webp?metadata";
 import emptyIcon from "~/assets/InGame/Empty.webp";
+import emptyIconMetadata from "~/assets/InGame/Empty.webp?metadata";
 import { computed } from "vue";
 
-const props = defineProps<{ tile: TileState }>();
+type SupportedTileStates =
+  | TileState.Blocked
+  | TileState.Unknown
+  | TileState.Fox
+  | TileState.Empty;
 
-const inGameImages: Record<TileState, string | [string, string]> = {
-  [TileState.Blocked]: blockedIcon,
-  [TileState.Unknown]: unknownIcon,
-  [TileState.Fox]: foxIcon,
-  [TileState.Sword]: [swordIcon, swordIconVert],
-  [TileState.Present]: [coffersIcon, giftBoxesIcon],
-  [TileState.Empty]: emptyIcon,
+const props = defineProps<{ tile: SupportedTileStates }>();
+
+const inGameImages = {
+  [TileState.Blocked]: [blockedIcon, blockedIconMetadata],
+  [TileState.Unknown]: [unknownIcon, unknownIconMetadata],
+  [TileState.Fox]: [foxIcon, foxIconMetadata],
+  [TileState.Empty]: [emptyIcon, emptyIconMetadata],
 } as const;
 
-const singleImage = computed(() => {
-  const img = inGameImages[props.tile];
-  return Array.isArray(img) ? null : img;
-});
-const dualImage = computed(() => {
-  const img = inGameImages[props.tile];
-  return Array.isArray(img) ? img : null;
+const image = computed(() => {
+  const [img, size] = inGameImages[props.tile];
+  return { img, size };
 });
 </script>
 
 <template>
   <section class="figure-set">
-    <figure v-if="singleImage !== null">
+    <figure v-if="image !== null">
       <img
-        :src="singleImage"
+        :src="image.img"
+        :height="image.size.height"
+        :width="image.size.width"
         :alt="`Example of an uncovered in-game ${tile} tile.`"
         class="in-game-tile-example"
       />
-      <figcaption>(in game)</figcaption>
-    </figure>
-    <figure v-else-if="dualImage !== null">
-      <img :src="dualImage[0]" class="in-game-tile-example" />
-      <img :src="dualImage[1]" class="in-game-tile-example" />
       <figcaption>(in game)</figcaption>
     </figure>
     <figure>

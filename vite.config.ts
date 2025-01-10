@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import checker from "vite-plugin-checker";
 import { resolve, join } from "path";
-
+import { imageSizePlugin } from "./plugins/image-size.plugin.js";
 const rootDir = resolve(__dirname);
 
 // https://vitejs.dev/config/
@@ -14,6 +14,7 @@ export default defineConfig({
     "import.meta.env.SOLVER": "'community-data-recursive-fast'",
   },
   plugins: [
+    imageSizePlugin(),
     vue(),
     checker({
       vueTsc: true,
