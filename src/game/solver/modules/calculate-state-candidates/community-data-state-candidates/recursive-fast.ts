@@ -11,10 +11,35 @@ import {
   createCommunityDataStateCandidatesFoxOmitsSolver,
 } from "./base-fox-omits.js";
 import { TileState } from "~/src/game/types/tile-states.js";
-import { assert } from "~/src/helpers.js";
+import { assert, assertDefined } from "~/src/helpers.js";
 import { indexToCord } from "~/src/game/helpers.js";
 import { BoundingBox, getBoundingBox } from "../../../bounding-box.js";
 import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
+import { RECURSIVE_FAST_LOOKUPS } from "./recursive-fast.lookups.js";
+import {
+  communityDataByIdentifier,
+  CommunityDataIdentifiers,
+} from "~/src/game/generated-community-data.js";
+
+export interface RecursiveFastLookupEntry {
+  /**
+   * Suggestion: Sword
+   */
+  S?: number;
+  /**
+   * Suggestion: Present
+   */
+  P?: number;
+  /**
+   * Suggestion: Fox
+   */
+  F?: number;
+  /**
+   * Weigh
+   */
+  w?: number;
+}
+export type RecursiveFastLookupEntryOrUnset = RecursiveFastLookupEntry | 0;
 
 function calculateWeight(results: ReturnType<typeof recursiveSolver>) {
   let sumOfAvg = 0;
@@ -27,19 +52,43 @@ function calculateWeight(results: ReturnType<typeof recursiveSolver>) {
   return sumOfAvg / count;
 }
 
+function strIsIdentifier(str: string): str is CommunityDataIdentifiers {
+  return str in communityDataByIdentifier;
+}
+
 export const calculateStatesCandidates =
   createCommunityDataStateCandidatesFoxOmitsSolver(
     (shapes, _only, filteredPatterns, solveState) => {
-      // const patternIdentifier = solveState.getPatternIdentifier();
-      // if (patternIdentifier !== null && solveState.anyUserStateSet() !== true) {
-      //   switch (patternIdentifier) {
-      //     case "C": {
-      //       solveState.addSuggestion(22, TileState.Sword, 1);
-      //       solveState.addSuggestion(22, TileState.Present, 1);
-      //       return;
-      //     }
-      //   }
-      // }
+      // Recursive
+      const patternIdentifier = solveState.getPatternIdentifier();
+      if (patternIdentifier !== null && solveState.anyUserStateSet() !== true) {
+        const result = strIsIdentifier(patternIdentifier)
+          ? RECURSIVE_FAST_LOOKUPS[patternIdentifier]
+          : undefined;
+        if (result !== undefined) {
+          for (let i = 0; i < BOARD_CELLS; i++) {
+            const item: RecursiveFastLookupEntryOrUnset | undefined = result[i];
+            assertDefined(item);
+            if (item === 0) {
+              continue;
+            }
+            if (item.S !== undefined) {
+              solveState.addSuggestion(i, TileState.Sword, item.S);
+            }
+            if (item.P !== undefined) {
+              solveState.addSuggestion(i, TileState.Present, item.P);
+            }
+            if (item.F !== undefined) {
+              solveState.addSuggestion(i, TileState.Fox, item.F);
+            }
+            if (item.w !== undefined) {
+              solveState.setFinalWeight(i, item.w);
+            }
+          }
+          return;
+        }
+      }
+
       // Smart fill
       const indexByShapes = getIndexByShapes(filteredPatterns);
       for (const [state, commonIndexes] of indexByShapes) {
