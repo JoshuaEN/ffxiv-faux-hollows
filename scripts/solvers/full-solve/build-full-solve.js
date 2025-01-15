@@ -5,6 +5,7 @@ import process from "process";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { solvers } from "../consts.js";
+import { getProjectRoot } from "../../helpers.js";
 
 const options = yargs(hideBin(process.argv))
   .option("solver", {
@@ -21,7 +22,7 @@ const options = yargs(hideBin(process.argv))
   .version(false)
   .parseSync();
 
-const repoRoot = path.resolve(path.join(import.meta.dirname, "..", "..", ".."));
+const repoRoot = getProjectRoot();
 
 await esbuild.build({
   entryPoints: [
@@ -39,7 +40,7 @@ await esbuild.build({
   bundle: true,
   outfile: path.join(
     repoRoot,
-    "dist",
+    "dist-scripts",
     "solvers",
     "full-solve",
     "full-solve.js"

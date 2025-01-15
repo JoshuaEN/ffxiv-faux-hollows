@@ -43,7 +43,7 @@ await esbuild.build({
   bundle: true,
   outfile: path.join(
     repoRoot,
-    "dist",
+    "dist-scripts",
     "solvers",
     "short-circuit-solve",
     "full-solve.js"

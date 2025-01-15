@@ -1,11 +1,10 @@
 import { solveAllPatterns } from "~/test/auto-solver/short-circuit/auto-solver.js";
 import { stringifyAutoSolveResults } from "~/test/auto-solver/short-circuit/formatter.js";
-
+import { getProjectRoot } from "~/scripts/helpers.js";
 import fs from "node:fs";
 import { join } from "path";
 
-// Note: We're actually inside ./dist/full-solve
-const repoRoot = join(import.meta.dirname, "..", "..");
+const repoRoot = getProjectRoot();
 
 const docsRoot = join(
   repoRoot,
