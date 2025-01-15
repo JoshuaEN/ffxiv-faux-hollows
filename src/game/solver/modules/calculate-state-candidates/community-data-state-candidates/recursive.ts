@@ -12,6 +12,8 @@ import {
 } from "./base-fox-omits.js";
 import { TileState } from "~/src/game/types/tile-states.js";
 import { assert } from "~/src/helpers.js";
+import { indexToCord } from "~/src/game/helpers.js";
+import { BoundingBox, getBoundingBox } from "../../../bounding-box.js";
 import { applyFoxSuggestions } from "../../../helpers/apply-fox-suggestions.js";
 
 function calculateWeight(results: ReturnType<typeof recursiveSolver>) {
@@ -62,12 +64,13 @@ export const calculateStatesCandidates =
           tiles[index] = smartFillState;
         }
       }
-      const count = countTiles(tiles);
+      let count = calculateTileStats(tiles);
       let incompleteSword =
         count[TileState.Sword] > 0 && count[TileState.Sword] < 6;
       let incompletePresent =
         count[TileState.Present] > 0 && count[TileState.Present] < 4;
 
+      let recalc = false;
       if (incompleteSword && userStateCounts[TileState.Sword] === 0) {
         incompleteSword = false;
         solveState.resetSmartFillFor(TileState.Sword);
@@ -76,6 +79,7 @@ export const calculateStatesCandidates =
             tiles[index] = TileState.Unknown;
           }
         }
+        recalc = true;
       }
       if (incompletePresent && userStateCounts[TileState.Present] === 0) {
         incompletePresent = false;
@@ -85,25 +89,33 @@ export const calculateStatesCandidates =
             tiles[index] = TileState.Unknown;
           }
         }
+        recalc = true;
       }
-      // if (done(found)) {
-      //   return;
-      // }
+
+      if (recalc) {
+        count = calculateTileStats(tiles);
+      }
 
       const results =
         incompleteSword || incompletePresent
           ? (new Map() as ReturnType<typeof recursiveSolver>)
-          : recursiveSolver(tiles, filteredPatterns);
+          : recursiveSolver(count, tiles, filteredPatterns);
       const swordIndexCounts = new Map<number, number>();
+      const swordsByCount = new Map<number, number>();
       const presentIndexCounts = new Map<number, number>();
+      const presentsByCount = new Map<number, number>();
       for (const pattern of filteredPatterns) {
         for (const index of pattern.boundingBox.Sword.indexes()) {
-          swordIndexCounts.set(index, (swordIndexCounts.get(index) ?? 0) + 1);
+          const newValue = (swordIndexCounts.get(index) ?? 0) + 1;
+          swordIndexCounts.set(index, newValue);
+          swordsByCount.set(newValue, (swordsByCount.get(newValue) ?? 0) + 1);
         }
         for (const index of pattern.boundingBox.Present.indexes()) {
-          presentIndexCounts.set(
-            index,
-            (presentIndexCounts.get(index) ?? 0) + 1
+          const newValue = (presentIndexCounts.get(index) ?? 0) + 1;
+          presentIndexCounts.set(index, newValue);
+          presentsByCount.set(
+            newValue,
+            (presentsByCount.get(newValue) ?? 0) + 1
           );
         }
       }
@@ -115,7 +127,7 @@ export const calculateStatesCandidates =
         if (result !== undefined) {
           solveState.setFinalWeight(
             index,
-            1_000_000 - result.total / result.count,
+            100_000 - Math.round((result.total / result.count) * 10000),
             result
           );
         }
@@ -131,9 +143,17 @@ export const calculateStatesCandidates =
             );
           }
           if (result === undefined) {
-            if (swordIndexCount === filteredPatterns.length) {
+            if (
+              swordIndexCount === filteredPatterns.length &&
+              (swordsByCount.get(filteredPatterns.length) === 6 ||
+                solveState.userStatesIndexList[TileState.Sword].size > 0)
+            ) {
               solveState.setSmartFill(index, TileState.Sword);
-            } else if (presentIndexCount === filteredPatterns.length) {
+            } else if (
+              presentIndexCount === filteredPatterns.length &&
+              (presentsByCount.get(filteredPatterns.length) === 6 ||
+                solveState.userStatesIndexList[TileState.Present].size > 0)
+            ) {
               solveState.setSmartFill(index, TileState.Present);
             }
           }
@@ -164,22 +184,51 @@ function getIndexByShapes(filteredPatterns: readonly ProcessedPattern[]) {
   return indexByShapes;
 }
 
+function filterForEmpty(
+  filteredPatterns: readonly ProcessedPattern[],
+  index: number
+) {
+  const newPatterns: ProcessedPattern[] = [];
+  for (const pattern of filteredPatterns) {
+    if (
+      pattern.boundingBox[TileState.Present].indexes().includes(index) ||
+      pattern.boundingBox[TileState.Sword].indexes().includes(index)
+    ) {
+      continue;
+    }
+
+    if (pattern.pattern.ConfirmedFoxes.includes(index)) {
+      continue;
+    } else {
+      newPatterns.push(pattern);
+    }
+  }
+  return newPatterns;
+}
+
 function recursiveSolver(
+  tilesByState: ReturnType<typeof calculateTileStats>,
   tiles: readonly TileState[],
   filteredPatterns: readonly ProcessedPattern[]
 ) {
-  const found = validateTiles(tiles);
-  const patternsByIndex = new Map<
+  validateTiles(tilesByState, tiles);
+  const scoreByIndex = new Map<
+    number,
+    { min: number; max: number; total: number; count: number }
+  >();
+  const patternsByIndexes = new Map<
     number,
     Record<
       TileState.Sword | TileState.Present | TileState.Fox | TileState.Empty,
       ProcessedPattern[]
     >
   >();
+
   for (let index = 0; index < BOARD_CELLS; index++) {
     if (tiles[index] !== TileState.Unknown) {
       continue;
     }
+
     const map: Record<
       TileState.Sword | TileState.Present | TileState.Fox | TileState.Empty,
       ProcessedPattern[]
@@ -190,50 +239,45 @@ function recursiveSolver(
       [TileState.Empty]: [],
     };
     for (const pattern of filteredPatterns) {
+      let match = false;
       if (pattern.boundingBox.Sword.indexes().includes(index)) {
-        if (found[TileState.Sword] !== true) {
+        if (tilesByState.foundSword !== true) {
           map[TileState.Sword].push(pattern);
+          match = true;
         }
       } else if (pattern.boundingBox.Present.indexes().includes(index)) {
-        if (found[TileState.Present] !== true) {
+        if (tilesByState.foundPresent !== true) {
           map[TileState.Present].push(pattern);
+          match = true;
         }
       } else if (pattern.pattern.ConfirmedFoxes.includes(index)) {
-        if (found[TileState.Fox] !== true) {
+        if (tilesByState.foundFox !== true) {
           map[TileState.Fox].push(pattern);
+          match = true;
         }
+      }
+
+      if (!match) {
+        map[TileState.Empty].push(pattern);
       }
     }
     if (
       map[TileState.Sword].length > 0 ||
       map[TileState.Present].length > 0 ||
-      map[TileState.Fox].length > 0 ||
-      map[TileState.Empty].length > 0
+      map[TileState.Fox].length > 0
+      // We ignore this index if there are only empty matches because if every pattern results in an empty hit for this index,
+      // choosing this index will never result in narrowing down the possible patterns and thus will always be a wasted (less than optimal) move.
+      // Further, due to other optimizations later on, this would actually result in an infinite loop.
+      //
+      // It may seem like we could apply the same logic to if only one of (Sword, Present, or Fox) had any matches.
+      // In some cases this is true, but there is often still potential calculations to be performed (e.g. around foxes),
+      // and this case only occurs
     ) {
-      patternsByIndex.set(index, map);
+      patternsByIndexes.set(index, map);
     }
   }
 
-  // Fill in any gaps
-  for (const [, map] of patternsByIndex) {
-    const foundPatterns = [
-      ...map[TileState.Sword],
-      ...map[TileState.Present],
-      ...map[TileState.Fox],
-    ];
-    for (const pattern of filteredPatterns) {
-      if (foundPatterns.includes(pattern) !== true) {
-        map[TileState.Empty].push(pattern);
-      }
-    }
-  }
-
-  const scoreByIndex = new Map<
-    number,
-    { min: number; max: number; total: number; count: number }
-  >();
-
-  for (const [index, map] of patternsByIndex) {
+  for (const [index, map] of patternsByIndexes) {
     for (const state of [
       TileState.Sword,
       TileState.Present,
@@ -256,20 +300,31 @@ function recursiveSolver(
 
           const newTilesFoxPresent = [...tiles];
           newTilesFoxPresent[index] = TileState.Fox;
+          const newTilesByState = { ...tilesByState };
+          newTilesByState[TileState.Fox] += 1;
+          newTilesByState.foundFox = true;
+          newTilesByState.patternFox = index;
 
           const newTilesFoxMissing = [...tiles];
-          const foxMissingFilteredPatterns = filteredPatterns.filter(
-            (p) =>
-              (p.boundingBox[TileState.Present].indexes().includes(index) ||
-                p.boundingBox[TileState.Sword].indexes().includes(index) ||
-                p.pattern.ConfirmedFoxes.includes(index)) !== true
+          const foxMissingFilteredPatterns = filterForEmpty(
+            filteredPatterns,
+            index
           );
 
           val =
-            fillFilterRecurse(newTilesFoxPresent, filteredPatterns) +
+            // We are branching into two different paths here
+
+            // This is the fox tile
+            fillFilterRecurse(
+              newTilesByState,
+              newTilesFoxPresent,
+              filteredPatterns
+            ) +
             1 +
+            // This is not the fox tile
             (foxMissingFilteredPatterns.length > 0
               ? fillFilterRecurse(
+                  tilesByState,
                   newTilesFoxMissing,
                   foxMissingFilteredPatterns
                 ) + 1
@@ -277,24 +332,33 @@ function recursiveSolver(
           moves = foxMissingFilteredPatterns.length > 0 ? 2 : 1;
         } else if (state === TileState.Empty) {
           const newTiles = [...tiles];
-          const newFilteredPatterns = filteredPatterns.filter(
-            (p) =>
-              (p.boundingBox[TileState.Present].indexes().includes(index) ||
-                p.boundingBox[TileState.Sword].indexes().includes(index) ||
-                p.pattern.ConfirmedFoxes.includes(index)) !== true
-          );
-          val = fillFilterRecurse(newTiles, newFilteredPatterns) + 1;
+          const newTilesByState = { ...tilesByState };
+          const newFilteredPatterns = filterForEmpty(filteredPatterns, index);
+          val =
+            fillFilterRecurse(newTilesByState, newTiles, newFilteredPatterns) +
+            1;
           moves = 1;
         } else {
           const newTiles = [...tiles];
-          newTiles[index] = state;
+          const newTilesByState = { ...tilesByState };
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           assert(state === TileState.Sword || state === TileState.Present);
           const indexesToFill = pattern.boundingBox[state].indexes();
           for (const index of indexesToFill) {
             newTiles[index] = state;
+            // We only do this down here because indexesToFill is all indexes, so doing it above would over-count.
+            newTilesByState[state] += 1;
           }
-          val = fillFilterRecurse(newTiles, filteredPatterns) + 1;
+          const newBoundingBox = getBoundingBox(indexesToFill);
+          assert(newBoundingBox !== null);
+          newTilesByState[`boundingBox${state}`] = newBoundingBox;
+          newTilesByState[`found${state}`] = true;
+          newTilesByState[`pattern${state}`] = pattern.pattern[state];
+          if (state === TileState.Sword) {
+            newTilesByState.patternSword3x2 = pattern.pattern.Sword3x2;
+          }
+          val =
+            fillFilterRecurse(newTilesByState, newTiles, filteredPatterns) + 1;
           moves = 1;
         }
 
@@ -313,132 +377,53 @@ function recursiveSolver(
     }
   }
 
-  // const indexByShapes = getIndexByShapes(filteredPatterns);
-
-  // const suggestedIndexes = new Map<number, Map<TileState, ProcessedPattern>>(); //: { index: number; tileState: TileState }[] = [];
-  // for (const pattern of filteredPatterns) {
-  //   const patternIndexes = new Map([
-  //     [TileState.Sword, pattern.boundingBox.Sword.indexes()],
-  //     [TileState.Present, pattern.boundingBox.Present.indexes()],
-  //     // [TileState.Fox, pattern.pattern.ConfirmedFoxes],
-  //   ] as const);
-  //   for (let index = 0; index < tiles.length; index++) {
-  //     if (tiles[index] !== TileState.Unknown) {
-  //       continue;
-  //     }
-
-  //     for (const [tileState, indexes] of patternIndexes) {
-  //       if (found[tileState]) {
-  //         continue;
-  //       }
-  //       if (indexes.includes(index)) {
-  //         suggestedIndexes.push({ index, tileState });
-  //         const countAtIndex = indexByShapes.get(tileState)?.get(index);
-  //         assert(countAtIndex !== undefined);
-  //         if (countAtIndex !== filteredPatterns.length) {
-  //           suggestedIndexes.push({ index, tileState: TileState.Empty });
-  //         }
-  //         // if (tileState === TileState.Fox) {
-  //         //   suggestedIndexes.push({ index, tileState: TileState.Empty });
-  //         // }
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-
-  //   assertLengthAtLeast(suggestedIndexes, 1);
-  //   for (const {
-  //     index: suggestedIndex,
-  //     tileState: suggestedTileState,
-  //   } of suggestedIndexes) {
-  //     assert(tiles[suggestedIndex] === TileState.Unknown);
-
-  //     const newTiles = [...tiles];
-  //     newTiles[suggestedIndex] = suggestedTileState;
-  //     if (
-  //       suggestedTileState === TileState.Sword ||
-  //       suggestedTileState === TileState.Present
-  //     ) {
-  //       const indexesToFill = patternIndexes.get(suggestedTileState);
-  //       assert(indexesToFill !== undefined);
-  //       for (const index of indexesToFill) {
-  //         newTiles[index] = suggestedTileState;
-  //       }
-  //     }
-  //     const val = fillFilterRecurse(newTiles, filteredPatterns) + 1;
-
-  //     const score = scoreByIndex.get(suggestedIndex) ?? {
-  //       min: Number.MAX_SAFE_INTEGER,
-  //       max: -1,
-  //       total: 0,
-  //       count: 0,
-  //     };
-  //     score.min = Math.min(val, score.min);
-  //     score.max = Math.max(val, score.max);
-  //     score.total += val;
-  //     score.count += 1;
-  //     scoreByIndex.set(suggestedIndex, score);
-  //   }
-
   return scoreByIndex;
 }
 
-const cacheForFillRecursive = new Map<string, number>();
+const cacheForFillRecursive: Record<string, number> = {};
 
 function fillFilterRecurse(
+  tileStats: ReturnType<typeof calculateTileStats>,
   tiles: readonly TileState[],
   filteredPatterns: readonly ProcessedPattern[]
 ): number {
-  // const key = checkCache(tiles, filteredPatterns);
+  validateTiles(tileStats, tiles);
 
-  // const cachedValue = cacheForFillRecursive.get(key);
-  // if (cachedValue !== undefined) {
-  //   return cachedValue;
-  // }
-
-  const found = validateTiles(tiles);
-
-  if (done(found)) {
+  if (done(tileStats)) {
     return 0;
   }
 
   const newFilteredPatterns: ProcessedPattern[] = [];
   for (const otherPattern of filteredPatterns) {
-    if (
-      found[TileState.Sword] &&
-      otherPattern.boundingBox.Sword.indexes().some(
-        (i) => tiles[i] !== TileState.Sword
-      )
+    if (tileStats.foundSword) {
+      if (
+        otherPattern.pattern.Sword !== tileStats.patternSword ||
+        otherPattern.pattern.Sword3x2 !== tileStats.patternSword3x2
+      ) {
+        continue;
+      }
+    } else if (
+      tileStats.boundingBoxSword !== null &&
+      otherPattern.boundingBox.Sword.contains(tileStats.boundingBoxSword) !==
+        true
+    ) {
+      continue;
+    }
+
+    if (tileStats.foundPresent) {
+      if (otherPattern.pattern.Present !== tileStats.patternPresent) {
+        continue;
+      }
+    } else if (
+      tileStats.boundingBoxPresent !== null &&
+      otherPattern.boundingBox.Present.contains(
+        tileStats.boundingBoxPresent
+      ) !== true
     ) {
       continue;
     }
     if (
-      !found[TileState.Sword] &&
-      otherPattern.boundingBox.Sword.indexes().some(
-        (i) => tiles[i] !== TileState.Sword && tiles[i] !== TileState.Unknown
-      )
-    ) {
-      continue;
-    }
-    if (
-      found[TileState.Present] &&
-      otherPattern.boundingBox.Present.indexes().some(
-        (i) => tiles[i] !== TileState.Present
-      )
-    ) {
-      continue;
-    }
-    if (
-      !found[TileState.Present] &&
-      otherPattern.boundingBox.Present.indexes().some(
-        (i) => tiles[i] !== TileState.Present && tiles[i] !== TileState.Unknown
-      )
-    ) {
-      continue;
-    }
-    if (
-      found[TileState.Fox] &&
+      tileStats.foundFox &&
       otherPattern.pattern.ConfirmedFoxes.find(
         (i) => tiles[i] === TileState.Fox
       ) === undefined
@@ -446,7 +431,7 @@ function fillFilterRecurse(
       continue;
     }
     if (
-      !found[TileState.Fox] &&
+      !tileStats.foundFox &&
       otherPattern.pattern.ConfirmedFoxes.every(
         (i) => tiles[i] !== TileState.Unknown && tiles[i] !== TileState.Empty
       )
@@ -458,8 +443,8 @@ function fillFilterRecurse(
   }
 
   if (
-    found[TileState.Sword] &&
-    found[TileState.Present] &&
+    tileStats.foundSword &&
+    tileStats.foundPresent &&
     newFilteredPatterns.every((p) =>
       p.pattern.ConfirmedFoxes.every(
         (f) => tiles[f] !== TileState.Unknown && tiles[f] !== TileState.Empty
@@ -469,19 +454,21 @@ function fillFilterRecurse(
     return 0;
   }
 
-  for (let i = 0; i < newFilteredPatterns.length; i++) {
-    const iVal = newFilteredPatterns[i];
-    for (let j = 0; j < newFilteredPatterns.length; j++) {
-      if (i === j) {
-        continue;
-      }
-      const jVal = newFilteredPatterns[j];
-      if (
-        iVal?.pattern.Present === jVal?.pattern.Present &&
-        iVal?.pattern.Sword === jVal?.pattern.Sword &&
-        iVal?.pattern.Sword3x2 === jVal?.pattern.Sword3x2
-      ) {
-        throw new Error(`Duplicate pattern`);
+  if (import.meta.env.DEV) {
+    for (let i = 0; i < newFilteredPatterns.length; i++) {
+      const iVal = newFilteredPatterns[i];
+      for (let j = 0; j < newFilteredPatterns.length; j++) {
+        if (i === j) {
+          continue;
+        }
+        const jVal = newFilteredPatterns[j];
+        if (
+          iVal?.pattern.Present === jVal?.pattern.Present &&
+          iVal?.pattern.Sword === jVal?.pattern.Sword &&
+          iVal?.pattern.Sword3x2 === jVal?.pattern.Sword3x2
+        ) {
+          throw new Error(`Duplicate pattern`);
+        }
       }
     }
   }
@@ -490,64 +477,52 @@ function fillFilterRecurse(
     throw new Error(`Failed to find any matching patterns`);
   }
 
-  // if (!newFilteredPatterns.includes(pattern)) {
-  //   throw new Error(`State did not have its own pattern`);
-  // }
-
   if (newFilteredPatterns.length > filteredPatterns.length) {
     throw new Error(`Gained patterns`);
   }
 
-  const postKey = checkCache(tiles, newFilteredPatterns);
-  const postCache = cacheForFillRecursive.get(postKey);
+  const postKey = `${tileStats.patternSword}${tileStats.patternSword3x2 ? "w" : "h"} ${tileStats.patternPresent} ${tileStats.patternFox}${getCacheKey(tiles, newFilteredPatterns)}`;
+  const postCache = cacheForFillRecursive[postKey];
   if (postCache !== undefined) {
     return postCache;
   }
 
-  const result = recursiveSolver(tiles, newFilteredPatterns);
+  const result = recursiveSolver(tileStats, tiles, newFilteredPatterns);
   const weight = calculateWeight(result);
-  // cacheForFillRecursive.set(key, weight);
-  cacheForFillRecursive.set(postKey, weight);
+  cacheForFillRecursive[postKey] = weight;
   return weight;
 }
 
-function checkCache(
+function getCacheKey(
   tiles: readonly TileState[],
   filteredPatterns: readonly ProcessedPattern[]
 ) {
-  const key = `T${tiles.join(",")}P${filteredPatterns
-    .map(
-      (p) =>
-        `${p.pattern.Sword}${p.pattern.Sword3x2 ? "w" : "t"}${p.pattern.Present}`
-    )
-    .join(",")}`; //F${pattern.pattern.ConfirmedFoxes.join(",")}`;
-  return key;
+  let result = "";
+  for (const p of filteredPatterns) {
+    const pattern = p.pattern;
+    result += `${pattern.Sword}${pattern.Sword3x2 ? "w" : "t"}${pattern.Present}z`;
+  }
+  return result;
 }
 
-function validateTiles(tiles: readonly TileState[]) {
-  const tilesByState = countTiles(tiles);
-
-  assert(tiles.length === BOARD_CELLS);
-  assert(tilesByState[TileState.Blocked] === 5);
-  assert(
-    tilesByState[TileState.Sword] === 0 || tilesByState[TileState.Sword] === 6
-  );
-  assert(
-    tilesByState[TileState.Present] === 0 ||
-      tilesByState[TileState.Present] === 4
-  );
-  assert(
-    tilesByState[TileState.Fox] === 0 || tilesByState[TileState.Fox] === 1
-  );
-
-  return {
-    [TileState.Sword]: tilesByState[TileState.Sword] === 6,
-    [TileState.Present]: tilesByState[TileState.Present] === 4,
-    [TileState.Fox]: tilesByState[TileState.Fox] === 1,
-  };
+function validateTiles(
+  tileStats: ReturnType<typeof calculateTileStats>,
+  tiles: readonly TileState[]
+) {
+  if (import.meta.env.DEV) {
+    assert(tiles.length === BOARD_CELLS);
+    assert(tileStats[TileState.Blocked] === 5);
+    assert(
+      tileStats[TileState.Sword] === 0 || tileStats[TileState.Sword] === 6
+    );
+    assert(
+      tileStats[TileState.Present] === 0 || tileStats[TileState.Present] === 4
+    );
+    assert(tileStats[TileState.Fox] === 0 || tileStats[TileState.Fox] === 1);
+  }
 }
 
-function countTiles(tiles: readonly TileState[]) {
+function calculateTileStats(tiles: readonly TileState[]) {
   const tilesByState = {
     [TileState.Blocked]: 0,
     [TileState.Empty]: 0,
@@ -556,16 +531,60 @@ function countTiles(tiles: readonly TileState[]) {
     [TileState.Present]: 0,
     [TileState.Fox]: 0,
   };
-  for (const tileState of tiles) {
+  let Sword = -1;
+  let swordMax = -1;
+  let Present = -1;
+  let presentMax = -1;
+  let Fox = -1;
+  for (let i = 0; i < tiles.length; i++) {
+    const tileState = tiles[i];
+    assert(tileState !== undefined);
     tilesByState[tileState] += 1;
+    if (tileState === TileState.Sword) {
+      if (Sword === -1) {
+        Sword = i;
+      }
+      swordMax = i;
+    } else if (tileState === TileState.Present) {
+      if (Present === -1) {
+        Present = i;
+      }
+      presentMax = i;
+    } else if (tileState === TileState.Fox) {
+      Fox = i;
+    }
   }
 
-  return tilesByState;
+  const SwordMin = Sword > -1 ? indexToCord(Sword) : null;
+  const SwordMax = Sword > -1 ? indexToCord(swordMax) : null;
+  const SwordBoundingBox =
+    SwordMin !== null && SwordMax !== null
+      ? BoundingBox.fromPoints(SwordMin, SwordMax)
+      : null;
+  const Sword3x2 =
+    SwordMin !== null && SwordMax !== null && SwordMax.x - SwordMin.x === 2;
+  const PresentBoundingBox =
+    Present > -1
+      ? BoundingBox.fromPoints(indexToCord(Present), indexToCord(presentMax))
+      : null;
+
+  return {
+    ...tilesByState,
+
+    foundSword: tilesByState[TileState.Sword] === 6,
+    foundPresent: tilesByState[TileState.Present] === 4,
+    foundFox: tilesByState[TileState.Fox] === 1,
+
+    patternSword: Sword,
+    patternSword3x2: Sword3x2,
+    patternPresent: Present,
+    patternFox: Fox,
+
+    boundingBoxSword: SwordBoundingBox,
+    boundingBoxPresent: PresentBoundingBox,
+  };
 }
 
-function done(found: ReturnType<typeof countTiles | typeof validateTiles>) {
-  return (
-    (found[TileState.Sword] === true || found[TileState.Sword] === 6) &&
-    (found[TileState.Present] === true || found[TileState.Present] === 4)
-  );
+function done(tileStats: ReturnType<typeof calculateTileStats>) {
+  return tileStats.foundSword === true && tileStats.foundPresent === true;
 }
