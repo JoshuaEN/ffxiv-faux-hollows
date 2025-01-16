@@ -11,6 +11,8 @@
   --muted-font-color: hsl(0, 0%, 82%);
   --page-background-color: #120d08;
 
+  --standard-margin: 1rem;
+
   --board-tile-count: 6;
   --board-tile-max-gap: 0.5rem;
   --board-tile-min-gap: 0.25rem;
@@ -60,6 +62,10 @@
   --board-suggest-fox-color: var(--font-color);
   --board-suggest-fox-background-color: #9e009e;
   --board-suggest-fox-outline-color: hsl(300, 58%, 50%);
+
+  --board-next-target-color: #ffd700;
+  --board-next-target-background-color: var(--board-unknown-background-color);
+  --board-next-target-outline-color: #ffd700;
 
   --tile-max-size: 6rem;
   --tile-min-size: 48px; // Based on Material touch target guidelines
@@ -245,7 +251,7 @@ button:not(:disabled).focused {
       calc(var(--board-tile-max-gap) * (calc(var(--board-tile-count) - 1)))
   );
   width: var(--app-width);
-  margin: 1rem;
+  margin: var(--standard-margin);
   margin-top: 3rem;
 }
 
@@ -290,7 +296,7 @@ img.in-game-tile-example {
 
 @media (width < 570px) {
   #app {
-    margin-top: 1rem;
+    margin-top: var(--standard-margin);
   }
   h1 {
     width: min-content;

@@ -44,11 +44,11 @@ defineProps<{ tile: CombinedTileState; index?: number; disabled?: boolean }>();
   border: 3px dashed var(--tile-color);
 }
 .userInput {
-  border: 2px solid white;
+  border: 2px solid var(--tile-color);
 }
 .nextTarget {
-  color: #ffd700;
-  background-color: var(--board-unknown-background-color);
-  border: 2px dotted #ffd700;
+  color: var(--board-next-target-color);
+  background-color: var(--board-next-target-background-color);
+  border: 2px dotted var(--board-next-target-outline-color);
 }
 </style>
