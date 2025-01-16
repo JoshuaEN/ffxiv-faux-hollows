@@ -145,6 +145,22 @@ export class GameBoardHarness
     return this.#rootLocator.locator(".active-help");
   }
 
+  getPrimaryActiveHelp() {
+    return this.#rootLocator.getByTestId("primary-active-help");
+  }
+
+  getPrimaryActiveHelpSummary() {
+    return this.getPrimaryActiveHelp().locator("summary");
+  }
+
+  getStrategyActiveHelp() {
+    return this.#rootLocator.getByTestId("strategy-active-help");
+  }
+
+  getStrategyActiveHelpSummary() {
+    return this.getStrategyActiveHelp().locator("summary");
+  }
+
   getActiveHelpTitles() {
     return this.getActiveHelpEntries().locator("summary");
   }

@@ -326,6 +326,7 @@ const strategyHelpOpen = ref<boolean>(false);
       solveStep === SolveStep.Done
     "
     v-model:active-help-open="strategyHelpOpen"
+    data-testid="strategy-active-help"
     :title="'Faux Hollows Strategy'"
   >
     <template #active-help>

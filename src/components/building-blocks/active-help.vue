@@ -6,7 +6,7 @@ defineProps<{ title: string }>();
   <details
     :open="open"
     class="active-help"
-    @onToggle="($event: ToggleEvent) => (open = $event.newState === 'open')"
+    @toggle="($event: ToggleEvent) => (open = $event.newState === 'open')"
   >
     <summary>
       <span class="icon-pos">
@@ -181,7 +181,8 @@ details {
   z-index: 4;
   border-radius: 50%;
   content: "";
-  box-shadow: inset 0px -2px 1px helpers.adjustBrightness(rgba(253, 222, 174, 0.8), -70);
+  box-shadow: inset 0px -2px 1px
+    helpers.adjustBrightness(rgba(253, 222, 174, 0.8), -70);
 }
 .icon-wrap-2 {
   width: 100%;

@@ -13,7 +13,11 @@ defineProps<{ activeHelpTitle: string }>();
   >
     <slot></slot>
   </AlertMessage>
-  <ActiveHelp v-model:active-help-open="open" :title="activeHelpTitle">
+  <ActiveHelp
+    v-model:active-help-open="open"
+    :title="activeHelpTitle"
+    data-testid="primary-active-help"
+  >
     <template #active-help>
       <slot name="active-help"></slot>
     </template>

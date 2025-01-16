@@ -17,21 +17,22 @@ async function assertHelp(
   }
   await expect(harness.getSolveStateHelp()).toContainText(tldrMessageContains);
 }
-test("it should show the blocked tiles active help by default", async ({
-  harness,
-}) => {
-  // Assert
-  await assertHelp(
+test.describe("context-sensitive help", () => {
+  test("it should show the blocked tiles active help by default", async ({
     harness,
-    "please fill in the blocked tiles",
-    "Fill Blocked Tiles"
-  );
-});
-test("it should show the blocked tiles active help when there still needs to be more blocked tiles entered", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  }) => {
+    // Assert
+    await assertHelp(
+      harness,
+      "please fill in the blocked tiles",
+      "Fill Blocked Tiles"
+    );
+  });
+  test("it should show the blocked tiles active help when there still needs to be more blocked tiles entered", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -47,19 +48,19 @@ test("it should show the blocked tiles active help when there still needs to be 
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "please fill in the blocked tiles",
-    "Fill Blocked Tiles"
-  );
-});
+    // Assert
+    await assertHelp(
+      harness,
+      "please fill in the blocked tiles",
+      "Fill Blocked Tiles"
+    );
+  });
 
-test("it should show suggested tiles help when one or more tiles is being suggested", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  test("it should show suggested tiles help when one or more tiles is being suggested", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -75,20 +76,20 @@ test("it should show suggested tiles help when one or more tiles is being sugges
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "the suggested tiles in game",
-    "Tile Suggestions",
-    HELP_FAUX_HOLLOWS_STRATEGY
-  );
-});
+    // Assert
+    await assertHelp(
+      harness,
+      "the suggested tiles in game",
+      "Tile Suggestions",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
 
-test("it should show Fill Sword help when the rest of the Sword should be filled in", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  test("it should show Fill Sword help when the rest of the Sword should be filled in", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -104,14 +105,18 @@ test("it should show Fill Sword help when the rest of the Sword should be filled
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(harness, "fill in the remaining Sword", "Fill Sword Tiles");
-});
-test("it should show Fill Present help when the rest of the Present should be filled in", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+    // Assert
+    await assertHelp(
+      harness,
+      "fill in the remaining Sword",
+      "Fill Sword Tiles"
+    );
+  });
+  test("it should show Fill Present help when the rest of the Present should be filled in", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -127,18 +132,18 @@ test("it should show Fill Present help when the rest of the Present should be fi
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
+    // Assert
+    await assertHelp(
+      harness,
+      "fill in the remaining Gift Box / Coffer tiles",
+      "Fill Gift Box or Coffer Tiles"
+    );
+  });
+  test("it should show Board solved when just the fox suggestions are remaining", async ({
     harness,
-    "fill in the remaining Gift Box / Coffer tiles",
-    "Fill Gift Box or Coffer Tiles"
-  );
-});
-test("it should show Board solved when just the fox suggestions are remaining", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -154,19 +159,19 @@ test("it should show Board solved when just the fox suggestions are remaining", 
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
+    // Assert
+    await assertHelp(
+      harness,
+      "Uncover tiles in game based on your chosen strategy",
+      "Board Solved",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
+  test("it should show Board solved when the fox is found", async ({
     harness,
-    "Uncover tiles in game based on your chosen strategy",
-    "Board Solved",
-    HELP_FAUX_HOLLOWS_STRATEGY
-  );
-});
-test("it should show Board solved when the fox is found", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │>F5  │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -182,19 +187,19 @@ test("it should show Board solved when the fox is found", async ({
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
+    // Assert
+    await assertHelp(
+      harness,
+      "Uncover tiles in game based on your chosen strategy",
+      "Board Solved",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
+  test("it should show Board solved when all of the fox locations are empty", async ({
     harness,
-    "Uncover tiles in game based on your chosen strategy",
-    "Board Solved",
-    HELP_FAUX_HOLLOWS_STRATEGY
-  );
-});
-test("it should show Board solved when all of the fox locations are empty", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │>E5  │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -210,20 +215,20 @@ test("it should show Board solved when all of the fox locations are empty", asyn
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "Uncover tiles in game based on your chosen strategy",
-    "Board Solved",
-    HELP_FAUX_HOLLOWS_STRATEGY
-  );
-});
+    // Assert
+    await assertHelp(
+      harness,
+      "Uncover tiles in game based on your chosen strategy",
+      "Board Solved",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
 
-test("it should handle when all of the fox locations are empty but the board is not solved", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  test("it should handle when all of the fox locations are empty but the board is not solved", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │>E5  │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -239,20 +244,20 @@ test("it should handle when all of the fox locations are empty but the board is 
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "Uncover tiles in game based on your chosen strategy",
-    "Board Solved",
-    HELP_FAUX_HOLLOWS_STRATEGY
-  );
-});
+    // Assert
+    await assertHelp(
+      harness,
+      "Uncover tiles in game based on your chosen strategy",
+      "Board Solved",
+      HELP_FAUX_HOLLOWS_STRATEGY
+    );
+  });
 
-test("it should show error help when no patterns are valid (blocked tiles)", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  test("it should show error help when no patterns are valid (blocked tiles)", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │>B1  │     │     │     │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -268,19 +273,19 @@ test("it should show error help when no patterns are valid (blocked tiles)", asy
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "Blocked tiles entered do not match any patterns",
-    "Resolving Issues"
-  );
-});
+    // Assert
+    await assertHelp(
+      harness,
+      "Blocked tiles entered do not match any patterns",
+      "Resolving Issues"
+    );
+  });
 
-test("it should show error help when no patterns are valid (present tiles)", async ({
-  harness,
-}) => {
-  // Act
-  await harness.actionsFromAsciiGrid(`
+  test("it should show error help when no patterns are valid (present tiles)", async ({
+    harness,
+  }) => {
+    // Act
+    await harness.actionsFromAsciiGrid(`
       ┌─────┬─────┬─────┬─────┬─────┬─────┐
       │     │     │     │     │>B1  │     │
       ├─────┼─────┼─────┼─────┼─────┼─────┤
@@ -296,10 +301,324 @@ test("it should show error help when no patterns are valid (present tiles)", asy
       └─────┴─────┴─────┴─────┴─────┴─────┘
     `);
 
-  // Assert
-  await assertHelp(
-    harness,
-    "Based on the entered tiles, the Gift Box / Coffer covers a minimum of a 3x2 area",
-    "Resolving Issues"
-  );
+    // Assert
+    await assertHelp(
+      harness,
+      "Based on the entered tiles, the Gift Box / Coffer covers a minimum of a 3x2 area",
+      "Resolving Issues"
+    );
+  });
+});
+
+test.describe("expanded state", () => {
+  test.describe("primary active help", () => {
+    test("it should start collapsed", async ({ harness }) => {
+      // Assert
+      await expect(harness.getPrimaryActiveHelp()).not.toHaveAttribute("open");
+    });
+    test("it should remain expanded when the board changes but the solve state remains the same", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │>B1  │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+    });
+    test("it should remain collapsed when the board changes but the solve state remains the same", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).not.toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │>B1  │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getPrimaryActiveHelp()).not.toHaveAttribute("open");
+    });
+    test("it should remain expanded when the board and solve state changes", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │>B1  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+    });
+    test("it should remain collapsed when the board and solve state changes", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).toHaveAttribute("open");
+      await harness.getPrimaryActiveHelpSummary().click();
+      await expect(harness.getPrimaryActiveHelp()).not.toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │>B1  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getPrimaryActiveHelp()).not.toHaveAttribute("open");
+    });
+  });
+  test.describe("strategy active help", () => {
+    test("it should start collapsed", async ({ harness }) => {
+      // Arrange
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │>B1  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+      // Assert
+      await expect(harness.getStrategyActiveHelp()).not.toHaveAttribute("open");
+    });
+    test("it should remain expanded when the board changes but the solve state remains the same", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │>B1  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │>S3  │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │>S2  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+        ┌─────┬─────┬─────┬─────┬─────┬─────┐
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │>E   │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        └─────┴─────┴─────┴─────┴─────┴─────┘
+      `);
+
+      // Assert
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+    });
+    test("it should remain collapsed when the board changes but the solve state remains the same", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │>B1  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │>S3  │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │>S2  │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).not.toHaveAttribute("open");
+
+      // Act
+      await harness.actionsFromAsciiGrid(`
+        ┌─────┬─────┬─────┬─────┬─────┬─────┐
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │>E   │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        └─────┴─────┴─────┴─────┴─────┴─────┘
+      `);
+
+      // Assert
+      await expect(harness.getStrategyActiveHelp()).not.toHaveAttribute("open");
+    });
+    test("it should remain expanded when the board and solve state changes", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.actionsFromAsciiGrid(`
+        ┌─────┬─────┬─────┬─────┬─────┬─────┐
+        │     │     │     │     │>B1  │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │>S3  │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │>S2  │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        └─────┴─────┴─────┴─────┴─────┴─────┘
+      `);
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │>P   │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+    });
+    test("it should remain collapsed when the board and solve state changes", async ({
+      harness,
+    }) => {
+      // Arrange
+      await harness.actionsFromAsciiGrid(`
+        ┌─────┬─────┬─────┬─────┬─────┬─────┐
+        │     │     │     │     │>B1  │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │>S3  │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │>S2  │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        ├─────┼─────┼─────┼─────┼─────┼─────┤
+        │     │     │     │     │     │     │
+        └─────┴─────┴─────┴─────┴─────┴─────┘
+      `);
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).toHaveAttribute("open");
+      await harness.getStrategyActiveHelpSummary().click();
+      await expect(harness.getStrategyActiveHelp()).not.toHaveAttribute("open");
+      // Act
+      await harness.actionsFromAsciiGrid(`
+    ┌─────┬─────┬─────┬─────┬─────┬─────┐
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │>P   │     │
+    ├─────┼─────┼─────┼─────┼─────┼─────┤
+    │     │     │     │     │     │     │
+    └─────┴─────┴─────┴─────┴─────┴─────┘
+  `);
+
+      // Assert
+      await expect(harness.getStrategyActiveHelp()).not.toHaveAttribute("open");
+    });
+  });
 });
