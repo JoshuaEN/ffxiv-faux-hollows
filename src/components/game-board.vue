@@ -157,6 +157,7 @@ onUnmounted(() => {
         data.board.solveState.totalCandidatePatterns
       }}</span>
     </span>
+    &nbsp;
     <span
       v-if="board.solveState.getPatternIdentifier() !== null"
       class="chip"
