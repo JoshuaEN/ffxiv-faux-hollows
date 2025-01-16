@@ -49,6 +49,10 @@ export class Board {
     return this.#tilesWithIssues;
   }
 
+  get anyUserSelectedStates() {
+    return this.#trackedUserSelectedStates[TileState.Blocked].size > 0;
+  }
+
   getUserState(index: number): TileState {
     const userState = this.#userSelectedStates[index];
     if (import.meta.env.DEV) {

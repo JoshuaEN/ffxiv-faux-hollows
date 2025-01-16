@@ -66,6 +66,7 @@ export abstract class BaseSequenceRunner {
     for (const [sequenceIndex, state] of eachIndex(states)) {
       // Add 1 since we shifted off the first index to fill initial state
       const adjustedSequenceIndex = sequenceIndex + 1;
+
       const {
         expectedDatum,
         expectedPatternData,
@@ -82,61 +83,79 @@ export abstract class BaseSequenceRunner {
         );
       }
 
+      const sequenceIndexStr =
+        adjustedSequenceIndex > 0 ? adjustedSequenceIndex : "";
+
       // Assert
-      const actualState = await this.getState();
-      const actual = {
-        str: `\n${this.formatPatterns(FormatDataSource.Actual, actualState.patternData)}\n${adjustedSequenceIndex}->0`,
-      };
-      const expected = {
-        str: `\n${this.formatPatterns(FormatDataSource.Expected, expectedPatternData)}\n${adjustedSequenceIndex}->0`,
-      };
-      const actualDatum = actualState.cells;
-      for (const [k, expectedData] of this.eachIndex(expectedDatum)) {
-        if (k > 0 && k % BOARD_WIDTH === 0) {
-          actual.str += `|\n\n${adjustedSequenceIndex}->${Math.floor(
-            k / BOARD_WIDTH
-          )}|`;
-          expected.str += `|\n\n${adjustedSequenceIndex}->${Math.floor(
-            k / BOARD_WIDTH
-          )}|`;
-        } else {
-          actual.str += `|`;
-          expected.str += "|";
-        }
-
-        const actualData = actualDatum[k];
-        if (actualData === undefined) {
-          this.fail(`No actual data at index ${k}`);
-        }
-
-        this.format(FormatDataSource.Actual, k, actual, actualData);
-        this.format(FormatDataSource.Expected, k, expected, expectedData);
-      }
-      actual.str += "|\n";
-      expected.str += "|\n";
-
-      const actualIssues = this.formatIssues(
-        FormatDataSource.Actual,
-        actualState.issues
-      );
-      const expectedIssues = this.formatIssues(
-        FormatDataSource.Expected,
+      await this.assertBoardState(
+        sequenceIndexStr,
+        expectedPatternData,
+        expectedDatum,
         expectedBoardIssues
       );
-      if (actualIssues.length > 0) {
-        actual.str += "\nIssues:\n  " + actualIssues.join("\n  ");
-      }
-      if (expectedIssues.length > 0) {
-        expected.str += "\nIssues:\n  " + expectedIssues.join("\n  ");
-      }
-      this.expect(
-        actual.str,
-        actualState.debug !== undefined
-          ? // We inject temporal and random data in because vitest merges test failures based on this message, even if the actual/expected values are different.
-            `\n\u001b[34mDebug: ${actualState.debug} \u001b[8m | Now: ${Date.now()} | Random Value: ${Math.random()}\u001b[0m\n`
-          : undefined
-      ).toEqual(expected.str);
     }
+  }
+
+  protected async assertBoardState(
+    sequenceIndexStr: string | number,
+    expectedPatternData: TestPatternData,
+    expectedDatum: CellTestData[],
+    expectedBoardIssues: BoardIssue[]
+  ) {
+    const actualState = await this.getState();
+    const actual = {
+      str: `\n${this.formatPatterns(FormatDataSource.Actual, actualState.patternData)}\n${sequenceIndexStr}->0`,
+    };
+    const expected = {
+      str: `\n${this.formatPatterns(FormatDataSource.Expected, expectedPatternData)}\n${sequenceIndexStr}->0`,
+    };
+    const actualDatum = actualState.cells;
+    for (const [k, expectedData] of eachIndex(expectedDatum)) {
+      if (k > 0 && k % BOARD_WIDTH === 0) {
+        actual.str += `|\n\n${sequenceIndexStr}->${Math.floor(
+          k / BOARD_WIDTH
+        )}|`;
+        expected.str += `|\n\n${sequenceIndexStr}->${Math.floor(
+          k / BOARD_WIDTH
+        )}|`;
+      } else {
+        actual.str += `|`;
+        expected.str += "|";
+      }
+
+      const actualData = actualDatum[k];
+      if (actualData === undefined) {
+        this.fail(`No actual data at index ${k}`);
+      }
+
+      this.format(FormatDataSource.Actual, k, actual, actualData);
+      this.format(FormatDataSource.Expected, k, expected, expectedData);
+    }
+    actual.str += "|\n";
+    expected.str += "|\n";
+
+    const actualIssues = this.formatIssues(
+      FormatDataSource.Actual,
+      actualState.issues
+    );
+    const expectedIssues = this.formatIssues(
+      FormatDataSource.Expected,
+      expectedBoardIssues
+    );
+    if (actualIssues.length > 0) {
+      actual.str += "\nIssues:\n  " + actualIssues.join("\n  ");
+    }
+    if (expectedIssues.length > 0) {
+      expected.str += "\nIssues:\n  " + expectedIssues.join("\n  ");
+    }
+
+    this.expect(
+      actual.str,
+      actualState.debug !== undefined
+        ? // We inject temporal and random data in because vitest merges test failures based on this message, even if the actual/expected values are different.
+          `\n\u001b[34mDebug: ${actualState.debug} \u001b[8m | Now: ${Date.now()} | Random Value: ${Math.random()}\u001b[0m\n`
+        : undefined
+    ).toEqual(expected.str);
   }
 
   protected async applyInitialState(initialState: string) {

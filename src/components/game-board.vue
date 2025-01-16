@@ -70,6 +70,7 @@ const popoverOpen = computed(
 );
 
 const props = defineProps<{ board: Board }>();
+const emit = defineEmits<{ boardChanged: [Board] }>();
 const data = props;
 
 const hideTilePicker = () => {
@@ -123,6 +124,7 @@ const tileClicked = (
 const pickTile = (index: number, tileState: TileState) => {
   hideTilePicker();
   props.board.setUserState(index, tileState);
+  emit("boardChanged", props.board);
 };
 
 watch(popoverRef, () => {

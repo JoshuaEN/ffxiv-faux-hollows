@@ -166,6 +166,10 @@ export class GameBoardHarness
       );
   }
 
+  getResetButton() {
+    return this.#rootLocator.getByTestId("reset-button");
+  }
+
   override async setUserSelection(
     index: number,
     tileState: TileState,
@@ -285,6 +289,22 @@ export class GameBoardHarness
         action.expectInvalidMove
       );
     }
+  }
+
+  async assertFromAsciiGrid(grid: string) {
+    const { actions, expectedDatum, expectedPatternData, issues } =
+      loadAsciiGrid(grid);
+    {
+      if (actions.length > 0) {
+        throw new Error(`Actions cannot be provided`);
+      }
+      if (issues.length > 0) {
+        throw new Error(
+          `Only Actions must be provided, but issues contained information`
+        );
+      }
+    }
+    await this.assertBoardState(0, expectedPatternData, expectedDatum, issues);
   }
 
   protected override formatConcreteTileStates(
