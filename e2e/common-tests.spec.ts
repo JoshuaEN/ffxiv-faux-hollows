@@ -1,7 +1,6 @@
-import { test } from "@playwright/test";
 import { allTestData } from "~/test/all-data-tests.js";
 import { TestTag } from "~/test/framework.js";
-import { GameBoardHarness } from "~/test/playwright/game-board.harness.js";
+import { test } from "~/test/playwright/fixtures.js";
 
 allTestData(
   (ops, ...states) => {
@@ -15,13 +14,8 @@ allTestData(
       return;
     }
 
-    test(title, async ({ page, request, context }) => {
-      await page.goto(".");
-      await new GameBoardHarness(page.locator("html"), {
-        page,
-        request,
-        context,
-      }).testSequence(states);
+    test(title, async ({ harness }) => {
+      await harness.testSequence(states);
     });
   },
   { describe: test.describe }

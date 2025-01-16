@@ -1,6 +1,6 @@
-import test, { expect, Page } from "playwright/test";
+import { expect, Page } from "playwright/test";
 import { TileState } from "~/src/game/types/tile-states.js";
-import { GameBoardHarness } from "~/test/playwright/game-board.harness.js";
+import { test } from "~/test/playwright/fixtures.js";
 
 async function repeatKey(page: Page, key: string, times: number) {
   while (times > 0) {
@@ -11,17 +11,8 @@ async function repeatKey(page: Page, key: string, times: number) {
 
 test("it should allow tab based navigation to specific tiles", async ({
   page,
-  request,
-  context,
+  harness,
 }) => {
-  // Arrange
-  await page.goto(".");
-  const harness = new GameBoardHarness(page.locator("html"), {
-    page,
-    request,
-    context,
-  });
-
   // Act
   await repeatKey(page, "Tab", 5);
 
@@ -31,17 +22,8 @@ test("it should allow tab based navigation to specific tiles", async ({
 
 test("it should allow space to open the picker and select tiles", async ({
   page,
-  request,
-  context,
+  harness,
 }) => {
-  // Arrange
-  await page.goto(".");
-  const harness = new GameBoardHarness(page.locator("html"), {
-    page,
-    request,
-    context,
-  });
-
   // Act
   await page.keyboard.press("Tab");
   await page.keyboard.press("Space");
@@ -53,17 +35,8 @@ test("it should allow space to open the picker and select tiles", async ({
 
 test("it should allow enter to open the picker and select tiles", async ({
   page,
-  request,
-  context,
+  harness,
 }) => {
-  // Arrange
-  await page.goto(".");
-  const harness = new GameBoardHarness(page.locator("html"), {
-    page,
-    request,
-    context,
-  });
-
   // Act
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
@@ -76,17 +49,8 @@ test("it should allow enter to open the picker and select tiles", async ({
 test.describe("Blocked tile picker", () => {
   test("it should tab to the next tile after reaching the end of the Blocked tile picker", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-
     // Act
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -99,17 +63,8 @@ test.describe("Blocked tile picker", () => {
 
   test("it should close the Blocked tile picker and return to the current tile when tabbing backwards", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-
     // Act
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -121,17 +76,8 @@ test.describe("Blocked tile picker", () => {
 
   test("it should close the Blocked tile picker and return to the current tile when tabbing backwards (go backwards twice)", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-
     // Act
     await repeatKey(page, "Tab", 4);
     await page.keyboard.press("Enter");
@@ -146,16 +92,8 @@ test.describe("Blocked tile picker", () => {
 test.describe("Primary tile picker", () => {
   test("it should tab to the next tile after reaching the end of the Primary tile picker", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
     await harness.actionsFromAsciiGrid(`
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │>B1  │     │
@@ -184,17 +122,8 @@ test.describe("Primary tile picker", () => {
 
   test("it should close the Primary tile picker and return to the current tile when tabbing backwards", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-
     await harness.actionsFromAsciiGrid(`
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │>B1  │     │
@@ -223,17 +152,8 @@ test.describe("Primary tile picker", () => {
 
   test("it should close the Primary tile picker and return to the current tile when tabbing backwards (go backwards twice)", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
-
     await harness.actionsFromAsciiGrid(`
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │>B1  │     │
@@ -307,16 +227,8 @@ test.describe('Smart Fill "tile picker"', () => {
   // });
   test("it should close the Smart Fill tile picker by tabbing backwards", async ({
     page,
-    request,
-    context,
+    harness,
   }) => {
-    // Arrange
-    await page.goto(".");
-    const harness = new GameBoardHarness(page.locator("html"), {
-      page,
-      request,
-      context,
-    });
     await harness.actionsFromAsciiGrid(`
     ┌─────┬─────┬─────┬─────┬─────┬─────┐
     │     │     │     │     │>B1  │     │
