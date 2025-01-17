@@ -82,14 +82,6 @@ const undoReset = () => {
 </template>
 
 <style scoped lang="scss">
-header {
-  display: flex;
-  gap: var(--standard-margin);
-  justify-content: space-between;
-}
-h1 {
-  margin-top: 0;
-}
 .reset-button {
   --reset-button-hover-color: rgb(253, 99, 99);
   --reset-button-active-color: red;

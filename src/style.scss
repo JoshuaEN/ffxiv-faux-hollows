@@ -178,9 +178,16 @@ body {
   min-height: 100vh;
 }
 
+header {
+  display: flex;
+  gap: var(--standard-margin);
+  justify-content: space-between;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin-top: 0;
   margin-bottom: 0.5rem;
 }
 
