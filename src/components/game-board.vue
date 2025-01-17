@@ -14,6 +14,7 @@ import {
   shift,
   autoUpdate,
   arrow,
+  limitShift,
 } from "@floating-ui/vue";
 import BaseTile from "~/src/components/base-tile.vue";
 import { getPickerOptions } from "./game-board.utils.js";
@@ -31,7 +32,7 @@ const popoverArrowRef = ref(null);
 const popoverMiddleware = ref([
   offset({ mainAxis: 10 }),
   flip(),
-  shift({ padding: 16 }),
+  shift({ padding: 16, limiter: limitShift({ offset: 15 /* Arrow width */ }) }),
   arrow({
     element: computed(() => {
       const val = popoverArrowRef.value;

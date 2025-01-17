@@ -39,6 +39,7 @@
   .message {
     max-width: calc(100vw - 4rem);
     max-height: calc(50vh - 1rem);
+    width: max-content;
   }
   &,
   > .arrow {
