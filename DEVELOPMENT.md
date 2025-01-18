@@ -1,6 +1,7 @@
 ## Commands
 
 - `pnpm run dev` - Starts dev server
+- `pnpm run typecheck` - Run typechecking
 - `pnpm run lint` - Run linting
 - `pnpm run test` - Run tests for development
 - `pnpm run test:ci` - Run tests once
