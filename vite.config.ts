@@ -20,7 +20,7 @@ export default defineConfig({
       vueTsc: true,
       eslint: {
         useFlatConfig: true,
-        lintCommand: "eslint --ext .js,.ts,.vue ./",
+        lintCommand: `eslint --config eslint.config.js "./**/*.{js,ts,vue}"`,
       },
     }),
   ],
