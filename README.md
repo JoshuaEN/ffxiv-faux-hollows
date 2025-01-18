@@ -6,11 +6,12 @@ Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spr
 
 ## Features
 
-- [Guarantees† always uncovering the Present and all fox candidates.](#statistical-probabilities)
+- [Guarantees† uncovering the Present and all possible fox locations](#statistical-probabilities)
   - ~89% chance to uncover the Sword & Present
   - ~95% chance to uncover the Sword & Fox‡
   - ~11% chance to uncover everything (Sword + Present + Fox)‡
 - [Excludes impossible board states](#excludes-impossible-board-states)
+- [Displays possible fox locations automatically](#displays-possible-fox-locations-automatically)
 - [Short-cut Blocked tile entries](#short-cut-blocked-tile-entries)
 - [Contextual help](#contextual-help)
 - [Recursive solver identifies hard-to-spot optimizations](#recursive-solver-identifies-hard-to-spot-optimizations)
@@ -24,36 +25,50 @@ Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spr
 
 ### Statistical Probabilities
 
+Odds of uncovering the given shapes across all patterns.
+
 ```
-Overview (unique outcomes, pattern normalized)
-  All                        Steps  Fox  <=11    >11    No fox  <=11    >11
-  -------------------------  -----  ---  ------  -----  ------  ------  ------
-    Uncover Sword & Present               89.1%  10.9%           88.9%   11.1%
-    Uncover Sword & Fox                   95.6%   4.4%           82.5%   17.5%
-    Uncover Present & Fox                100.0%   0.0%          100.0%    0.0%
-    Uncover All                           11.6%  88.4%            0.0%  100.0%
+All                        Steps  Fox  <=11    >11    No fox  <=11    >11
+-------------------------  -----  ---  ------  -----  ------  ------  ------
+  Uncover Sword & Present               89.1%  10.9%           88.9%   11.1%
+  Uncover Sword & Fox                   95.6%   4.4%           82.5%   17.5%
+  Uncover Present & Fox                100.0%   0.0%          100.0%    0.0%
+  Uncover All                           11.6%  88.4%            0.0%  100.0%
 ```
 
-[Full results](./docs/solve-methods/result-logs/community-data-recursive-fast.txt)
+- The `<=11` (11 or fewer moves) column is the success percentage, since players have 11 moves in Faux Hollows.
+- Fox means a fox is present, no fox means it is not. No fox is equivalent to finding the fox at the last possible location.
 
-> [!INFO]
+[The full results are available here.](./docs/solve-methods/result-logs/community-data-recursive-fast.txt)
+
+> [!NOTE]
 > Disclaimer: These statistics are one possible interpretation of the data.
 >
 > See [docs/solve-methods/README.md](./docs/solve-methods/README.md) for details.
 
 ### Excludes impossible board states
 
-Leveraging the data from the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"), many patterns which seem possible are instead eliminated.
+Leveraging the data from the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"), many patterns which seem possible are omitted.
 
 For example, in the following board there are five spots where a Present could fit:
 
 <img alt="Game board with all blocked tiles filled in after entering just one" src="./docs/assets/README_md/impossible-board-states.png" width="40%"/>
 
-But in reality the game will only ever use two of the possible places:
+But in reality the game will only ever use these two locations:
 
 <img alt="Game board with all blocked tiles filled in after entering just one" src="./docs/assets/README_md/impossible-board-states-2.png" width="40%"/>
 
 In this example, this is the difference from having a 2/5 chance of being able to uncover the Sword + Gift box to being guaranteed the Sword + Gift box.
+
+### Displays possible fox locations automatically
+
+Fox locations are automatically shown when there are four or less possible fox locations remaining.
+
+> [!NOTE]
+> Why four?
+>
+> Each pattern has exactly four possible fox locations, and this solver always finds the exact pattern in three or less moves,
+> so this strategy on average uses less moves to check all possible fox locations.
 
 ### Short-cut Blocked tile entries
 
@@ -78,7 +93,7 @@ Consider this board:
 
 <img alt="Board example (sorry, I don't think it's really useful to describe this in detail)" src="./docs/assets/README_md/edge-case-1.png" width="40%"/>
 
-Looking at the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949") (this is C↑), we can see there are four possible Present locations:
+Looking at the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=22642346#gid=22642346") (this is C↑), we can see there are four possible Present locations for this Sword location:
 <img alt="Community data spreadsheet information for the board example above" src="./docs/assets/README_md/edge-case-2.png" />
 
 There are also three tiles where two Presents overlap:
@@ -105,9 +120,11 @@ There are still three outcomes:
 1. The present from the 4th pattern in the picture is there
 1. The tile is empty
 
-In the first two cases, we are done like before. In the third case though, it is no longer a 50/50 because one of the fox locations for 1st pattern overlaps with the present in the 3rd pattern; by picking that square there is now the (rare) chance we find a fox and, even if we don't, if it is the 1st pattern we have still crossed off a possible fox location "for free".
+In the first two cases, we are done like before. In the third case though, it is no longer a 50/50 because one of the fox locations for 1st pattern overlaps with the present in the 3rd pattern; by picking that square there is now the (rare) chance we find a fox and, even if we don't, if it is the 1st pattern we have still eliminated a possible fox location.
 
 This difference matters because we subtracted one from the maximum number of moves for Sword + Fox, which previously needed a maximum of 12 moves to uncover the Sword and all fox candidates<sup>[[1]](#footnote-1)</sup>.
+
+Ultimately, this (and it's three rotations) is the only identified case of a benefit to evaluating more than one move deep.
 
 ### Input error detection
 
