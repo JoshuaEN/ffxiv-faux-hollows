@@ -6,6 +6,8 @@ import { Board } from "./game/board.js";
 import UndoIcon from "./components/icons/undo-icon.vue";
 import ResetIcon from "./components/icons/reset-icon.vue";
 
+const version = import.meta.env["FAUX_HOLLOWS_APP_VERSION"];
+
 const board = shallowRef(new Board());
 const lastClearedBoard = shallowRef<Board | null>(null);
 const hasLastClearedBoard = computed(() => lastClearedBoard.value !== null);
@@ -78,6 +80,7 @@ const undoReset = () => {
         >
       </span>
     </div>
+    <div class="items version">Version {{ version }}</div>
   </footer>
 </template>
 
@@ -141,6 +144,10 @@ footer {
 
   @media (hover: hover) {
     opacity: 0.9;
+
+    .version {
+      opacity: 0.75;
+    }
   }
 
   &:hover {
