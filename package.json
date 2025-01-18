@@ -7,7 +7,8 @@
     "vue": "vue",
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "preview": "pnpm run build && pnpm run host-dist-preview",
+    "host-dist-preview": "pnpm wr pages dev",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ci": "vitest run",
@@ -17,6 +18,7 @@
     "e2e:ui:debug": "playwright test --ui --debug",
     "lint": "eslint .",
     "typecheck": "pnpm vue-tsc --noEmit",
+    "wr": "pnpm wrangler",
     "script:load-community-data": "pnpm tsx ./scripts/load-community-data/load-community-data.ts --path",
     "script:create-recursive-fast-lookups": "node ./scripts/recursive-fast-lookups/build-recursive-fast-lookups.js",
     "postscript:create-recursive-fast-lookups": "node --max-old-space-size=8152 --enable-source-maps ./dist-scripts/recursive-fast-lookups/create-recursive-fast-lookups.js",
@@ -66,7 +68,11 @@
     "vitest": "^2.1.8",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.1.10",
+    "wrangler": "^3.103.2",
     "yargs": "^17.7.2"
   },
-  "packageManager": "pnpm@9.0.6+sha1.648f6014eb363abb36618f2ba59282a9eeb3e879"
+  "packageManager": "pnpm@9.0.6+sha1.648f6014eb363abb36618f2ba59282a9eeb3e879",
+  "engines": {
+    "node": "^20.13.1"
+  }
 }

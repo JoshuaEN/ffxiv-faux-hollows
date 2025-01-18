@@ -13,6 +13,7 @@ dist
 dist-ssr
 dist-scripts
 *.local
+.wrangler
 
 # Editor directories and files
 .vscode/*
