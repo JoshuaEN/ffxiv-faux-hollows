@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  validations:
+    uses: ./.github/workflows/validations.yml
+  deploy:
+    name: Deploy to Cloudflare Pages
+    environment: production
+    runs-on: ubuntu-latest
+    needs: [validations]
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-env
+
+      - uses: ./.github/actions/build
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

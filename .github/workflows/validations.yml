@@ -1,0 +1,89 @@
+name: Validations
+
+on: [workflow_call, pull_request]
+
+jobs:
+  validate:
+    name: "Validations"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-env
+
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm run test:ci
+
+      - uses: ./.github/actions/build
+
+      - uses: ./.github/actions/assert-no-changes
+
+      - name: "Run full solve"
+        run: pnpm run script:full-solve --solver community-data-recursive-fast
+      - uses: ./.github/actions/assert-no-changes
+
+      - name: "Run short circuit solve"
+        run: pnpm run script:short-circuit:full-solve --solver community-data-recursive-fast
+      - uses: ./.github/actions/assert-no-changes
+
+      - name "Recreate recursive fast lookups"
+        run: pnpm run script:create-recursive-fast-lookups
+      - uses: ./.github/actions/assert-no-changes
+
+  validate-e2e:
+    name: "Validations - e2e"
+    runs-on: ubuntu-latest
+    needs: [validate]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4, 5, 6]
+        shardTotal: [6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-env
+
+      - name: Install Playwright browsers
+        run: pnpm playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: pnpm run e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --config playwright.prerelease.config.ts
+
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shardIndex }}
+          path: blob-report
+          retention-days: 1
+
+  validate-e2e-merge-reports:
+    name: "Validations - e2e - Merge Reports"
+    # Merge reports after playwright-tests, even if some shards have failed
+    if: ${{ !cancelled() }}
+    needs: [validate-e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-env
+
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14

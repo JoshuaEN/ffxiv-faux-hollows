@@ -1,0 +1,15 @@
+name: "Setup environment"
+description: "Setup pnpm, node, and installs all dependencies"
+runs:
+  using: "composite"
+  steps:
+    - uses: pnpm/action-setup@v4
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: "pnpm"
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile

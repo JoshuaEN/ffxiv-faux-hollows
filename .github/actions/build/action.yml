@@ -1,0 +1,10 @@
+name: "Build app"
+description: "Build application"
+runs:
+  using: "composite"
+  steps:
+    - name: Get version
+      run: |
+        echo "FAUX_HOLLOWS_APP_VERSION=$(git rev-parse --short=10 HEAD)" >> "$GITHUB_ENV"
+    - name: Build
+      run: pnpm run build

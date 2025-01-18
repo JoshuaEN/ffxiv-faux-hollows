@@ -1,0 +1,9 @@
+name: "Assert no changes"
+description: "Assert there are no changes (tracked or untracked) visible to git"
+runs:
+  using: "composite"
+  steps:
+    - name: Assert no changes
+      run: |
+        git status --porcelain=v1
+        exit $( git status --porcelain | head -1 | wc -l )
