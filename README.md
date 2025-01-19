@@ -16,7 +16,7 @@ Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spr
 - [Contextual help](#contextual-help)
 - [Recursive solver identifies hard-to-spot optimizations](#recursive-solver-identifies-hard-to-spot-optimizations)
 - [Input error detection](#input-error-detection)
-- Extensively tested
+- [Thoroughly tested](#thoroughly-tested)
 
 <br>
 † If I have made no errors and when following recommended suggestions.
@@ -131,6 +131,19 @@ Ultimately, this (and it's three rotations) is the only identified case of a ben
 Input which does not match any possible pattern is automatically detected and an error is displayed, preventing trying to solve an impossible board:
 
 <img alt="Game board with blocked tiles in an impossible pattern, shown an error" src="./docs/assets/README_md/error-detection.png" width="500"/>
+
+### Thoroughly tested
+
+In addition to some traditional testing, the solver is tested by checking every possible combination of recommended moves (including every fox location for each pattern, including no fox being present), repeated for each common strategy:
+
+1. Try to uncover Sword + Present
+1. Try to uncover Sword + Fox
+1. Try to uncover Present + Fox
+1. Try to uncover everything
+
+This provides statistics on how good the solver is, detects regressions, and naturally exercises a wide range of common cases.
+
+More (technical) details available at [Testing Strategy](./DEVELOPMENT.md#testing-strategy).
 
 ## Local Development
 
