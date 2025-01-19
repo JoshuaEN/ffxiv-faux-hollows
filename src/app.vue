@@ -70,6 +70,7 @@ const undoReset = () => {
   display: flex;
   flex-direction: column;
   align-items: end;
+  align-self: end;
   outline: none !important;
   transition-property: opacity visibility;
   transition-duration: 150ms;
