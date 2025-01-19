@@ -2,6 +2,10 @@ name: Validations
 
 on: [workflow_call, pull_request]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   validate:
     name: "Validations"

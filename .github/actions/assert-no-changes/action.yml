@@ -4,6 +4,7 @@ runs:
   using: "composite"
   steps:
     - name: Assert no changes
+      shell: bash
       run: |
         git status --porcelain=v1
         exit $( git status --porcelain | head -1 | wc -l )
