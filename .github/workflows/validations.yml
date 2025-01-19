@@ -29,7 +29,7 @@ jobs:
         run: pnpm run script:short-circuit:full-solve --solver community-data-recursive-fast
       - uses: ./.github/actions/assert-no-changes
 
-      - name "Recreate recursive fast lookups"
+      - name: "Recreate recursive fast lookups"
         run: pnpm run script:create-recursive-fast-lookups
       - uses: ./.github/actions/assert-no-changes
 
