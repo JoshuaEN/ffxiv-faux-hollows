@@ -367,6 +367,12 @@ export function loadAsciiGrid(str: string) {
           }
           const recommended = column.startsWith("*");
 
+          if (recommended && prompt !== null) {
+            throw new Error(
+              `${columnErrorContext}[Slot 1][Slot 4] Both the recommended flag (*) and the prompt flags cannot be set`
+            );
+          }
+
           cells.push({
             suggestions: {
               Sword,

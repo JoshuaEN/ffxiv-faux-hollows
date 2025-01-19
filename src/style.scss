@@ -12,21 +12,59 @@
   --page-background-color: #120d08;
 
   --standard-margin: 1rem;
+  --large-screen-top-margin: 3rem;
 
   --board-tile-count: 6;
   --board-tile-max-gap: 0.5rem;
   --board-tile-min-gap: 0.25rem;
-  /*
-    1.25vw was roughly calculated by taking the maximum width of the board:
-    (--tile-max-size * 6 + --board-tile-max-gap * 5 + padding [1rem * 2]) = 648px
-    Then calculating what percent --board-tile-max-gap is of 648:
-    --board-tile-max-gap / 648 * 100 = 1.234567890 (repeating)
 
-    It was then rounded to 1.25 because that had a more visually stable resizing behavior.
+  --tile-max-size: 6rem;
+  --tile-min-size: 48px; // Based on Material touch target guidelines
+
+  --tile-border-radius: 8px;
+
+  --board-max-size: calc(
+    var(--tile-max-size) * var(--board-tile-count) + var(--board-tile-max-gap) *
+      (var(--board-tile-count) - 1)
+  );
+  --board-min-size: calc(
+    var(--tile-min-size) * var(--board-tile-count) + var(--board-tile-min-gap) *
+      (var(--board-tile-count) - 1)
+  );
+
+  /* Ballpark "looks good" magic number. Goal is for the header, grid, and first line of help text to all be visible. */
+  --board-vertical-reserved-space: 17rem;
+  --board-vertical-height-constrainer: max(
+    var(--board-min-size),
+    calc(100vh - var(--board-vertical-reserved-space))
+  );
+
+  /* Unitless value of calc(var(--board-max-size) - var(--board-min-size)); */
+  --board-size-range: 308;
+  /* Unitless value of
+    calc(
+    var(--board-tile-max-gap) - var(--board-tile-min-gap)
+  );
   */
+  --board-gap-range: 4;
+
+  // Enable smooth resizing of the tile gap between the board's max and min sizes.
+  // There are two cases to handle:
+  // 1. Vertical sizing
+  // 2. Horizontal sizing
+  // In either case, we figure out how far below the max size of the board we are, and then multiple that by the
+  // range we need to cover.
   --board-tile-gap: max(
-    var(--board-tile-min-gap),
-    min(min(1.25vw, 1.25vh), var(--board-tile-max-gap))
+    /* Lower limit */ var(--board-tile-min-gap),
+    min(
+      /* Vertical resizing */ var(--board-tile-max-gap) -
+        (var(--board-max-size) + var(--board-vertical-reserved-space) - 100vh) *
+        (var(--board-gap-range) / var(--board-size-range)),
+      /* Horizontal resizing */ var(--board-tile-max-gap) -
+        (var(--board-max-size) + var(--standard-margin) * 2 - 100vw) *
+        (var(--board-gap-range) / var(--board-size-range)),
+      /* Upper limit */ var(--board-tile-max-gap)
+    )
   );
 
   --board-unknown-color: var(--font-color);
@@ -67,18 +105,12 @@
   --board-next-target-background-color: var(--board-unknown-background-color);
   --board-next-target-outline-color: #ffd700;
 
-  --tile-max-size: 6rem;
-  --tile-min-size: 48px; // Based on Material touch target guidelines
-
-  --tile-border-radius: 8px;
-
   --chip-background-color: #2f3d4e;
   --chip-color: var(--font-color);
 
   color-scheme: dark light;
   color: var(--font-color);
   background-color: var(--page-background-color);
-  scrollbar-gutter: stable both-edges;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -171,11 +203,21 @@
   }
 }
 
+html,
+body,
+.app {
+  display: grid;
+  grid-template: 1fr / 1fr;
+}
+
+html {
+  min-height: 100%;
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
-  display: flex;
-  justify-content: safe center;
-  min-height: 100vh;
+  justify-items: safe center;
 }
 
 header {
@@ -185,7 +227,7 @@ header {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 3.2rem;
   line-height: 1.1;
   margin-top: 0;
   margin-bottom: 0.5rem;
@@ -249,17 +291,13 @@ button:not(:disabled).focused {
   opacity: 0.8;
 }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  --app-width: min(
-    min(1280px, min(75vh, 95vw)),
-    calc(var(--tile-max-size) * var(--board-tile-count)) +
-      calc(var(--board-tile-max-gap) * (calc(var(--board-tile-count) - 1)))
+.app {
+  width: max(
+    var(--board-min-size),
+    min(var(--board-max-size), 100% - var(--standard-margin) * 2)
   );
-  width: var(--app-width);
   margin: var(--standard-margin);
-  margin-top: 3rem;
+  margin-top: var(--large-screen-top-margin);
 }
 
 figure {
@@ -301,11 +339,67 @@ img.in-game-tile-example {
   }
 }
 
-@media (width < 570px) {
-  #app {
+/* 888px is 17rem, which is used in --board-vertical-height-constrainer, plus 616px which is --board-max-size */
+@media (height <= 888px) {
+  .app {
+    margin-top: max(
+      var(--standard-margin),
+      calc(var(--large-screen-top-margin) - (888px - 100vh) * 1.5)
+    );
+  }
+}
+
+@media (width <= 665px) {
+  .app {
     margin-top: var(--standard-margin);
   }
   h1 {
     width: min-content;
+  }
+}
+
+.spacer {
+  flex-grow: 1;
+}
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3rem;
+
+  p {
+    text-align: center;
+  }
+
+  p:not(:first-child) {
+    margin-top: 0;
+  }
+
+  .items {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+    grid-auto-flow: column dense;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    margin-top: 1rem;
+    width: 100%;
+
+    @media (hover: hover) {
+      opacity: 0.8;
+
+      .version {
+        opacity: 0.65;
+      }
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .align-right {
+      text-align: right;
+    }
   }
 }

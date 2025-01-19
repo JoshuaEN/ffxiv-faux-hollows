@@ -466,7 +466,7 @@ function printPatternSummaryFoxNoFox({
   ) {
     printStrategyPercentsNormalized(
       highLevelSummariesNormalizedLines,
-      `Rollup of ${key} - Fox present`,
+      `Rollup of ${key} - Fox`,
       onlyFox,
       patternPartitions.onlyFox
     );
@@ -479,16 +479,12 @@ function printPatternSummaryFoxNoFox({
   }
 
   if (highLevelSummariesLines !== undefined) {
-    printStrategyPercents(
-      highLevelSummariesLines,
-      `${key} - Fox present`,
-      onlyFox
-    );
+    printStrategyPercents(highLevelSummariesLines, `${key} - Fox`, onlyFox);
     printStrategyPercents(highLevelSummariesLines, `${key} - No Fox`, noFox);
   }
 
   if (detailedLines !== undefined) {
-    detailedLines.push(`${indent(1)}${key} - Fox present`);
+    detailedLines.push(`${indent(1)}${key} - Fox`);
     printPatternSummary(
       detailedLines,
       printCalculation(onlyFox.minInSlot, onlyFox.maxInSlot)

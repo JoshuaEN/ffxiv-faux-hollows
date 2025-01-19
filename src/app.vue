@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef } from "vue";
-import SpreadsheetLink from "./components/building-blocks/spreadsheet-link.vue";
 import GameBoard from "./components/game-board.vue";
 import { Board } from "./game/board.js";
 import UndoIcon from "./components/icons/undo-icon.vue";
 import ResetIcon from "./components/icons/reset-icon.vue";
-
-const version = import.meta.env["FAUX_HOLLOWS_APP_VERSION"];
 
 const board = shallowRef(new Board());
 const lastClearedBoard = shallowRef<Board | null>(null);
@@ -52,36 +49,6 @@ const undoReset = () => {
     </button>
   </header>
   <GameBoard :board="board" v-on:board-changed="boardChanged($event)" />
-  <div class="spacer" aria-hidden="true"></div>
-  <footer>
-    <p>
-      Solver for the
-      <a
-        href="https://www.finalfantasyxiv.com/"
-        rel="noopener noreferrer external"
-        >Final Fantasy XIV</a
-      >&nbsp;<a
-        href="https://ffxiv.consolegameswiki.com/wiki/Faux_Hollows"
-        rel="noopener noreferrer external"
-        >Faux Hollows minigame</a
-      >.
-    </p>
-    <div class="items">
-      <span class="item"
-        >Powered by u/Ylandah's
-        <SpreadsheetLink />
-      </span>
-      <span class="item">Created by JoshuaEN</span>
-      <span class="item">
-        <a
-          href="https://github.com/JoshuaEN/ffxiv-faux-hollows/issues"
-          rel="noopener noreferrer external"
-          >Report a problem</a
-        >
-      </span>
-    </div>
-    <div class="items version">Version {{ version }}</div>
-  </footer>
 </template>
 
 <style scoped lang="scss">
@@ -103,8 +70,9 @@ const undoReset = () => {
   display: flex;
   flex-direction: column;
   align-items: end;
+  align-self: end;
   outline: none !important;
-  transition-property: opacity visibility;
+  transition-property: opacity, visibility;
   transition-duration: 150ms;
   transition-timing-function: linear;
   transition-behavior: allow-discrete;
@@ -131,50 +99,6 @@ const undoReset = () => {
   &:active {
     color: var(--reset-button-active-color);
     filter: brightness(100%);
-  }
-}
-.spacer {
-  flex-grow: 1;
-}
-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1rem;
-
-  @media (hover: hover) {
-    opacity: 0.9;
-
-    .version {
-      opacity: 0.75;
-    }
-  }
-
-  &:hover {
-    opacity: 1;
-  }
-
-  p {
-    text-align: center;
-  }
-
-  p:not(:first-child) {
-    margin-top: 0;
-  }
-
-  .items {
-    display: flex;
-    flex-direction: row;
-    font-size: 0.8rem;
-    gap: 1ch;
-    box-sizing: border-box;
-    margin-top: 1rem;
-  }
-  .item {
-    padding-right: 1ch;
-  }
-  .item:not(:last-child) {
-    border-right: 1px solid var(--font-color);
   }
 }
 </style>
