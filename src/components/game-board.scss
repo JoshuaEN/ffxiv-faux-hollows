@@ -2,6 +2,17 @@
   display: grid;
   grid-template-columns: repeat(var(--board-tile-count), 1fr);
   gap: var(--board-tile-gap);
+  position: relative;
+  min-width: min-content;
+  min-height: min-content;
+  aspect-ratio: 1;
+}
+
+.gameBoard,
+.chips {
+  max-width: var(--board-vertical-height-constrainer);
+}
+
 .gameBoardBackground {
   position: absolute;
   top: 0;
