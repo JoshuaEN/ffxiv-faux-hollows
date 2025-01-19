@@ -2,6 +2,26 @@
   display: grid;
   grid-template-columns: repeat(var(--board-tile-count), 1fr);
   gap: var(--board-tile-gap);
+.gameBoardBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  background-color: transparent;
+  background-image: radial-gradient(
+    var(--board-unknown-background-color)
+      round(nearest, clamp(4px, calc((var(--board-tile-gap) / 2)), 4px), 2px),
+    transparent 0
+  );
+  background-size: calc(100% / 6) calc(100% / 6);
+  background-position: 50%;
+  padding: calc(((var(--board-tile-gap)) / 2));
+  margin: calc(-1 * ((var(--board-tile-gap)) / 2));
+  clip-path: inset(calc(100% / 6 / 2));
+  min-width: 100%;
+  min-height: 100%;
 }
 
 .debug {

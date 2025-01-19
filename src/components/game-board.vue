@@ -193,6 +193,7 @@ onUnmounted(() => {
       />
       <div v-if="popoverData?.index === index" :data-popover-tp="index"></div>
     </template>
+    <div class="gameBoardBackground" aria-hidden="true"></div>
   </main>
   <Teleport
     :to="`[data-popover-tp=&quot;${popoverData?.index}&quot;]`"
