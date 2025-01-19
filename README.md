@@ -19,16 +19,16 @@ Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spr
 - [Thoroughly tested](#thoroughly-tested)
 
 <br>
-† If I have made no errors and when following recommended suggestions.
+† If there are no errors in the calculations; when following recommended suggestions.
 
 ‡ If the fox is present.
 
 ### Statistical Probabilities
 
-Odds of uncovering the given shapes across all patterns.
+Odds of uncovering the listed shapes across all patterns:
 
 ```
-All                        Steps  Fox  <=11    >11    No fox  <=11    >11
+All Patterns               Steps  Fox  <=11    >11    No fox  <=11    >11
 -------------------------  -----  ---  ------  -----  ------  ------  ------
   Uncover Sword & Present               89.1%  10.9%           88.9%   11.1%
   Uncover Sword & Fox                   95.6%   4.4%           82.5%   17.5%
@@ -37,14 +37,14 @@ All                        Steps  Fox  <=11    >11    No fox  <=11    >11
 ```
 
 - The `<=11` (11 or fewer moves) column is the success percentage, since players have 11 moves in Faux Hollows.
-- Fox means a fox is present, no fox means it is not. No fox is equivalent to finding the fox at the last possible location.
+- Fox means a fox is present, No Fox means it is not. No fox is equivalent to finding the fox at the last possible location.
 
 [The full results are available here.](./docs/solve-methods/result-logs/community-data-recursive-fast.txt)
 
 > [!NOTE]
-> Disclaimer: These statistics are one possible interpretation of the data.
+> These statistics are one possible interpretation of the data.
 >
-> See [docs/solve-methods/README.md](./docs/solve-methods/README.md) for details.
+> See [docs/solve-methods/03 - Solve Approaches.md](./docs/solve-methods/03%20-%20Solve%20Approaches.md) for details.
 
 ### Excludes impossible board states
 

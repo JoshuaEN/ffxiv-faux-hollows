@@ -4,7 +4,7 @@ Solve methods, generally, refer to the approach for determining the best tile(s)
 
 Several solve approaches have been explored:
 
-## Recursive Solver
+## Recursive Solver (Current Solver Method)
 
 The recursive solver simulates every possible move for the current state, averaging the steps from the current state to the point the board is solved for each possible move. The moves which have the lowest average are then shown as recommended.
 
