@@ -56,12 +56,14 @@ export default defineConfig({
 
     /* Test against mobile viewports. */
     {
-      name: "Mobile Chrome",
+      name: "MobileChrome",
       use: { ...devices["Pixel 5"] },
+      grepInvert: /@keyboard/,
     },
     {
-      name: "Mobile Safari",
+      name: "MobileSafari",
       use: { ...devices["iPhone 12"] },
+      grepInvert: /@keyboard/,
     },
 
     /* Test against branded browsers. */
