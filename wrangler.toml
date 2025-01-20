@@ -2,3 +2,6 @@
 name = "ffxiv-faux-hollows"
 pages_build_output_dir = "./dist"
 compatibility_date = "2025-01-18"
+
+[dev]
+local_protocol = "https"
