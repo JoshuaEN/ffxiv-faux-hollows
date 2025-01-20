@@ -1,4 +1,5 @@
 import test, {
+  chromium,
   expect,
   Locator,
   Page,
@@ -23,6 +24,7 @@ import {
 import { assertUnreachable } from "~/src/helpers.js";
 import { includeClass } from "./expect.js";
 import { AutoSolverHarness } from "../auto-solver/full/types/auto-solver.harness.js";
+import { indexToCord } from "~/src/game/helpers.js";
 
 export class GameBoardHarness
   extends BaseSequenceRunner
@@ -91,7 +93,7 @@ export class GameBoardHarness
   }
 
   getTile(index: number) {
-    const locator = this.#rootLocator.getByTestId(`game-tile-index-${index}`);
+    const locator = this.getTileLocator(index);
     const tileData = {
       locator,
       combinedTileState: async () => {
@@ -130,15 +132,38 @@ export class GameBoardHarness
   }
 
   getTileLocator(index: number) {
-    return this.getTile(index).locator;
+    return this.#rootLocator.getByTestId(`game-tile-index-${index}`);
   }
 
-  getPopover() {
+  getPopover(index: number) {
+    return this.#rootLocator
+      .locator(`[data-popover-tp="${index}"]`)
+      .getByTestId("popover-picker");
+  }
+
+  async assertOnePopoverOpen(index: number) {
+    await expect(this.getAllPopovers()).toBeVisible();
+    const popover = this.getPopover(index);
+    await expect(popover).toBeVisible();
+    return popover;
+  }
+
+  async assertPopoverClosed() {
+    await expect(this.getAllPopovers()).not.toBeVisible();
+  }
+
+  getAllPopovers() {
     return this.#rootLocator.getByTestId("popover-picker");
   }
 
-  getAllPopoverButtons() {
-    return this.getPopover().locator("button:not(:disabled)");
+  getAllPopoverButtons(index: number) {
+    return this.getPopover(index).locator("button:not(:disabled)");
+  }
+
+  getPopoverButton(index: number, tileState: TileState) {
+    return this.getAllPopoverButtons(index).and(
+      this.getPopover(index).getByTestId(`popover-picker-button-${tileState}`)
+    );
   }
 
   getActiveHelpEntries() {
@@ -204,13 +229,10 @@ export class GameBoardHarness
 
         await tile.locator.click();
 
-        const popover = this.getPopover();
-        await expect(popover).toBeVisible();
-        const buttons = this.getAllPopoverButtons();
+        const popover = await this.assertOnePopoverOpen(index);
+        const buttons = this.getAllPopoverButtons(index);
 
-        const button = popover.getByTestId(
-          `popover-picker-button-${tileState}`
-        );
+        const button = this.getPopoverButton(index, tileState);
 
         if (isSmartFilled) {
           const existingNonSmartFilledTileState =
@@ -225,7 +247,7 @@ export class GameBoardHarness
             `This tile must be a ${existingNonSmartFilledTileState} tile based on the other tiles on the board.`
           );
           await tile.locator.click();
-          await expect(popover).not.toBeVisible();
+          await this.assertPopoverClosed();
           expect(await tile.tileState()).toEqual(existingTileState);
         } else {
           await expect(buttons.nth(0)).toBeVisible();
@@ -251,11 +273,25 @@ export class GameBoardHarness
             await expect(button).not.toHaveClass(includeClass("faded"));
             await button.click();
           }
-          await expect(popover).not.toBeVisible();
+          await this.assertPopoverClosed();
           expect(await tile.tileState()).toEqual(tileState);
         }
       }
     );
+  }
+
+  async keyPress(
+    key: string,
+    focusedAfter: Locator,
+    options?: {
+      /**
+       * Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+       */
+      delay?: number;
+    }
+  ) {
+    await this.#page.keyboard.press(key, options);
+    await expect(focusedAfter).toBeFocused();
   }
 
   syncToAsciiGrid(grid: string) {
@@ -421,7 +457,6 @@ export class GameBoardHarness
         tileIndex++;
         await this.testStep(`index ${tileIndex}`, async () => {
           const tileDebugTile = `[Tile: ${tileIndex}]`;
-          // const tile = await boardTile.getAttribute("data-test-tile");
           const classList = await boardTile.evaluate((e) =>
             Array.from(e.classList)
           );
@@ -459,7 +494,8 @@ export class GameBoardHarness
           }
 
           await boardTile.click();
-          const primaryOptions = await this.getPopoverPrimaryOptions();
+          await this.assertOnePopoverOpen(tileIndex);
+          const primaryOptions = await this.getPopoverPrimaryOptions(tileIndex);
           cell.suggestions = {
             Fox: 0,
             Present: 0,
@@ -479,7 +515,8 @@ export class GameBoardHarness
             }
           }
 
-          const secondaryOptions = await this.getPopoverSecondaryOptions();
+          const secondaryOptions =
+            await this.getPopoverSecondaryOptions(tileIndex);
 
           const allOptions = [...primaryOptions, null, ...secondaryOptions];
           expect(allOptions, "All options should be unique").toEqual(
@@ -517,11 +554,24 @@ export class GameBoardHarness
           } else {
             expect(primaryOptions).toHaveLength(0);
             expect(secondaryOptions).toHaveLength(0);
-            const buttons = this.getAllPopoverButtons();
+            const buttons = this.getAllPopoverButtons(tileIndex);
             await expect(buttons.nth(0)).not.toBeVisible();
-            await expect(this.getPopover()).toContainText(
+            await expect(this.getPopover(tileIndex)).toContainText(
               `This tile must be a ${this.#smartFillToTile(cell.smartFill)} tile based on the other tiles on the board.`
             );
+
+            // Workaround for mobile browser testing, wherein because the smart fill info text is so wide
+            // it overlaps the center of the next button by index (which is on the next row).
+            // So we close the popover instead of just clicking on the next button.
+            if (
+              this.#page.context().browser()?.browserType() === chromium &&
+              indexToCord(tileIndex).x === 5
+            ) {
+              await this.testStep("Close smart fill popover", async () => {
+                await boardTile.click();
+                await this.assertPopoverClosed();
+              });
+            }
           }
           cells[tileIndex] = cell;
           await this.testStep(`Result ${JSON.stringify(cell)}`, () => {});
@@ -552,9 +602,9 @@ export class GameBoardHarness
     });
   }
 
-  async #getPopoverOptionSet(rootSelector: string) {
+  async #getPopoverOptionSet(index: number, rootSelector: string) {
     const tileStates: string[] = Array.from(Object.values(TileState));
-    const popover = this.getPopover();
+    const popover = this.getPopover(index);
     const tiles: TileState[] = [];
     await popover.waitFor({ state: "visible" });
     for (const item of await popover.getByTestId(rootSelector).all()) {
@@ -577,15 +627,15 @@ export class GameBoardHarness
     return this.#rootLocator.getByTestId("game-board");
   }
 
-  getPopoverPrimaryOptions() {
+  getPopoverPrimaryOptions(index: number) {
     return this.testStep("getPopoverPrimaryOptions", () =>
-      this.#getPopoverOptionSet("popover-picker-primary-option")
+      this.#getPopoverOptionSet(index, "popover-picker-primary-option")
     );
   }
 
-  getPopoverSecondaryOptions() {
+  getPopoverSecondaryOptions(index: number) {
     return this.testStep("getPopoverSecondaryOptions", () =>
-      this.#getPopoverOptionSet("popover-picker-secondary-option")
+      this.#getPopoverOptionSet(index, "popover-picker-secondary-option")
     );
   }
 
