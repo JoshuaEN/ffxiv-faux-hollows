@@ -54,7 +54,7 @@ jobs:
         uses: ./.github/actions/assert-no-changes
 
   validate-e2e:
-    name: "e2e - ${{ matrix.project }}"
+    name: "e2e - ${{ matrix.project }} (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})"
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -64,7 +64,7 @@ jobs:
           - "Chromium"
           - "Firefox"
           - "Webkit"
-          - "Mobile Chrome"
+          - "MobileChrome"
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     steps:
@@ -83,7 +83,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.shardIndex }}
+          name: "blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}"
           path: blob-report
           retention-days: 1
 
