@@ -24,14 +24,11 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-      - name: Build
-        uses: ./.github/actions/build
-
       - name: "> Assert no initial changes"
         uses: ./.github/actions/assert-no-changes
 
-      - name: "Run full solve"
-        run: pnpm run script:full-solve --solver community-data-recursive-fast --skip-existing-solves false
+      - name: "Recreate recursive fast lookups"
+        run: pnpm run script:create-recursive-fast-lookups
       - name: "> Assert no changes"
         uses: ./.github/actions/assert-no-changes
 
@@ -40,15 +37,25 @@ jobs:
       - name: "> Assert no changes"
         uses: ./.github/actions/assert-no-changes
 
-      - name: "Recreate recursive fast lookups"
-        run: pnpm run script:create-recursive-fast-lookups
+  validate-full-solve:
+    name: "Validations - Full Solve"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+
+      - name: "> Assert no initial changes"
+        uses: ./.github/actions/assert-no-changes
+      - name: "Run full solve"
+        run: pnpm run script:full-solve --solver community-data-recursive-fast --skip-existing-solves false
       - name: "> Assert no changes"
         uses: ./.github/actions/assert-no-changes
 
   validate-e2e:
     name: "Validations - e2e"
     runs-on: ubuntu-latest
-    needs: [validate]
     timeout-minutes: 60
     strategy:
       fail-fast: false
