@@ -72,8 +72,6 @@ jobs:
 
       - name: Run Playwright tests
         run: pnpm run e2e --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} --config playwright.prerelease.config.ts
-        env:
-          DEBUG: pw:webserver
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
