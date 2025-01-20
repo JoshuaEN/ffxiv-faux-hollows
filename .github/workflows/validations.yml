@@ -78,7 +78,7 @@ jobs:
   validate-e2e-merge-reports:
     name: "Validations - e2e - Merge Reports"
     # Merge reports after playwright-tests, even if some shards have failed
-    if: ${{ !cancelled() && (needs.validate-e2e.result != skipped) }}
+    if: ${{ !cancelled() && (needs.validate-e2e.result != 'skipped') }}
     needs: [validate-e2e]
     runs-on: ubuntu-latest
     steps:
