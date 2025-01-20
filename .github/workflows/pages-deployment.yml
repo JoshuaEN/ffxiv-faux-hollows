@@ -2,9 +2,15 @@ on:
   push:
     branches:
       - main
+  pull_request: {}
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   validations:
+    name: Run validations
     uses: ./.github/workflows/validations.yml
   deploy:
     name: Deploy to Cloudflare Pages
@@ -15,10 +21,13 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-env
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
-      - uses: ./.github/actions/build
+      - name: Build
+        uses: ./.github/actions/build
 
       - name: Publish
         uses: cloudflare/wrangler-action@v3

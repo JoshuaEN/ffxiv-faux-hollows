@@ -1,7 +1,5 @@
 name: Validations
 
-on: [workflow_call, pull_request]
-
 defaults:
   run:
     shell: bash
@@ -11,8 +9,10 @@ jobs:
     name: "Validations"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-env
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
       - name: Typecheck
         run: pnpm run typecheck
@@ -21,21 +21,26 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-      - uses: ./.github/actions/build
+      - name: Build
+        uses: ./.github/actions/build
 
-      - uses: ./.github/actions/assert-no-changes
+      - name: "> Assert no initial changes"
+        uses: ./.github/actions/assert-no-changes
 
       - name: "Run full solve"
-        run: pnpm run script:full-solve --solver community-data-recursive-fast
-      - uses: ./.github/actions/assert-no-changes
+        run: pnpm run script:full-solve --solver community-data-recursive-fast --skip-existing-solves false
+      - name: "> Assert no changes"
+        uses: ./.github/actions/assert-no-changes
 
       - name: "Run short circuit solve"
         run: pnpm run script:short-circuit:full-solve --solver community-data-recursive-fast
-      - uses: ./.github/actions/assert-no-changes
+      - name: "> Assert no changes"
+        uses: ./.github/actions/assert-no-changes
 
       - name: "Recreate recursive fast lookups"
         run: pnpm run script:create-recursive-fast-lookups
-      - uses: ./.github/actions/assert-no-changes
+      - name: "> Assert no changes"
+        uses: ./.github/actions/assert-no-changes
 
   validate-e2e:
     name: "Validations - e2e"
@@ -48,8 +53,10 @@ jobs:
         shardIndex: [1, 2, 3, 4, 5, 6]
         shardTotal: [6]
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-env
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
       - name: Install Playwright browsers
         run: pnpm playwright install --with-deps
@@ -68,12 +75,14 @@ jobs:
   validate-e2e-merge-reports:
     name: "Validations - e2e - Merge Reports"
     # Merge reports after playwright-tests, even if some shards have failed
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && (needs.validate-e2e.result != skipped) }}
     needs: [validate-e2e]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-env
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -90,4 +99,4 @@ jobs:
         with:
           name: html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
-          retention-days: 14
+          retention-days: 1
