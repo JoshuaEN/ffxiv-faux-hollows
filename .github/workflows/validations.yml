@@ -9,7 +9,7 @@ defaults:
 
 jobs:
   validate:
-    name: "Validations"
+    name: "General"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
         uses: ./.github/actions/assert-no-changes
 
   validate-full-solve:
-    name: "Validations - Full Solve"
+    name: "Full Solve"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,7 +54,7 @@ jobs:
         uses: ./.github/actions/assert-no-changes
 
   validate-e2e:
-    name: "Validations - e2e"
+    name: "e2e - ${{ matrix.project }}"
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -88,7 +88,7 @@ jobs:
           retention-days: 1
 
   validate-e2e-merge-reports:
-    name: "Validations - e2e - Merge Reports"
+    name: "e2e - Merge Reports"
     # Merge reports after playwright-tests, even if some shards have failed
     if: ${{ !cancelled() && (needs.validate-e2e.result != 'skipped') }}
     needs: [validate-e2e]
