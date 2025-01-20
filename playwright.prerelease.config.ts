@@ -75,7 +75,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm run host-dist-preview",
+    command: "pnpm run preview",
     url: "http://localhost:8788",
     reuseExistingServer: false,
   },
