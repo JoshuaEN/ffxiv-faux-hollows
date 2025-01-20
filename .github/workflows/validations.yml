@@ -61,9 +61,9 @@ jobs:
       fail-fast: false
       matrix:
         project:
-          - "chromium"
-          - "firefox"
-          - "webkit"
+          - "Chromium"
+          - "Firefox"
+          - "Webkit"
           - "Mobile Chrome"
         shardIndex: [1, 2, 3]
         shardTotal: [3]
