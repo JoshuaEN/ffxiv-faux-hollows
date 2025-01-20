@@ -53,6 +53,15 @@ jobs:
           retention-days: 1
           if-no-files-found: ignore
 
+      - name: Upload traces
+        if: ${{ !cancelled() && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "web-server-logs-${{ matrix.project }}-${{ matrix.shardIndex }}"
+          path: /home/runner/.config/.wrangler/logs/**/*.log
+          retention-days: 1
+          if-no-files-found: ignore
+
   validate-e2e-merge-reports:
     name: "e2e - Merge Reports"
     # Merge reports after playwright-tests, even if some shards have failed
