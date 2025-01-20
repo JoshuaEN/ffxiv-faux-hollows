@@ -14,7 +14,7 @@ jobs:
     uses: ./.github/workflows/validations.yml
   deploy:
     name: Deploy to Cloudflare Pages
-    environment: production
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
     runs-on: ubuntu-latest
     needs: [validations]
     permissions:
