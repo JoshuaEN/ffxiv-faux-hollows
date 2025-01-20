@@ -60,7 +60,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4, 5, 6]
+        project:
+          - "chromium"
+          - "firefox"
+          - "webkit"
+          - "Mobile Chrome"
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,7 +77,7 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Run Playwright tests
-        run: pnpm run e2e --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} --config playwright.prerelease.config.ts
+        run: pnpm run e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --config playwright.prerelease.config.ts --project="${{ matrix.project }}"
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
