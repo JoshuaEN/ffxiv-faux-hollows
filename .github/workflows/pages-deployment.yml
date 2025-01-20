@@ -12,11 +12,14 @@ jobs:
   validations:
     name: Run validations
     uses: ./.github/workflows/validations.yml
+  e2e_validations:
+    name: Run e2e validations
+    uses: ./.github/workflows/validations.yml
   deploy:
     name: Deploy to Cloudflare Pages
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
     runs-on: ubuntu-latest
-    needs: [validations]
+    needs: [validations, e2e_validations]
     permissions:
       contents: read
       deployments: write
