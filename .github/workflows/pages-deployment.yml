@@ -14,7 +14,7 @@ jobs:
     uses: ./.github/workflows/validations.yml
   e2e_validations:
     name: Run e2e validations
-    uses: ./.github/workflows/validations.yml
+    uses: ./.github/workflows/e2e.yml
   deploy:
     name: Deploy to Cloudflare Pages
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
