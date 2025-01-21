@@ -79,7 +79,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm run preview",
+    command:
+      // The wrangler dev server crashes sometimes, hopefully this will fix it.
+      'pnpm concurrently --restart-tries 5 --restart-after 200 "pnpm run preview"',
     url: "https://localhost:8788",
     reuseExistingServer: false,
     ignoreHTTPSErrors: true,
