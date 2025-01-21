@@ -3,13 +3,13 @@
   "name": "FFXIV Faux Hollows Solver",
   "icons": [
     {
-      "src": "/assets/icons/favicon-ear-v1.svg",
+      "src": "/no-cache-assets/icons/favicon-ear-v1.svg",
       "type": "image/svg+xml",
       "sizes": "144x144",
       "purpose": "any"
     },
     {
-      "src": "/assets/icons/favicon-ear-maskable-v2.svg",
+      "src": "/no-cache-assets/icons/favicon-ear-maskable-v2.svg",
       "type": "image/svg+xml",
       "sizes": "144x144",
       "purpose": "maskable"
