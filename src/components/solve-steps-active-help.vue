@@ -51,7 +51,8 @@ const strategyHelpOpen = ref<boolean>(false);
     v-model:active-help-open="activeHelpOpen"
     active-help-title="Fill Blocked Tiles"
   >
-    <em>In this tool</em>, please fill in the blocked tiles.
+    <em>In this tool</em>, please fill in the blocked tiles by clicking or
+    tapping on the tiles above.
     <template #active-help>
       <p>
         <img
@@ -103,7 +104,9 @@ const strategyHelpOpen = ref<boolean>(false);
         After uncovering a single Sword tile on the board, the remaining tiles
         can be determined since every tile is unique.
       </p>
-      <p>In the case of swords, they can appear in two orientations:</p>
+      <p class="clear-float">
+        In the case of swords, they can appear in two orientations:
+      </p>
       <div class="figure-set">
         <figure>
           <img
