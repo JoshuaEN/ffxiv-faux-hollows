@@ -37,7 +37,7 @@ defineProps<{ tile: CombinedTileState; index?: number; disabled?: boolean }>();
 
 <style scoped>
 .suggestion {
-  opacity: 0.5;
+  opacity: 0.75;
 }
 .smartFill {
   opacity: 0.95;
