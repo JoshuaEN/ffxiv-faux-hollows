@@ -23,7 +23,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: isCI ? 1 : Math.floor(cpus().length * 0.75),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["line"], ["blob"]],
+  reporter: [["blob"]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -35,7 +35,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
   },
 
-  timeout: 10 * 60 * 1000,
+  timeout: 3 * 60 * 1000,
 
   /* Configure projects for major browsers */
   projects: [
@@ -79,7 +79,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm run preview",
+    command:
+      // The wrangler dev server crashes sometimes, hopefully this will fix it.
+      'pnpm concurrently --restart-tries 5 --restart-after 200 "pnpm run preview"',
     url: "https://localhost:8788",
     reuseExistingServer: false,
     ignoreHTTPSErrors: true,
