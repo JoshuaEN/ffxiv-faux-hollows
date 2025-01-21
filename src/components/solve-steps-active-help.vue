@@ -370,6 +370,8 @@ const strategyHelpOpen = ref<boolean>(false);
 img {
   border: 2px solid #00000054;
   border-radius: 10px;
+  max-width: max-content;
+  max-height: max-content;
 }
 img.float-right {
   float: right;
