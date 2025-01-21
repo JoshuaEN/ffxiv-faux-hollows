@@ -7,8 +7,9 @@
   font-weight: 400;
 
   --font-color: #f5f5f5;
-  --highlight-font-color: #ff9c4e;
-  --muted-font-color: hsl(0, 0%, 82%);
+  --highlight-font-color: #ffa966;
+  --link-font-color: hsl(31 23% 65% / 1);
+  --page-muted-font-color: #a6a5a3;
   --page-background-color: #120d08;
 
   --standard-margin: 1rem;
@@ -234,7 +235,7 @@ h1 {
 }
 
 a {
-  color: var(--highlight-font-color);
+  color: var(--link-font-color);
 
   &:hover {
     filter: brightness(120%);
@@ -383,19 +384,18 @@ footer {
     justify-content: space-between;
     font-size: 0.8rem;
     box-sizing: border-box;
-    margin-top: 1rem;
     width: 100%;
+    margin-top: var(--standard-margin);
+    gap: var(--standard-margin);
+    border-top: 1px solid var(--page-muted-font-color);
+    padding-top: var(--standard-margin);
+    padding-left: var(--standard-margin);
+    margin-left: -var(--standard-margin);
+    padding-right: var(--standard-margin);
+    margin-right: -var(--standard-margin);
 
-    @media (hover: hover) {
-      opacity: 0.8;
-
-      .version {
-        opacity: 0.65;
-      }
-    }
-
-    &:hover {
-      opacity: 1;
+    .version {
+      color: var(--page-muted-font-color);
     }
 
     .align-right {
