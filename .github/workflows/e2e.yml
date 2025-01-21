@@ -53,7 +53,7 @@ jobs:
           retention-days: 1
           if-no-files-found: ignore
 
-      - name: Upload traces
+      - name: Upload wrangler logs
         if: ${{ !cancelled() && failure() }}
         uses: actions/upload-artifact@v4
         with:
