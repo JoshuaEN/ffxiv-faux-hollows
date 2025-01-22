@@ -402,6 +402,10 @@ footer {
     margin-left: -var(--standard-margin);
     margin-right: -var(--standard-margin);
 
+    li {
+      list-style-type: none;
+    }
+
     .align-right {
       text-align: right;
     }
