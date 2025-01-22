@@ -43,8 +43,8 @@ defineProps<{ title: string }>();
 <style scoped lang="scss">
 @use "../../scss/helpers.scss";
 summary {
-  --background-gradient: hsl(66 9% 45% / 0.46);
-  --background-base: #313729;
+  --background-gradient: var(--active-help-background-gradient);
+  --background-base: var(--active-help-background-base);
   position: relative;
   display: inline flex;
   padding: 2px;
@@ -52,7 +52,7 @@ summary {
   user-select: none;
   border-width: 3px 3px 3px 3px;
   border-style: ridge groove groove ridge;
-  border-color: hsl(37, 46%, 47%);
+  border-color: var(--active-help-globe-border-color);
   border-radius: 12px;
   cursor: pointer;
   background: linear-gradient(
@@ -97,12 +97,13 @@ summary {
 
 details {
   padding: 1rem;
+  color: var(--dark-bg-font-color);
   &[open] summary {
     display: flex;
     justify-content: center;
     border-radius: 12px 12px 0 0;
     border-bottom-width: 0;
-    border-color: hsl(37, 46%, 47%);
+    border-color: var(--active-help-globe-border-color);
   }
 
   &:not([open]) summary .title-text {
@@ -119,19 +120,19 @@ details {
 .content-wrapper {
   border-radius: 0 0 12px 12px;
   border-width: 0 3px 3px 3px;
-  border-color: hsl(37, 46%, 47%);
+  border-color: var(--active-help-globe-border-color);
   border-style: ridge groove groove ridge;
   overflow: hidden;
 }
 
 .content {
-  background-color: #2b3125;
+  background-color: var(--active-help-content-background);
   box-shadow:
-    inset 1px 1px 0px #252b1e,
-    inset -1px -1px 0px #252b1e;
-  border-left: 12px solid #313729;
-  border-right: 12px solid #313729;
-  border-bottom: 24px solid #313729;
+    inset 1px 1px 0px var(--active-help-content-border-color),
+    inset -1px -1px 0px var(--active-help-content-border-color);
+  border-left: 12px solid var(--active-help-background-base);
+  border-right: 12px solid var(--active-help-background-base);
+  border-bottom: 24px solid var(--active-help-background-base);
   padding: 1rem;
 
   > :first-child {
@@ -153,11 +154,11 @@ details {
   font-weight: bold;
   border-radius: 50%;
   background: radial-gradient(
-    #29a44c 40%,
-    #276612 65%,
-    hsl(105, 70%, 0.5%) 80%
+    var(--active-help-globe-glassy-background-radial-gradient-1) 40%,
+    var(--active-help-globe-glassy-background-radial-gradient-2) 65%,
+    var(--active-help-globe-glassy-background-radial-gradient-3) 80%
   );
-  border: 4px solid #f3ba61;
+  border: 4px solid var(--active-help-globe-outer-border-color);
   aspect-ratio: 1;
   width: 100%;
   display: flex;
@@ -182,7 +183,7 @@ details {
   border-radius: 50%;
   content: "";
   box-shadow: inset 0px -2px 1px
-    helpers.adjustBrightness(rgba(253, 222, 174, 0.8), -70);
+    helpers.adjustBrightness(var(--active-help-globe-glassy-bottom-shadow), -70);
 }
 .icon-wrap-2 {
   width: 100%;
@@ -200,7 +201,7 @@ details {
   z-index: 4;
   border-radius: 50%;
   content: "";
-  box-shadow: inset 0px 0px 2px rgb(83, 51, 0);
+  box-shadow: inset 0px 0px 2px var(--active-help-globe-darken-edge-color);
 }
 // Top inset
 .icon-wrap-2::after {
@@ -213,7 +214,7 @@ details {
   z-index: 4;
   border-radius: 50%;
   content: "";
-  box-shadow: inset 0px 2px 2px rgb(24, 70, 8);
+  box-shadow: inset 0px 2px 2px var(--active-help-globe-top-inset-color);
 }
 // Glassy highlight
 .icon-wrap::before {
@@ -225,7 +226,10 @@ details {
   left: 6px;
   z-index: 4;
   border-radius: 50%/54% 54% 41% 41%;
-  background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+  background: linear-gradient(
+    var(--active-help-globe-glassy-highlight-from-color),
+    var(--active-help-globe-glassy-highlight-to-color)
+  );
   content: "";
 }
 </style>

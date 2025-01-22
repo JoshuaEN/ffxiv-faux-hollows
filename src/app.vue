@@ -65,7 +65,7 @@ const undoReset = () => {
 .reset-button,
 .undo-reset-button {
   background-color: transparent;
-  color: var(--font-color);
+  color: var(--page-font-color);
   padding: 0;
   display: flex;
   flex-direction: column;

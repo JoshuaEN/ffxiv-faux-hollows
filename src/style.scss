@@ -6,11 +6,42 @@
   line-height: 1.5;
   font-weight: 400;
 
-  --font-color: #f5f5f5;
+  --light-color: #f5f5f5;
+  --dark-color: #120d08;
+
+  --page-font-color: var(--light-color);
+  --dark-bg-font-color: var(--light-color);
   --highlight-font-color: #ffa966;
   --link-font-color: hsl(31 23% 65% / 1);
   --page-muted-font-color: #a6a5a3;
-  --page-background-color: #120d08;
+  --page-background-color: var(--dark-color);
+
+  --alert-em-color: #880b0b;
+
+  --alert-info-background: #fffef0;
+  --alert-info-color: var(--dark-color);
+  --alert-info-border-color: #b27c45;
+
+  --alert-error-background: #fffef0;
+  --alert-error-color: var(--dark-color);
+  --alert-error-border-color: #ff3c00;
+
+  --active-help-background-base: #313729;
+  --active-help-background-gradient: hsl(66 9% 45% / 0.46);
+
+  --active-help-content-border-color: #252b1e;
+  --active-help-content-background: #2b3125;
+
+  --active-help-globe-border-color: #af8541;
+  --active-help-globe-outer-border-color: #f3ba61;
+  --active-help-globe-darken-edge-color: rgb(83, 51, 0);
+  --active-help-globe-top-inset-color: rgb(24, 70, 8);
+  --active-help-globe-glassy-highlight-from-color: rgba(255, 255, 255, 0.5);
+  --active-help-globe-glassy-highlight-to-color: rgba(255, 255, 255, 0);
+  --active-help-globe-glassy-bottom-shadow: rgba(253, 222, 174, 0.8);
+  --active-help-globe-glassy-background-radial-gradient-1: #29a44c;
+  --active-help-globe-glassy-background-radial-gradient-2: #276612;
+  --active-help-globe-glassy-background-radial-gradient-3: hsl(105, 70%, 0.5%);
 
   --standard-margin: 1rem;
   --large-screen-top-margin: 3rem;
@@ -23,6 +54,8 @@
   --tile-min-size: 48px; // Based on Material touch target guidelines
 
   --tile-border-radius: 8px;
+  --tile-border-default-width: 2px;
+  --tile-border-smart-fill-width: 3px;
 
   --board-max-size: calc(
     var(--tile-max-size) * var(--board-tile-count) + var(--board-tile-max-gap) *
@@ -68,7 +101,7 @@
     )
   );
 
-  --board-unknown-color: var(--font-color);
+  --board-unknown-color: var(--dark-bg-font-color);
   --board-unknown-background-color: hsl(31, 23%, 21%);
   --board-unknown-outline-color: hsl(31, 23%, 41%);
 
@@ -80,7 +113,7 @@
   --board-blocked-background-color: hsl(0, 0%, 21%);
   --board-blocked-outline-color: hsl(0, 0%, 41%);
 
-  --board-sword-color: var(--font-color);
+  --board-sword-color: var(--dark-bg-font-color);
   --board-sword-background-color: #2b4f8a;
   --board-sword-outline-color: hsl(217, 52%, 55%);
 
@@ -90,15 +123,15 @@
   );
   --board-sword-suggestion-outline-color: var(--board-sword-outline-color);
 
-  --board-present-color: var(--font-color);
+  --board-present-color: var(--dark-bg-font-color);
   --board-present-background-color: #89302d;
   --board-present-outline-color: hsl(2, 51%, 56%);
 
-  --board-fox-color: var(--font-color);
+  --board-fox-color: var(--dark-bg-font-color);
   --board-fox-background-color: #694b1c;
   --board-fox-outline-color: hsl(37, 58%, 50%);
 
-  --board-suggest-fox-color: var(--font-color);
+  --board-suggest-fox-color: var(--dark-bg-font-color);
   --board-suggest-fox-background-color: #9e009e;
   --board-suggest-fox-outline-color: hsl(300, 58%, 50%);
 
@@ -106,11 +139,8 @@
   --board-next-target-background-color: var(--board-unknown-background-color);
   --board-next-target-outline-color: #ffd700;
 
-  --chip-background-color: #2f3d4e;
-  --chip-color: var(--font-color);
-
   color-scheme: dark light;
-  color: var(--font-color);
+  color: var(--page-font-color);
   background-color: var(--page-background-color);
 
   font-synthesis: none;
@@ -118,6 +148,47 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+@media (forced-colors: active) {
+  :root {
+    --tile-border-default-width: 6px;
+    --tile-border-smart-fill-width: 6px;
+
+    --active-help-globe-border-color: ButtonBorder;
+    --active-help-globe-outer-border-color: ButtonBorder;
+    --active-help-globe-darken-edge-color: transparent;
+    --active-help-globe-top-inset-color: transparent;
+    --active-help-globe-glassy-highlight-from-color: transparent;
+    --active-help-globe-glassy-highlight-to-color: transparent;
+    --active-help-globe-glassy-bottom-shadow: transparent;
+    --active-help-globe-glassy-background-radial-gradient-1: ButtonFace;
+    --active-help-globe-glassy-background-radial-gradient-2: ButtonFace;
+    --active-help-globe-glassy-background-radial-gradient-3: ButtonFace;
+  }
+
+  .baseTile {
+    border-style: double;
+
+    .suggestionIndicator {
+      background-color: ButtonFace;
+      color: ButtonText;
+      padding: 5px;
+      margin: -5px;
+      border-radius: 50%;
+    }
+    .suggestionIndicator.SuggestFox-suggestion-indicator {
+      top: 0;
+      left: 0;
+      margin: unset;
+      padding: 1px;
+      border-radius: 0 var(--tile-border-radius) 50% 0;
+    }
+  }
+
+  * {
+    opacity: 1 !important;
+  }
 }
 
 .suggestionIndicator {
@@ -200,7 +271,7 @@
 .SuggestPresent {
   svg:not(.suggestionIndicator) {
     color: var(--tile-background-color);
-    filter: brightness(50%);
+    filter: brightness(30%);
   }
 }
 
@@ -280,7 +351,7 @@ button:not(:disabled).focused {
 *:focus:not(:disabled),
 *:focus-visible:not(:disabled),
 button:not(:disabled).focused {
-  outline: 3px solid var(--tile-outline-color, var(--font-color));
+  outline: 3px solid var(--tile-outline-color, var(--dark-bg-font-color));
 }
 
 .hasIssue {

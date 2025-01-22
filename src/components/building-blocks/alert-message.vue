@@ -31,22 +31,27 @@ const ariaRole = computed(() => {
   box-shadow: 0 0 2em var(--alert-border-color) inset;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 
+  outline-width: 5px;
+  outline-style: solid;
+  outline-color: var(--alert-outline-color, transparent);
   em {
     font-style: italic;
     font-weight: 600;
-    color: #880b0b;
+    color: var(--alert-em-color);
   }
 }
 
 .alert-Info {
-  --alert-background: #fffef0;
-  --alert-color: var(--page-background-color);
-  --alert-border-color: #b27c45;
+  --alert-background: var(--alert-info-background);
+  --alert-color: var(--alert-info-color);
+  --alert-border-color: var(--alert-info-border-color);
+  --alert-outline-color: var(--alert-info-outline-color);
 }
 
 .alert-Error {
-  --alert-background: #fffef0;
-  --alert-color: var(--page-background-color);
-  --alert-border-color: #ff3c00;
+  --alert-background: var(--alert-error-background);
+  --alert-color: var(--alert-error-color);
+  --alert-border-color: var(--alert-error-border-color);
+  --alert-outline-color: var(--alert-error-outline-color);
 }
 </style>

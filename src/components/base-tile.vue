@@ -73,7 +73,7 @@ const label = computed(() => {
 
 <template>
   <button
-    :class="{ [`${tile}`]: !Array.isArray(tile) }"
+    :class="{ [`${tile}`]: !Array.isArray(tile), baseTile: true }"
     :aria-label="label"
     :disabled="disabled ?? false"
   >
@@ -133,6 +133,7 @@ button {
   max-height: var(--tile-max-size);
   min-height: var(--tile-min-size);
   aspect-ratio: 1;
+  border-width: var(--tile-border-default-width);
 }
 svg {
   position: absolute;

@@ -41,14 +41,15 @@ defineProps<{ tile: CombinedTileState; index?: number; disabled?: boolean }>();
 }
 .smartFill {
   opacity: 0.95;
-  border: 3px dashed var(--tile-color);
+  border: var(--tile-border-smart-fill-width) dashed var(--tile-color);
 }
 .userInput {
-  border: 2px solid var(--tile-color);
+  border: var(--tile-border-default-width) solid var(--tile-color);
 }
 .nextTarget {
   color: var(--board-next-target-color);
   background-color: var(--board-next-target-background-color);
-  border: 2px dotted var(--board-next-target-outline-color);
+  border: var(--tile-border-default-width) dotted
+    var(--board-next-target-outline-color);
 }
 </style>
