@@ -32,7 +32,7 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Run Playwright tests
-        run: pnpm run e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --config playwright.prerelease.config.ts --project="${{ matrix.project }}"
+        run: pnpm run e2e:ci --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --project="${{ matrix.project }}"
         env:
           DEBUG: "pw:webserver"
 
