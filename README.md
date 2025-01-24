@@ -90,10 +90,10 @@ Only one to three blocked tiles need to be entered to uniquely identify a board 
 
 Contextual help will be displayed based on what has been entered into the board:
 
-<img alt="Contextual help at the bottom of board" src="./docs/assets/README_md/contextual-help-1.png" width="40%"/>
+<img alt="Contextual help at the bottom of board" src="./docs/assets/README_md/contextual-help-1.png" />
 
 In addition to the summary help, detailed help is available by clicking or tapping the active help entries to expand them:
-<img alt="Contextual help at the bottom of board" src="./docs/assets/README_md/contextual-help-2.png" width="40%"/>
+<img alt="Contextual help at the bottom of board" src="./docs/assets/README_md/contextual-help-2.png" />
 
 ### Recursive solver identifies hard-to-spot optimizations
 
