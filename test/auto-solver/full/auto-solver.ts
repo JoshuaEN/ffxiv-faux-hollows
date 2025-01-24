@@ -435,7 +435,7 @@ async function solveSingleStep(
             if (
               !strategy.every((tileState) =>
                 tileState === TileState.Fox
-                  ? stepsTo.UncoverFox
+                  ? stepsTo.UncoverFox !== undefined && stepsTo.UncoverFox > 0
                   : stepsTo[`Found${tileState}`] !== undefined
               )
             ) {
