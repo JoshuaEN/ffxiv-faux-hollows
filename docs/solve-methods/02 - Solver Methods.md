@@ -6,11 +6,33 @@ Several solve approaches have been explored:
 
 ## Recursive Solver (Current Solver Method)
 
-The recursive solver simulates every possible move for the current state, averaging the steps from the current state to the point the board is solved for each possible move. The moves which have the lowest average are then shown as recommended.
+The recursive solver identifies the possible patterns based on the current board and then simulates, for every tile on the board, every possible path from choosing that tile to the point the board is solved.
 
-Recursive fast is the recursive solver with the first step of all patterns being pre-solved. This is a significant performance boost on slower devices.
+The solver then assigns each tile a value of the average number of moves across all paths to solve the board. The tile(s) which have the lowest average are then recommended.
+
+More specifically, starting from the current board state, the solver:
+
+<ol>
+  <li>Gets all possible patterns remaining.</li>
+  <li>Gets all Unknown tiles which overlap with at least one remaining pattern (e.g. a fox candidate, the sword would cover that tile, etc...).</li>
+  <li>For each of those tiles,<br>for each remaining pattern:
+    <ol type="a">
+      <li>Simulate uncovering that tile.<br>For candidate fox locations, both outcomes (fox, no fox) are simulated.</li>
+      <li>If the board is not solved, start over at step 1 with this new board.</li>
+      <li>Add the result from the previous step to the list of all results.</li>
+    </ol>
+  </li>
+  <li>Average all of the results.</li>
+  <li>Return this value.</li>
+</ol>
+
+That probably sounds like a _lot_ of possibilities to calculate, but the solver caches results (e.g., many paths tend to reach a point where there's only the four fox tiles left, results in these being calculated just once) and filters patterns instead of adding empty marks to the simulated board (this helps the cache hit rate).
+
+The recursive fast version also uses a lookup table for the first step (the initial state) of all patterns, which offers a significant performance boost since the first move has far more possibilities to calculate (though the realtime performance was acceptable on high-end desktop).
 
 This is the approach currently used.
+
+[Source code](../../src/game/solver/modules/calculate-state-candidates/community-data-state-candidates/recursive-fast.ts)
 
 ## Buckets
 
@@ -22,6 +44,10 @@ The case of 2,2,2,2 is better because in every case there will always be just on
 
 This is pretty simplistic (it doesn't look more than one step, so it is possible that [3] would actually lead to 1,1,1, which would actually make the second option better). In practice though, it performs exactly the same to the recursive solve except for a single edge case where, if there is a particular pattern and a fox is present on a particular square, the recursive solver would solve one step sooner.
 
+[Source code](../../src/game/solver/modules/calculate-state-candidates/community-data-state-candidates/buckets.ts)
+
 ## Others
 
-The other solvers are just various other experiments.
+The other solvers are just various other experiments and points of comparison.
+
+[Source code](../../src/game/solver/modules/calculate-state-candidates)
