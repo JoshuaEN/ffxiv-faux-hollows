@@ -35,7 +35,10 @@ export class GameBoardHarness
   constructor(
     rootLocator: Locator,
     args: PlaywrightTestArgs,
-    readonly testStep = test.step.bind(test)
+    readonly testStep: <T>(
+      title: string,
+      body: () => T | Promise<T>
+    ) => Promise<T> = test.step.bind(test)
   ) {
     super(
       (message: string) => {
