@@ -1,8 +1,16 @@
-# FFXIV Faux Hollows Solver
+<p>
+  <a href="https://faux.joshuaen.com">
+    <img src="./assets/icons/favicon-ear-v1.svg" />
+  </a>
+</p>
+
+# Faux Hollows Solver
 
 Solver for the [Final Fantasy XIV](https://www.finalfantasyxiv.com/) [Faux Hollows minigame](https://ffxiv.consolegameswiki.com/wiki/Faux_Hollows).
 
 Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"), inspired by [u/d00tt3hsm00t's post on what a pattern missing in the spreadsheet actually means](https://www.reddit.com/r/ffxiv/comments/16wl1e7/comment/kev50wv/).
+
+Available at [faux.joshuaen.com](https://faux.joshuaen.com).
 
 ## Features
 
@@ -10,7 +18,7 @@ Powered by [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spr
   - ~89% chance to uncover the Sword & Present
   - ~95% chance to uncover the Sword & Fox‡
   - ~11% chance to uncover everything (Sword + Present + Fox)‡
-- [Excludes impossible board states](#excludes-impossible-board-states)
+- [Omits impossible sword and present locations](#omits-impossible-sword-and-present-locations)
 - [Displays possible fox locations automatically](#displays-possible-fox-locations-automatically)
 - [Short-cut Blocked tile entries](#short-cut-blocked-tile-entries)
 - [Contextual help](#contextual-help)
@@ -46,9 +54,9 @@ All Patterns               Steps  Fox  <=11    >11    No fox  <=11    >11
 >
 > See [docs/solve-methods/03 - Solve Approaches.md](./docs/solve-methods/03%20-%20Solve%20Approaches.md) for details.
 
-### Excludes impossible board states
+### Omits impossible sword and present locations
 
-Leveraging the data from the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"), many patterns which seem possible are omitted.
+With the [Community Data Spreadsheet by u/Ylandah](https://docs.google.com/spreadsheets/d/1mUyCzlzDmdXMwaSTUgWXtEA45oJNn-iB4_bVM43zf58/edit?gid=49331949#gid=49331949"), many sword and present locations which seem valid are correctly excluded.
 
 For example, in the following board there are five spots where a Present could fit:
 
