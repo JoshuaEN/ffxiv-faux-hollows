@@ -270,8 +270,7 @@ function recursiveSolver(
       // Further, due to other optimizations later on, this would actually result in an infinite loop.
       //
       // It may seem like we could apply the same logic to if only one of (Sword, Present, or Fox) had any matches.
-      // In some cases this is true, but there is often still potential calculations to be performed (e.g. around foxes),
-      // and this case only occurs
+      // In some cases this is true, but there is often still potential calculations to be performed (e.g. around foxes).
     ) {
       patternsByIndexes.set(index, map);
     }
