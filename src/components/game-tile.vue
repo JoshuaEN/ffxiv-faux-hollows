@@ -37,14 +37,18 @@ defineProps<{ tile: CombinedTileState; index?: number; disabled?: boolean }>();
 
 <style scoped>
 .suggestion {
-  opacity: 0.75;
+  filter: brightness(75%);
 }
 .smartFill {
-  opacity: 0.95;
-  border: var(--tile-border-smart-fill-width) dashed var(--tile-color);
+  filter: brightness(95%);
+  border-width: var(--tile-border-smart-fill-width);
+  border-style: dashed;
+  border-color: var(--tile-color);
 }
 .userInput {
-  border: var(--tile-border-default-width) solid var(--tile-color);
+  border-width: var(--tile-border-default-width);
+  border-style: solid;
+  border-color: var(--tile-color);
 }
 .nextTarget {
   color: var(--board-next-target-color);
