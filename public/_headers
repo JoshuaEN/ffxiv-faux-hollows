@@ -5,6 +5,7 @@
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+  ! Access-Control-Allow-Origin
 
 /index.html
   Cache-Control: public, no-cache
