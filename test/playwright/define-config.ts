@@ -56,30 +56,39 @@ export function defineConfig(
       /* Configure projects for major browsers */
       projects: [
         {
+          name: "ChromiumSmokeTest",
+          use: { ...devices["Desktop Chrome"] },
+          grep: /@smoke-test/,
+        },
+
+        {
           name: "Chromium",
           use: { ...devices["Desktop Chrome"] },
+          grepInvert: /@smoke-test/,
         },
 
         {
           name: "Firefox",
           use: { ...devices["Desktop Firefox"] },
+          grepInvert: /@smoke-test/,
         },
 
         {
           name: "Webkit",
           use: { ...devices["Desktop Safari"] },
+          grepInvert: /@smoke-test/,
         },
 
         /* Test against mobile viewports. */
         {
           name: "MobileChrome",
           use: { ...devices["Pixel 5"] },
-          grepInvert: /@keyboard/,
+          grepInvert: /@keyboard|@smoke-test/,
         },
         {
           name: "MobileSafari",
           use: { ...devices["iPhone 12"] },
-          grepInvert: /@keyboard/,
+          grepInvert: /@keyboard|@smoke-test/,
         },
 
         /* Test against branded browsers. */

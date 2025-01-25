@@ -45,7 +45,7 @@ jobs:
       - name: Smoke Test Deployment
         uses: ./.github/actions/e2e
         with:
-          args: "--config playwright.postrelease.config.ts --project='Chromium' --grep='@smoke-test'"
+          args: "--config playwright.postrelease.config.ts --project='ChromiumSmokeTest'"
           artifact-postfix: "Smoke-Test"
         env:
           PW_BASE_URL: ${{ github.ref == 'refs/heads/main' && 'https://faux.joshuaen.com' || steps.deploy.outputs.deployment-url }}
