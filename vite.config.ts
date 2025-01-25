@@ -12,9 +12,6 @@ export default defineConfig({
     "import.meta.vitest": "undefined",
     "import.meta.env.DEV": "undefined",
     "import.meta.env.SOLVER": "'community-data-recursive-fast'",
-    "import.meta.env.FAUX_HOLLOWS_APP_VERSION": JSON.stringify(
-      process.env["FAUX_HOLLOWS_APP_VERSION"] ?? "Unknown"
-    ),
   },
   plugins: [
     imageSizePlugin(),

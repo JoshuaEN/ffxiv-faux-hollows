@@ -6,7 +6,11 @@ runs:
     - name: Get version
       shell: bash
       run: |
-        echo "FAUX_HOLLOWS_APP_VERSION=$(git rev-parse --short=10 HEAD)" >> "$GITHUB_ENV"
+        echo "VITE_FAUX_HOLLOWS_APP_VERSION=$(git rev-parse --short=10 HEAD)" >> "$GITHUB_ENV"
+    - name: Print version
+      shell: bash
+      run: |
+        echo $VITE_FAUX_HOLLOWS_APP_VERSION
     - name: Build
       shell: bash
       run: pnpm run build
