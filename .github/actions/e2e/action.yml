@@ -11,9 +11,11 @@ runs:
   steps:
     - name: Install Playwright browsers
       run: pnpm playwright install --with-deps
+      shell: bash
 
     - name: Run Playwright tests
       run: pnpm run e2e:ci ${{ inputs.args }}"
+      shell: bash
       env:
         DEBUG: "pw:webserver"
 
