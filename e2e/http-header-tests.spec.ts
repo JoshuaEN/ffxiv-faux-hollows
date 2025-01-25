@@ -133,46 +133,48 @@ test.describe(
     });
 
     // Try to detect other assets aside from the primary JS and CSS files
-    test("it should set correct headers on all resources requested on page load", async ({
-      page,
-    }) => {
-      const responseUrls: string[] = [];
-      page.on("response", async (response) => {
-        const url = response.url();
-        responseUrls.push(url);
-        if (url.includes("/assets/")) {
-          await expect(response).toHaveHeader(cacheControl, hashedAssetCache);
-        } else {
-          await expect(response).toHaveHeader(cacheControl, [
-            noCache,
-            mustRevalidate,
-          ]);
-        }
-      });
-      await page.goto(".", { waitUntil: "networkidle" });
+    test(
+      "it should set correct headers on all resources requested on page load",
+      { tag: "@smoke-test" },
+      async ({ page }) => {
+        const responseUrls: string[] = [];
+        page.on("response", async (response) => {
+          const url = response.url();
+          responseUrls.push(url);
+          if (url.includes("/assets/")) {
+            await expect(response).toHaveHeader(cacheControl, hashedAssetCache);
+          } else {
+            await expect(response).toHaveHeader(cacheControl, [
+              noCache,
+              mustRevalidate,
+            ]);
+          }
+        });
+        await page.goto(".", { waitUntil: "networkidle" });
 
-      expect(
-        responseUrls.find((url) =>
-          /\/assets\/index-[A-Za-z0-9-]+\.js/.test(url)
-        )
-      ).toBeDefined();
-      expect(
-        responseUrls.find((url) =>
-          /\/assets\/index-[A-Za-z0-9-]+\.css/.test(url)
-        )
-      ).toBeDefined();
-      expect(
-        responseUrls.find((url) =>
-          /\/assets\/empty-board-[A-Za-z0-9-]+\.webp/.test(url)
-        )
-      ).toBeDefined();
-    });
+        expect(
+          responseUrls.find((url) =>
+            /\/assets\/index-[A-Za-z0-9-]+\.js/.test(url)
+          )
+        ).toBeDefined();
+        expect(
+          responseUrls.find((url) =>
+            /\/assets\/index-[A-Za-z0-9-]+\.css/.test(url)
+          )
+        ).toBeDefined();
+        expect(
+          responseUrls.find((url) =>
+            /\/assets\/empty-board-[A-Za-z0-9-]+\.webp/.test(url)
+          )
+        ).toBeDefined();
+      }
+    );
   }
 );
 
 test.describe(
   "HTTP Header Content-Security-Policy",
-  { tag: "@needs-preview-server" },
+  { tag: ["@needs-preview-server"] },
   () => {
     test("it should set CSP header", async ({ request }) => {
       expect(

@@ -5,8 +5,8 @@
 - `pnpm run lint` - Run linting
 - `pnpm run test` - Run tests for development
 - `pnpm run test:ci` - Run tests once
-- `pnpm run e2e:ui` - Run the e2e UI
-- `pnpm run e2e` - Run the e2e tests (headless)
+- `pnpm run e2e` - Run the e2e UI
+- `pnpm run e2e:ci` - Run the e2e tests (headless)
 
 ## Solver commands
 
@@ -27,6 +27,13 @@
 ## e2e tests
 
 e2e tests are widely used to provide both e2e and component/integration level testing. This is perhaps not optimal, but the small size of the project makes this work well and sidesteps needing to setup a component testing test framework.
+
+### Smoke tests
+
+Smoke tests are a tiny subset of the main e2e test suite. They are designed to run against the actual website, and to minimize the odds of running afoul of automatic bot protections they are limited to just two tests:
+
+1. A single smoke-test test which is intended to exercise some of the basic functionality.
+1. A header test.
 
 ## Unit tests
 
