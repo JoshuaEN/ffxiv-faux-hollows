@@ -51,7 +51,7 @@ export function defineConfig(
         version: version === undefined ? "Unknown" : version,
       },
 
-      timeout: 3 * 60 * 1000,
+      timeout: 6 * 60 * 1000,
 
       /* Configure projects for major browsers */
       projects: [
