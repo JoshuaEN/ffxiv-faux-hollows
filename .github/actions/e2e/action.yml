@@ -14,7 +14,7 @@ runs:
       shell: bash
 
     - name: Run Playwright tests
-      run: pnpm run e2e:ci ${{ inputs.args }}"
+      run: pnpm run e2e:ci ${{ inputs.args }}
       shell: bash
       env:
         DEBUG: "pw:webserver"
