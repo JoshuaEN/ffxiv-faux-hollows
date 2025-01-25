@@ -5,8 +5,8 @@
 - `pnpm run lint` - Run linting
 - `pnpm run test` - Run tests for development
 - `pnpm run test:ci` - Run tests once
-- `pnpm run e2e:ui` - Run the e2e UI
-- `pnpm run e2e` - Run the e2e tests (headless)
+- `pnpm run e2e` - Run the e2e UI
+- `pnpm run e2e:ci` - Run the e2e tests (headless)
 
 ## Solver commands
 
