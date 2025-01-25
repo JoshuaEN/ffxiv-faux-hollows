@@ -28,6 +28,13 @@
 
 e2e tests are widely used to provide both e2e and component/integration level testing. This is perhaps not optimal, but the small size of the project makes this work well and sidesteps needing to setup a component testing test framework.
 
+### Smoke tests
+
+Smoke tests are a tiny subset of the main e2e test suite. They are designed to run against the actual website, and to minimize the odds of running afoul of automatic bot protections they are limited to just two tests:
+
+1. A single smoke-test test which is intended to exercise some of the basic functionality.
+1. A header test.
+
 ## Unit tests
 
 There are a few unit tests, as most code is in components, and thus covered by the e2e tests, or part of the main solver flow and covered by the domain specific tests.
