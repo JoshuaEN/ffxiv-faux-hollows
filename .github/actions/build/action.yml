@@ -1,12 +1,18 @@
 name: "Build app"
 description: "Build application"
+outputs:
+  version:
+    description: "Faux Hollows app version"
+    value: ${{ steps.get-version.outputs.version }}
 runs:
   using: "composite"
   steps:
     - name: Get version
       shell: bash
+      id: get-version
       run: |
-        echo "VITE_FAUX_HOLLOWS_APP_VERSION=$(git rev-parse --short=10 HEAD)" >> "$GITHUB_ENV"
+        echo "VITE_FAUX_HOLLOWS_APP_VERSION=$(git rev-parse --short=10 HEAD)" >> $GITHUB_ENV
+        echo "version=$(git rev-parse --short=10 HEAD)" >> $GITHUB_OUTPUT
     - name: Print version
       shell: bash
       run: |
