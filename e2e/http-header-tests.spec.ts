@@ -116,7 +116,7 @@ test.describe(
     }) => {
       const responseBody = await (await request.get("/", requestOps)).text();
       const urls = [
-        ...responseBody.matchAll(/(\/assets\/index-[A-Za-z0-9-]+\.[js|css])/g),
+        ...responseBody.matchAll(/(\/assets\/index-[A-Za-z0-9_-]+\.[js|css])/g),
       ];
 
       expect(urls).toHaveLength(2);
@@ -154,17 +154,17 @@ test.describe(
 
         expect(
           responseUrls.find((url) =>
-            /\/assets\/index-[A-Za-z0-9-]+\.js/.test(url)
+            /\/assets\/index-[A-Za-z0-9_-]+\.js/.test(url)
           )
         ).toBeDefined();
         expect(
           responseUrls.find((url) =>
-            /\/assets\/index-[A-Za-z0-9-]+\.css/.test(url)
+            /\/assets\/index-[A-Za-z0-9_-]+\.css/.test(url)
           )
         ).toBeDefined();
         expect(
           responseUrls.find((url) =>
-            /\/assets\/empty-board-[A-Za-z0-9-]+\.webp/.test(url)
+            /\/assets\/empty-board-[A-Za-z0-9_-]+\.webp/.test(url)
           )
         ).toBeDefined();
       }
