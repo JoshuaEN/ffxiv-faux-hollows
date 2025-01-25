@@ -4,12 +4,18 @@
     "src/**/*.ts",
     "scripts/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
     "test/**/*.ts",
     "e2e/**/*.ts",
     "deploy/**/*.ts",
-    "plugins/**/*.d.ts"
-  ],
-  "references": [{ "path": "./tsconfig.node.json" }]
+    "plugins/**/*.d.ts",
+
+    "vite.config.ts",
+    "playwright/**/*.ts",
+    "test/**/*.ts",
+    "playwright.config.ts",
+    "playwright.prerelease.config.ts",
+    "playwright.postrelease.config.ts",
+    "plugins/**/*.ts"
+  ]
 }

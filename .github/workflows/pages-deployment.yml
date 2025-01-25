@@ -30,12 +30,23 @@ jobs:
         uses: ./.github/actions/setup-env
 
       - name: Build
+        id: build
         uses: ./.github/actions/build
 
-      - name: Publish
+      - name: Deploy
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy
+          command: pages deploy --branch ${{ github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Smoke Test Deployment
+        uses: ./.github/actions/e2e
+        with:
+          args: "--config playwright.postrelease.config.ts --project='Chromium' --grep='@smoke-test'"
+          artifact-postfix: "Smoke-Test"
+        env:
+          PW_BASE_URL: ${{ github.ref == 'refs/heads/main' && 'https://faux.joshuaen.com' || steps.deploy.outputs.deployment-url }}
+          PW_APP_VERSION: ${{ steps.build.outputs.version }}

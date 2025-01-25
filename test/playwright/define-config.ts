@@ -20,10 +20,11 @@ export function defineConfig(
   {
     baseURL,
     ignoreHTTPSErrors,
-  }: { baseURL: string; ignoreHTTPSErrors?: boolean },
+    version,
+  }: { baseURL: string; ignoreHTTPSErrors?: boolean; version?: string },
   ...config: PlaywrightTestConfig[]
 ) {
-  return baseDefineConfig(
+  return baseDefineConfig<{ version: string }>(
     {
       testDir: "./e2e/",
       /* Run tests in files in parallel */
@@ -46,6 +47,8 @@ export function defineConfig(
 
         ignoreHTTPSErrors:
           ignoreHTTPSErrors === undefined ? false : ignoreHTTPSErrors,
+
+        version: version === undefined ? "Unknown" : version,
       },
 
       timeout: 3 * 60 * 1000,
