@@ -2,7 +2,7 @@
 name: Missing Sword or Gift Box location
 about: A Sword or Gift Box location shown in game is not identified by the solver
 title: ''
-labels: ''
+labels: location-data-error
 assignees: ''
 
 ---
