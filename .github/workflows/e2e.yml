@@ -28,39 +28,11 @@ jobs:
       - name: Setup Environment
         uses: ./.github/actions/setup-env
 
-      - name: Install Playwright browsers
-        run: pnpm playwright install --with-deps
-
       - name: Run Playwright tests
-        run: pnpm run e2e:ci --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --project="${{ matrix.project }}"
-        env:
-          DEBUG: "pw:webserver"
-
-      - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/e2e
         with:
-          name: "blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}"
-          path: blob-report
-          retention-days: 1
-
-      - name: Upload traces
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "traces-report-${{ matrix.project }}-${{ matrix.shardIndex }}"
-          path: test-results
-          retention-days: 1
-          if-no-files-found: ignore
-
-      - name: Upload wrangler logs
-        if: ${{ !cancelled() && failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "web-server-logs-${{ matrix.project }}-${{ matrix.shardIndex }}"
-          path: /home/runner/.config/.wrangler/logs/**/*.log
-          retention-days: 1
-          if-no-files-found: ignore
+          args: "--config playwright.prerelease.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --project='${{ matrix.project }}'"
+          artifact-postfix: "${{ matrix.project }}-${{ matrix.shardIndex }}"
 
   validate-e2e-merge-reports:
     name: "e2e - Merge Reports"
