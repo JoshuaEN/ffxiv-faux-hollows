@@ -2,7 +2,7 @@
 name: Missing Fox location
 about: A Fox location shown in game is not identified by the solver
 title: ''
-labels: bug
+labels: location-data-error
 assignees: ''
 
 ---
